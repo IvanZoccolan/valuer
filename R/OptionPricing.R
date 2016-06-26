@@ -2,8 +2,6 @@
 #Author: Ivan Zoccolan
 
 
-library(R6)
-
 is_numeric_scalar <- function(x) inherits(x, "numeric") & isTRUE(length(x) == 1)
 
 is_positive_scalar <- function(x) {
@@ -50,27 +48,27 @@ payoff_call <- R6Class("payoff_call", inherit = payoff,
 
 #Examples
 
-callpayoff <- payoff_call$new(100)
+# callpayoff <- payoff_call$new(100)
 
-inherits(callpayoff, "payoff")
+# inherits(callpayoff, "payoff")
 
-callpayoff$get()
+# callpayoff$get()
 
-callpayoff$set(120)
+# callpayoff$set(120)
 
-callpayoff$get()
+# callpayoff$get()
 
-callpayoff[c(130, 120)]
+# callpayoff[c(130, 120)]
 
-callpayoff$set("test")
+# callpayoff$set("test")
 
-call <- payoff_call$new("call")
+# call <- payoff_call$new("call")
 
-system.time(callpayoff[c(130, 120)])
+# system.time(callpayoff[c(130, 120)])
 
-spots <- 120 * rnorm(n = 1e4, mean = 1, sd = 0.2)
+# spots <- 120 * rnorm(n = 1e4, mean = 1, sd = 0.2)
 
-system.time(callpayoff[spots])
+# system.time(callpayoff[spots])
 
 
 #Implements a vanilla option
@@ -110,42 +108,42 @@ vanilla_option <- R6Class("vanilla_option", public = list(
 
 #Examples
 
-option = vanilla_option$new(callpayoff, 3)
+# option <- vanilla_option$new(callpayoff, 3)
 
-option$get_expiry()
+# option$get_expiry()
 
-option$option_payoff(c(170,180))
+# option$option_payoff(c(170, 180))
 
-option  = vanilla_option$new(3)
-option = vanilla_option$new("pippo")
+# option  <- vanilla_option$new(3)
+# option <- vanilla_option$new("pippo")
 
-option = vanilla_option$new( )
+# option <- vanilla_option$new( )
 
-option = vanilla_option$new("pippo", 8)
+# option <- vanilla_option$new("pippo", 8)
 
-option1 = option
+# option1 <- option
 
-callpayoff$get()
+# callpayoff$get()
 
-callpayoff$set(90)
+# callpayoff$set(90)
 
-option$option_payoff(c(170,180))
+# option$option_payoff(c(170, 180))
 
 
 #Defines a parameter class
 
-parameters <- R6Class("parameters", public=list(
+parameters <- R6Class("parameters", public = list(
   integral = function(t1, t2) {},
   integral_square = function(t1, t2) {}
   )
 )
 
-constant_parameters <- R6Class("constant_parameters", public =list(
+constant_parameters <- R6Class("constant_parameters", public = list(
   initialize = function(const){
-    if(!missing(const)){
+    if (!missing(const)){
       if (is_numeric_scalar(const)){
         private$constant <- const
-        private$constant_square <- const^2
+        private$constant_square <- const ^ 2
       } else stop("Constant must be a numeric scalar")
     } else {
        private$constant <- 0.0
@@ -153,10 +151,10 @@ constant_parameters <- R6Class("constant_parameters", public =list(
      }
    },
   integral = function(t1, t2){
-    (t2 - t1)*private$constant
+    (t2 - t1) * private$constant
   },
-  integral_square = function(t1,t2){
-    (t2 - t1)*private$constant_square
+  integral_square = function(t1, t2){
+    (t2 - t1) * private$constant_square
   }
  ),
   private = list(
@@ -169,16 +167,16 @@ constant_parameters <- R6Class("constant_parameters", public =list(
 
 #Examples
 
-r <- constant_parameters$new(0.02)
+#r <- constant_parameters$new(0.02)
 
-r$integral(0,10)
+#r$integral(0, 10)
 
-r$integral_square(0,10)
+#r$integral_square(0, 10)
 
-r <- constant_parameters$new()
+#r <- constant_parameters$new()
 
-r$integral(0,1)
+#r$integral(0, 1)
 
-r <- constant_parameters$new(c(1,2))
+#r <- constant_parameters$new(c(1, 2))
 
-r <- constant_parameters$new("pippo")
+#r <- constant_parameters$new("pippo")
