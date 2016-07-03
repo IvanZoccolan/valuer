@@ -2,21 +2,14 @@
 #Author: Ivan Zoccolan
 
 
-is_numeric_scalar <- function(x) inherits(x, "numeric") & isTRUE(length(x) == 1)
-
-is_positive_scalar <- function(x) {
-  inherits(x, "numeric") & isTRUE(length(x) == 1) &
-  isTRUE(x > 0)
-}
-
-payoff <- R6Class("payoff", public = list(initialize = function(){},
+payoff <- R6::R6Class("payoff", public = list(initialize = function(){},
                                         get = function() {},
                                         set = function() {}),
                                         private = list()
                                         )
 
 
-payoff_call <- R6Class("payoff_call", inherit = payoff,
+payoff_call <- R6::R6Class("payoff_call", inherit = payoff,
                       public = list(
                         initialize = function(x){
                           if (!missing(x)) {
@@ -73,7 +66,7 @@ payoff_call <- R6Class("payoff_call", inherit = payoff,
 
 #Implements a vanilla option
 
-vanilla_option <- R6Class("vanilla_option", public = list(
+vanilla_option <- R6::R6Class("vanilla_option", public = list(
                          initialize = function(the_payoff, expiry) {
 
                            if (!missing(the_payoff) ){
@@ -132,13 +125,13 @@ vanilla_option <- R6Class("vanilla_option", public = list(
 
 #Defines a parameter class
 
-parameters <- R6Class("parameters", public = list(
+parameters <- R6::R6Class("parameters", public = list(
   integral = function(t1, t2) {},
   integral_square = function(t1, t2) {}
   )
 )
 
-constant_parameters <- R6Class("constant_parameters", public = list(
+constant_parameters <- R6::R6Class("constant_parameters", public = list(
   initialize = function(const){
     if (!missing(const)){
       if (is_numeric_scalar(const)){

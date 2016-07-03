@@ -10,14 +10,14 @@
 #This class defines the interface only. Implementation is demanded to subclasses inheriting this one.
 
 
-gatherer <- R6Class("gatherer",
+gatherer <-  R6::R6Class("gatherer",
   public = list( dump_result = function(result) {},
                  get_results = function() {})
 
 )
 
 
-statistics_mean <- R6Class("statistics_mean", inherit = gatherer,
+statistics_mean <- R6::R6Class("statistics_mean", inherit = gatherer,
 
                   public = list(
 
