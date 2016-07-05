@@ -31,18 +31,18 @@ cash_flow <- R6::R6Class("cash_flow", public = list(
   set_amount = function(the_amount){
     if(!missing(the_amount))
       if (is_not_negative_scalar(the_amount)) private$amount <- the_amount
-      else stop("the_amount should be a not negative scalar\n")
+      else stop("argument must be a non-negative scalar\n")
     else private$amount <- 0
   },
   initialize = function(time, the_amount){
     if (!missing(time)){
       if (inherits(time, "timeDate")) private$time_index <- time
-      else stop("time must be a timeDate object\n")
+      else stop("argument must be a timeDate object\n")
     } else private$time_index <- timeDate::Sys.timeDate()
 
     if(!missing(the_amount)){
       if (inherits(the_amount, "numeric")) private$amount <- the_amount
-      else stop("the_amount should be a numeric vector\n")
+      else stop("argument must be numeric\n")
     } else private$amount <- 0.
   }
   ),
@@ -77,7 +77,7 @@ path_dependent <- R6::R6Class("path_dependent", public = list(
     initialize = function(the_times){
       if (!missing(the_times))
         if (inherits(the_times, "timeDate")) private$times <- the_times
-        else stop("the_times must be a timeDate object\n")
+        else stop("argument must be a timeDate object\n")
       else private$times <- timeDate::Sys.timeDate()
     },
     get_times = function(){private$times},
