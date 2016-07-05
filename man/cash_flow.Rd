@@ -17,9 +17,9 @@ Class providing a cash flow object with methods to get/set the cash flow amount.
 \section{Fields}{
 
 \describe{
-\item{\code{amount}}{Stores the amount of the cash flow.}
+\item{\code{amount}}{\code{numeric} Stores the amount of the cash flow.}
 
-\item{\code{time_index}}{Stores the time index of the cash flow.}
+\item{\code{time_index}}{\code{\link{timeDate}} Stores the time index of the cash flow.}
 }}
 \section{Methods}{
 
@@ -30,7 +30,8 @@ Class providing a cash flow object with methods to get/set the cash flow amount.
   }
 }
 \examples{
-cash <- cash_flow$new(10, 50.89)
+tt <- timeDate::Sys.timeDate()
+cash <- cash_flow$new(tt, 50.89)
 cash$get_amount()
 cash$set_amount(60.00)
 cash$get_amount()

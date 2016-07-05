@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+packrat/lib*/
+.Rprofile
+valuer.Rproj
+packrat
+.Rbuildignore

@@ -10,12 +10,13 @@
 #' @return Object of \code{\link{R6Class}} with methods to get/set the cash flow amount.
 #' @format \code{\link{R6Class}} object.
 #' @examples
-#' cash <- cash_flow$new(10, 50.89)
+#' tt <- timeDate::Sys.timeDate()
+#' cash <- cash_flow$new(tt, 50.89)
 #' cash$get_amount()
 #' cash$set_amount(60.00)
 #' cash$get_amount()
-#' @field amount Stores the amount of the cash flow.
-#' @field time_index Stores the time index of the cash flow.
+#' @field amount \code{numeric} Stores the amount of the cash flow.
+#' @field time_index \code{\link{timeDate}} Stores the time index of the cash flow.
 #' @section Methods:
 #' \describe{
 #'   \item{\code{get_amount}}{get method for the amount of the cash flow}
@@ -35,9 +36,9 @@ cash_flow <- R6::R6Class("cash_flow", public = list(
   },
   initialize = function(time, the_amount){
     if (!missing(time)){
-      if (is_not_negative_scalar(time)) private$time_index <- time
-      else stop("time should not be a negative scalar\n")
-    } else private$time_index <- 0
+      if (inherits(time, "timeDate")) private$time_index <- time
+      else stop("time must be a timeDate object\n")
+    } else private$time_index <- timeDate::Sys.timeDate()
 
     if(!missing(the_amount)){
       if (inherits(the_amount, "numeric")) private$amount <- the_amount
@@ -47,7 +48,7 @@ cash_flow <- R6::R6Class("cash_flow", public = list(
   ),
  private = list(
   amount = "numeric",
-  time_index = "numeric"
+  time_index = "timeDate"
  )
 )
 
