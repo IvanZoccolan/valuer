@@ -13,21 +13,22 @@ Object of \code{\link{R6Class}}
 }
 \description{
 Base class which defines the interface for a path dependent derivative
-product. This class should be imported by subclasses implementing its methods.
+product. This class should be inherited by subclasses implementing its methods.
 Objects of this class should not be instantiated.
 }
 \section{Fields}{
 
 \describe{
-\item{\code{time_index}}{A \code{\link{timeDate}} object storing the cash flow times .}
+\item{\code{time_index}}{A \code{\link{timeDate}} object storing the product time-line .}
 }}
 \section{Methods}{
 
 \describe{
-  \item{\code{get_times}}{get method for the cash flow times}
-  \item{\code{max_number_cfs}}{returns the maximun number of cash flows the product can generate}
-  \item{\code{cash_flow_times}}{retuns the possible cash flow times of the product}
-  \item{\code{cash_flows}}{returns the cash flows of the product}
+  \item{\code{new}}{Constructor method which takes as argument a \code{\link{timeDate}} object with the product time-line. If no argument is specified it gets initialized with a year long daily sequence}
+  \item{\code{get_times}}{get method for the product time-line. Retuns a \code{\link{timeDate}} object}
+  \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
+  \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Within this base class the method simply returns the product time-line.}
+  \item{\code{cash_flows}}{returns a \code{\link{cash_flows}} object with the cash flows of the product}
   }
 }
 \keyword{datasets}
