@@ -10,6 +10,8 @@ test_that("initialize works as expected", {
   expect_error(cash_flows$new("pippo"), "argument must be a timeDate object")
   expect_error(cash_flows$new(timeDate::Sys.timeDate(), "pippo"), "argument must be numeric")
 
+  expect_error(cash_flows$new(tt, head(amounts)), "arguments must have the same length")
+
   }
 )
 

@@ -12,3 +12,5 @@ is_not_negative_scalar <- function(x){
   inherits(x, "numeric") & isTRUE(length(x) == 1) &
     isTRUE(x >= 0)
 }
+
+same_length <- function(x,y) isTRUE(length(x) == length(y))
