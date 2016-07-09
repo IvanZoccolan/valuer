@@ -107,15 +107,15 @@ path_dependent <- R6::R6Class("path_dependent", public = list(
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
-#' @field the_product A \code{\link{path_dependent}} object with the product the engine will price.
-#' @field r A \code{\link{parameters}} object with the interest rate.
+#' @field the_product (\code{private}) A \code{\link{path_dependent}} object with the product the engine will price.
+#' @field r (\code{private}) A \code{\link{parameters}} object with the interest rate.
 #' @section Methods:
 #' \describe{
-#'   \item{\code{new}}{Constructor method which takes as argument a \code{\link{path_dependent}} object with the product and a \code{\link{parameters}} object with the interest rate}
-#'   \item{\code{get_one_path}}{Returns a \code{numeric} vector with a simulated path of the product underlying asset. This method needs to be implemented by subclasses.}
-#'   \item{\code{run_simulation}}{Runs the Monte Carlo simulation and stores the results in a \code{\link{gatherer}} object. Takes as arguments a \code{\link{gatherer}} object to store the results and an \code{integer} scalar with the number of paths to simulate.}
-#'   \item{\code{discount_one_path}}{discounts a cash flow path}
-#'   \item{\code{discounts}}{\code{\link{R6Class}} active binding which calculates the discount factors.}
+#'   \item{\code{new} (\code{public})}{Constructor method which takes as argument a \code{\link{path_dependent}} object with the product and a \code{\link{parameters}} object with the interest rate}
+#'   \item{\code{get_one_path} (\code{public})}{Returns a \code{numeric} vector with a simulated path of the product underlying asset. This method needs to be implemented by subclasses.}
+#'   \item{\code{run_simulation} (\code{public})}{Runs the Monte Carlo simulation and stores the results in a \code{\link{gatherer}} object. Takes as arguments a \code{\link{gatherer}} object to store the results and an \code{integer} scalar with the number of paths to simulate.}
+#'   \item{\code{discount_one_path} (\code{public})}{Discounts a simulated path of the underlying asset. It takes as argument \code{spot_values} a \code{numeric} vector of simulated values of the underlying asset, calculates the cash flows and takes their present value given the discount factors. Returns a \code{numeric} scalar with the present value of the discounted product cash flows.}
+#'   \item{\code{discounts} (\code{public})}{\code{\link{R6Class}} active binding which calculates the discount factors.}
 #'   }
 
 

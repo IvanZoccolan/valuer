@@ -7,21 +7,35 @@
 #' @description Class for a  pricing engine of a path dependent derivative
 #' product with an underlying asset modeled as a geometric Brownian motion.
 #' @docType class
+#' @usage
+#' prod_time <- timeDate::timeSequence(from="2016-07-09", to="2017-07-09")
+#' prod <- path_dependent$new(prod_time)
+#' r <- constant_parameters$new(0.01 / 365)
+#' spot <- 100
+#' vol <- constant_parameters$new(0.2)
+#' div <- constant_parameters$new(0.0)
+#' exotic <- exotic_bs_engine$new(prod, r, spot, vol, div)
 #' @importFrom R6 R6Class
 #' @importClassesFrom timeDate timeDate
 #' @importFrom timeDate timeDate timeSequence
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
-#' @field the_product A \code{\link{path_dependent}} object with the product the engine will price.
-#' @field r A \code{\link{parameters}} object with the interest rate.
+#' @field the_product (\code{private}) A \code{\link{path_dependent}} object with the product the engine will price.
+#' @field r (\code{private}) A \code{\link{parameters}} object with the interest rate.
+#' @field times (\code{private}) A \code{\link{timeDate}} object with the time-line of the \code{\link{path_dependent}} product.
+#' @field drifts (\code{private}) A \code{numeric} vector holding the drifts.
+#' @field standard_deviations (\code{private}) A \code{numeric} vector holding the standard_deviations.
+#' @field variates (\code{private}) A \code{numeric} vector holding the simulated standard normal values.
+#' @field log_spot (\code{private}) A \code{numeric} scalar holding the log of the initial value of the underlying asset.
+#' @field no_time_intervals (\code{private}) A \code{numeric} vector holding the number of time intervals (\code{times[j] - times[j - 1]})
 #' @section Methods:
 #' \describe{
-#'   \item{\code{new}}{Constructor method which takes as argument a \code{\link{path_dependent}} object with the product and a \code{\link{parameters}} object with the interest rate}
-#'   \item{\code{get_one_path}}{Returns a \code{numeric} vector with a simulated path of the product underlying asset modeled as a risk neutral geometric Brownian motion process.}
-#'   \item{\code{run_simulation}}{Runs the Monte Carlo simulation and stores the results in a \code{\link{gatherer}} object. Takes as arguments a \code{\link{gatherer}} object to store the results and an \code{integer} scalar with the number of paths to simulate.}
-#'   \item{\code{discount_one_path}}{discounts a cash flow path}
-#'   \item{\code{discounts}}{\code{\link{R6Class}} active binding which calculates the discount factors.}
+#'   \item{\code{new} (\code{public})}{Constructor method. It takes as arguments: \code{product} a \code{\link{path_dependent}} object, \code{interest} a \code{\link{parameters}} object carrying the interest rate, \code{spot} a \code{numeric} positive scalar which is the initial value of the underlying asset, \code{volatility} a \code{parameters} object carrying the volatility of the underlying asset and \code{dividends} a \code{parameters} object carrying the continuous dividend payout rate}
+#'   \item{\code{get_one_path} (\code{public})}{Returns a \code{numeric} vector with a simulated path of the product underlying asset modeled as a risk neutral geometric Brownian motion process.}
+#'   \item{\code{run_simulation} (\code{public})}{Runs the Monte Carlo simulation and stores the results in a \code{\link{gatherer}} object. Takes as arguments a \code{\link{gatherer}} object to store the results and an \code{integer} scalar with the number of paths to simulate.}
+#'   \item{\code{discount_one_path}}{Discounts a simulated path of the underlying asset. It takes as argument \code{spot_values} a \code{numeric} vector of simulated values of the underlying asset, calculates the cash flows and takes their present value given the discount factors. Returns a \code{numeric} scalar with the present value of the discounted product cash flows.}
+#'   \item{\code{discounts} (\code{public})}{\code{\link{R6Class}} active binding which calculates the discount factors.}
 #'   }
 
 exotic_bs_engine <- R6Class("exotic_bs_engine", inherit= exotic_engine,
@@ -52,10 +66,10 @@ exotic_bs_engine <- R6Class("exotic_bs_engine", inherit= exotic_engine,
 
       if(!missing(volatility) & !missing(dividends)){
         if (inherits(volatility, "parameters") & inherits(dividends, "parameters")){
-            for (j in seq(no_time_intervals)){
-              this_variance <- volatility$integral_square(times[j], times[j+1])
-              private$drifts[j] <- interest$integral(times[j], times[j+1])
-              - dividends$integral(times[j], times[j+1])
+            for (j in seq(private$no_time_intervals)){
+              this_variance <- volatility$integral_square(private$times[j], private$times[j+1])
+              private$drifts[j] <- interest$integral(private$times[j], private$times[j+1])
+              - dividends$integral(private$times[j], private$times[j+1])
               - 0.5 * this_variance
               private$standard_deviations[j] <- sqrt(this_variance)
             }

@@ -131,6 +131,28 @@ parameters <- R6::R6Class("parameters", public = list(
   )
 )
 
+
+
+#' Class providing a constant parameter object.
+#'
+#' @docType class
+#' @usage
+#' r <- constant_parameters$new(0.01/365)
+#' r$integral(timeDate("2016-07-09"), timeDate("2017-07-09"))
+#' r$integral_square(timeDate("2016-07-09"), timeDate("2017-07-09"))
+#' @importFrom R6 R6Class
+#' @export
+#' @return Object of \code{\link{R6Class}}
+#' @format \code{\link{R6Class}} object.
+#' @field constant (\code{private}) A \code{numeric} which stores the constant parameter.
+#' @field constant_square (\code{private} A \code{numeric} which stores the square of the constant parameter
+#' @section Methods:
+#' \describe{
+#'   \item{\code{integral} (\code{public})}{Calculates the integral given the initial and final times. The arguments are two \code{\link{timeDate}} object with the initial  and final times. It returns a \code{numeric} scalar with the integral}
+#'
+#'   \item{\code{integral_square} (\code{public})}{Calculates the integral of the squared constant parameter given the initial and final times. The arguments are two \code{\link{timeDate}} object with the initial  and final times. It returns a \code{numeric} scalar with the integral}
+#'   }
+
 constant_parameters <- R6::R6Class("constant_parameters", public = list(
   initialize = function(const){
     if (!missing(const)){
@@ -144,10 +166,10 @@ constant_parameters <- R6::R6Class("constant_parameters", public = list(
      }
    },
   integral = function(t1, t2){
-    (t2 - t1) * private$constant
+    as.numeric((t2 - t1) * private$constant)
   },
   integral_square = function(t1, t2){
-    (t2 - t1) * private$constant_square
+    as.numeric((t2 - t1) * private$constant_square)
   }
  ),
   private = list(
