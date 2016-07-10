@@ -8,7 +8,7 @@
 \usage{
 prod_time <- timeDate::timeSequence(from="2016-07-09", to="2017-07-09")
 prod <- path_dependent$new(prod_time)
-r <- constant_parameters$new(0.01 / 365)
+r <- constant_parameters$new(0.01)
 spot <- 100
 vol <- constant_parameters$new(0.2)
 div <- constant_parameters$new(0.0)
