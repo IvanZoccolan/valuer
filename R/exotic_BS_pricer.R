@@ -38,7 +38,7 @@
 #'   \item{\code{discounts} (\code{public})}{\code{\link{R6Class}} active binding which calculates the discount factors.}
 #'   }
 
-exotic_bs_engine <- R6Class("exotic_bs_engine", inherit= exotic_engine,
+exotic_bs_engine <- R6::R6Class("exotic_bs_engine", inherit= exotic_engine,
   public = list(
     initialize = function(product, interest, spot, volatility, dividends){
       if(!missing(product))

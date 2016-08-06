@@ -27,10 +27,11 @@ derivative product it inherits from the path_dependent base class.
 \section{Methods}{
 
 \describe{
-  \item{\code{new}}{Constructor method which takes as argument a \code{\link{timeDate}} object with the product time-line. If no argument is specified it gets initialized with a year long daily sequence}
+  \item{\code{new}}{Constructor method which takes as argument a \code{\link{timeDate}} object with the product time-line,
+  a \code{\link{timeDate}} object with the date of delivery and a \code{\link{payoff}} object with the payoff. If the time line isn't specified it gets initialized with a year long daily sequence. If the delivery date is not specified it is set as the last date of the time line. If the payoff is not specified it will be set with  a call type payoff with strike 100.}
   \item{\code{get_times}}{get method for the product time-line. Retuns a \code{\link{timeDate}} object}
   \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
-  \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. It returns the delivery time of the arithmetic asian option}
+  \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. It returns the first date and the  delivery date of the arithmetic asian option}
   \item{\code{cash_flows}}{returns a \code{\link{cash_flows}} object with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying asset this method will calculate the cash flows from}
   }
 }
