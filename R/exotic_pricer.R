@@ -93,6 +93,7 @@ path_dependent <- R6::R6Class("path_dependent", public = list(
     ),
   private = list(
     times = "timeDate"
+
   )
 )
 

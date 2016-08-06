@@ -27,7 +27,7 @@
 #' @field drifts (\code{private}) A \code{numeric} vector holding the drifts.
 #' @field standard_deviations (\code{private}) A \code{numeric} vector holding the standard_deviations.
 #' @field variates (\code{private}) A \code{numeric} vector holding the simulated standard normal values.
-#' @field log_spot (\code{private}) A \code{numeric} scalar holding the log of the initial value of the underlying asset.
+#' @field spot (\code{private}) A \code{numeric} scalar holding the initial value of the underlying asset.
 #' @field no_time_intervals (\code{private}) A \code{numeric} vector holding the number of time intervals (\code{times[j] - times[j - 1]})
 #' @section Methods:
 #' \describe{
@@ -60,7 +60,7 @@ exotic_bs_engine <- R6Class("exotic_bs_engine", inherit= exotic_engine,
 
       if(!missing(spot))
          if (is_positive_scalar(spot)){
-           private$log_spot <- log(spot)
+           private$spot <- spot
          } else stop(error_msg_3)
        else stop(error_msg_3)
 
@@ -82,8 +82,8 @@ exotic_bs_engine <- R6Class("exotic_bs_engine", inherit= exotic_engine,
       private$variates <- rnorm(private$no_time_intervals)
       current_log_spot <- private$drifts +
                             private$standard_deviations * private$variates
-      current_log_spot <- private$log_spot + cumsum(current_log_spot)
-      exp(current_log_spot)
+      current_log_spot <- cumsum(current_log_spot)
+      c(spot, spot*exp(current_log_spot))
 
     }
   ),
@@ -92,7 +92,7 @@ exotic_bs_engine <- R6Class("exotic_bs_engine", inherit= exotic_engine,
     drifts = "numeric",
     standard_deviations = "numeric",
     variates = "numeric",
-    log_spot = "numeric",
+    spot = "numeric",
     no_time_intervals = "numeric"
   )
 )

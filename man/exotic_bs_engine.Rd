@@ -36,7 +36,7 @@ product with an underlying asset modeled as a geometric Brownian motion.
 
 \item{\code{variates}}{(\code{private}) A \code{numeric} vector holding the simulated standard normal values.}
 
-\item{\code{log_spot}}{(\code{private}) A \code{numeric} scalar holding the log of the initial value of the underlying asset.}
+\item{\code{spot}}{(\code{private}) A \code{numeric} scalar holding the initial value of the underlying asset.}
 
 \item{\code{no_time_intervals}}{(\code{private}) A \code{numeric} vector holding the number of time intervals (\code{times[j] - times[j - 1]})}
 }}
