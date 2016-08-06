@@ -1,10 +1,5 @@
 #Defines the statistics gatherer class
-#Porting to R of C++ code by M. Joshi
-#Ivan Zoccolan 18/6/2016
-
-
-#The class will decide how part of the algorithm will behave. This is the strategy pattern.
-#So the statistics gatherer object will be changed its state by the Monte Carlo algorithm and must retain #the change at each step.
+#The statistics gatherer object will be changed its state by functions and other object methods and must retain the change at each step.
 #In R we will need to use classes with reference semantics such as Reference Classes or R6
 
 #This class defines the interface only. Implementation is demanded to subclasses inheriting this one.
@@ -16,6 +11,8 @@ gatherer <-  R6::R6Class("gatherer",
 
 )
 
+#Implementation of a statistic gatherer class which returns the mean
+#of its values
 
 statistics_mean <- R6::R6Class("statistics_mean", inherit = gatherer,
 

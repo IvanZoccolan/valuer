@@ -1,5 +1,3 @@
-#Reimplementation of payoff class, vanilla options and statistics gatherer with R6.
-#Author: Ivan Zoccolan
 
 
 payoff <- R6::R6Class("payoff", public = list(initialize = function(){},
