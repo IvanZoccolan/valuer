@@ -9,12 +9,16 @@
 #' @docType class
 #' @usage
 #' prod_time <- timeDate::timeSequence(from="2016-07-09", to="2017-07-09")
-#' prod <- path_dependent$new(prod_time)
+#' prod <- path_dependent_asian$new(prod_time)
 #' r <- constant_parameters$new(0.01)
 #' spot <- 100
 #' vol <- constant_parameters$new(0.2)
 #' div <- constant_parameters$new(0.0)
-#' exotic <- exotic_bs_engine$new(prod, r, spot, vol, div)
+#' engine <- exotic_bs_engine$new(prod, r, spot, vol, div)
+#' gatherer_mean <- statistics_mean$new()
+#' no_of_paths <- 1e5
+#' engine$run_simulation(gatherer_mean, no_of_paths)
+#' gatherer_mean$get_results()
 #' @importFrom R6 R6Class
 #' @importClassesFrom timeDate timeDate
 #' @importFrom timeDate timeDate timeSequence
@@ -34,9 +38,10 @@
 #'   \item{\code{new} (\code{public})}{Constructor method. It takes as arguments: \code{product} a \code{\link{path_dependent}} object, \code{interest} a \code{\link{parameters}} object carrying the interest rate, \code{spot} a \code{numeric} positive scalar which is the initial value of the underlying asset, \code{volatility} a \code{parameters} object carrying the volatility of the underlying asset and \code{dividends} a \code{parameters} object carrying the continuous dividend payout rate}
 #'   \item{\code{get_one_path} (\code{public})}{Returns a \code{numeric} vector with a simulated path of the product underlying asset modeled as a risk neutral geometric Brownian motion process.}
 #'   \item{\code{run_simulation} (\code{public})}{Runs the Monte Carlo simulation and stores the results in a \code{\link{gatherer}} object. Takes as arguments a \code{\link{gatherer}} object to store the results and an \code{integer} scalar with the number of paths to simulate.}
-#'   \item{\code{discount_one_path}}{Discounts a simulated path of the underlying asset. It takes as argument \code{spot_values} a \code{numeric} vector of simulated values of the underlying asset, calculates the cash flows and takes their present value given the discount factors. Returns a \code{numeric} scalar with the present value of the discounted product cash flows.}
+#'   \item{\code{discount_one_path} (\code{public})}{Discounts a simulated path of the underlying asset. It takes as argument \code{spot_values} a \code{numeric} vector of simulated values of the underlying asset, calculates the cash flows and takes their present value given the discount factors. Returns a \code{numeric} scalar with the present value of the discounted product cash flows.}
 #'   \item{\code{discounts} (\code{public})}{\code{\link{R6Class}} active binding which calculates the discount factors.}
 #'   }
+
 
 exotic_bs_engine <- R6::R6Class("exotic_bs_engine", inherit= exotic_engine,
   public = list(

@@ -39,6 +39,8 @@ same_length <- function(x,y, ...) tryCatch(isTRUE(length(x) == length(y)), error
 
 is_payoff <- function(x, ...) tryCatch(inherits(x, "payoff"), error = function(e) FALSE)
 
+is_between <- function(x,lower,upper, ...) tryCatch(isTRUE(x >= lower) & isTRUE(x <= upper), error = function(e) FALSE)
+
 #Error messages
 
 error_msg_1 <- function(object) paste("argument must be a ", object, " object\n")
@@ -47,5 +49,7 @@ error_msg_3 <- "argument must be a positive scalar\n"
 error_msg_4 <- function(arg) paste("argument", arg, "must be a positive integer\n")
 error_msg_5 <- function(arg) paste("argument", arg, "must be a numeric scalar\n")
 error_msg_6 <- "The delivery time should be one of the possible product dates\n"
+error_msg_7 <- function(arg) paste("argument", arg, "must be a non negative scalar\n")
+error_msg_8 <- function(arg) paste("argument", arg, "must be between 0 and 1\n")
 
 

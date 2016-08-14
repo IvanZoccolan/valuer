@@ -17,3 +17,4 @@ Imports: R6 (>= 2.1.2),
     RcppEigen (>= 0.3.2.8.1),
     timeDate (>= 3012.100)
 Suggests: testthat
+LinkingTo: Rcpp
