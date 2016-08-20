@@ -11,7 +11,7 @@ premium <- 100
 rollup <- payoff_rollup$new(premium, rate)
 t1 <- timeDate::timeDate("2016-01-01")
 t2 <- timeDate::timeDate("2016-12-31")
-rollup$get_payoff(c(120,100), t1,t2)
+rollup$get_payoff(c(120,100), c(t1,t2))
 }
 \value{
 Object of \code{\link{R6Class}}
@@ -37,7 +37,7 @@ Class providing a roll-up of premiums payoff object. Provides methods to get/set
   \item{\code{set_rate} (\code{public})}{Sets the roll-up rate private field.
    The argument is a \code{\link{constant_parameters object}}}
   \item{\code{get_payoff} (\code{public})}{Gets the payoff. The arguments are a \code{numeric} vector
-   with the amounts and two \code{\link{timeDate}} objects with the start and end dates
+   with the amounts and a vector of\code{\link{timeDate}} objects with the start and end dates
    to calculate the roll-up amount (see \bold{Usage})}
 }
 }

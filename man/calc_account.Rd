@@ -4,7 +4,7 @@
 \alias{calc_account}
 \title{Calculates the account}
 \usage{
-calc_account(spot, fee, barrier)
+calc_account(spot, fee, barrier, penalty)
 }
 \arguments{
 \item{spot}{\code{numeric} vector with the VA reference fund values}
@@ -12,6 +12,8 @@ calc_account(spot, fee, barrier)
 \item{fee}{\code{numeric} scalar with the fee}
 
 \item{barrier}{\code{numeric} scalar with the state-dependent barrier}
+
+\item{penalty}{\code{numeric} scalar with the surrender penalty}
 }
 \description{
 Calculates the account

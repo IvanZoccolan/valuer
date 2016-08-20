@@ -28,9 +28,7 @@ base class for more specialized implementations such as a roll-up or ratchet pay
   \item{\code{set_premium} (\code{public})}{Sets the the_premium private field.
    The argument is a non negative scalar}
   \item{\code{get_premium} (\code{public})}{Returns the premium as non negative scalar}
-  \item{\code{get_payoff} (\code{public})}{Gets a zero payoff in this base class.The arguments are a \code{numeric} vector
-   with the amounts and two \code{\link{timeDate}} objects with the start and end dates
-   to calculate the roll-up amount. }
+  \item{\code{get_payoff} (\code{public})}{Gets a zero payoff in this base class.The arguments are a \code{numeric} vector with the amounts and a vector of \code{\link{timeDate}} objects to calculate the payoff}
 }
 }
 \keyword{datasets}

@@ -53,3 +53,24 @@ error_msg_7 <- function(arg) paste("argument", arg, "must be a non negative scal
 error_msg_8 <- function(arg) paste("argument", arg, "must be between 0 and 1\n")
 
 
+
+
+#' Normalizes a timeDate sequence into year fractions
+#'@param times A \code{\link{timeDate}} sequence
+
+yr_fractions <- function(times){
+
+  t_periods <- timeDate::periods(times, period = "12m", by="12m")
+
+  t_diffs <- as.numeric(difftimeDate(t_periods$to, t_periods$from)) + 1
+
+  ind <- seq_along(t_diffs)
+
+  out <- sapply(ind, function(i) i - 1 + seq(t_diffs[i]) / t_diffs[i])
+
+  unlist(out)
+
+}
+
+
+

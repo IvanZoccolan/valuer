@@ -1,5 +1,31 @@
-#Implemetation of VA products. The  base class will be path_dependent.
-#Each VA rider will be a subclass.
+#Implemetation of VA products.
+#
+######################### DESIGN  #######################################################################
+#
+#The path_dependent class will be the base class of a VA product
+#The cash_flows method needs to take into account the death time
+#The death_time can be simulated by the VA pricer engine an passed to the cash_flows method
+#A new path_dependent subclass is needed for each VA contract rider
+#For example we will have a specialized GMAB path_dependent class for VA with GMAB rider, etc
+#Will implement GMAB, GMDB and GMAB + GMDB first. Will leave GMIB, GMIB + GMDB, GMWB for a later stage.
+#A base class for riders is needed to make a standard interface as each product will have to store the same info
+#such as fee, barrier (for state-dependent fees), penalties for withdrawals, type of gurantee payoff (rollup / ratchet)
+#A roll-up payoff or ratchet payoff object will be passed into the initialize of the product.
+
+#The cash_flows will return all possible withdrawal cash_flow. The engine will use the cash_flows
+#depending if we're doing static or mixed
+#The cash flows will be saved in private field of the engine.
+#The formula which calculates the account cannot be vectorized since each value dependends on the
+#previuos one. So for performance reasons it is implemented in C++ and interfaced with Rcpp
+
+################################################################################################################
+
+
+
+
+
+
+
 
 #Roll-up an ratchet payoff objects are implemented
 
@@ -22,9 +48,7 @@
 #'   \item{\code{set_premium} (\code{public})}{Sets the the_premium private field.
 #'    The argument is a non negative scalar}
 #'   \item{\code{get_premium} (\code{public})}{Returns the premium as non negative scalar}
-#'   \item{\code{get_payoff} (\code{public})}{Gets a zero payoff in this base class.The arguments are a \code{numeric} vector
-#'    with the amounts and two \code{\link{timeDate}} objects with the start and end dates
-#'    to calculate the roll-up amount. }
+#'   \item{\code{get_payoff} (\code{public})}{Gets a zero payoff in this base class.The arguments are a \code{numeric} vector with the amounts and a vector of \code{\link{timeDate}} objects to calculate the payoff}
 #'}
 
 
@@ -46,7 +70,7 @@ payoff_guarantee <- R6::R6Class("payoff_guarantee",
                                    else private$the_premium <- 100
                                },
                                get_premium = function(){private$the_premium},
-                               get_payoff = function(amount, t1, t2){
+                               get_payoff = function(amount, t){
                                  return(0)
                                }
 
@@ -73,7 +97,7 @@ payoff_guarantee <- R6::R6Class("payoff_guarantee",
 #' rollup <- payoff_rollup$new(premium, rate)
 #' t1 <- timeDate::timeDate("2016-01-01")
 #' t2 <- timeDate::timeDate("2016-12-31")
-#' rollup$get_payoff(c(120,100), t1,t2)
+#' rollup$get_payoff(c(120,100), c(t1,t2))
 #' @importFrom R6 R6Class
 #' @export
 #' @return Object of \code{\link{R6Class}}
@@ -90,7 +114,7 @@ payoff_guarantee <- R6::R6Class("payoff_guarantee",
 #'   \item{\code{set_rate} (\code{public})}{Sets the roll-up rate private field.
 #'    The argument is a \code{\link{constant_parameters object}}}
 #'   \item{\code{get_payoff} (\code{public})}{Gets the payoff. The arguments are a \code{numeric} vector
-#'    with the amounts and two \code{\link{timeDate}} objects with the start and end dates
+#'    with the amounts and a vector of\code{\link{timeDate}} objects with the start and end dates
 #'    to calculate the roll-up amount (see \bold{Usage})}
 #'}
 
@@ -114,8 +138,8 @@ payoff_rollup <- R6::R6Class("payoff_rollup", inherit = payoff_guarantee,
                           else stop(error_msg_1("constant_parameters"))
                           else private$the_rate <- constant_parameters$new(0)
                       },
-                      get_payoff = function(amount, t1, t2){
-                        guarantee <- private$the_premium*exp(private$the_rate$integral(t1,t2))
+                      get_payoff = function(amount, t){
+                        guarantee <- private$the_premium*exp(private$the_rate$integral(t[1],t[2]))
                         sapply(amount, function(i) max(i, guarantee))
                       }
 
@@ -137,7 +161,7 @@ payoff_rollup <- R6::R6Class("payoff_rollup", inherit = payoff_guarantee,
 #' Generic Variable Annuity  product class
 #' @description  Class providing an interface for a generic VA product object. It inherits from \code{\link{path_dependent}}. \cr This class shouldn't be instantiated but used as base class for implementing  products with contract riders such as GMAB, GMIB, etc.
 #' It supports a simple state-dependent fee structure with a single barrier. \cr
-#' See \bold{References} for more details on variable annuities.
+#' See \bold{References} for a description of variable annuities life insurance products, their guarantees and fee structures.
 #' @docType class
 #' @importFrom R6 R6Class
 #' @importClassesFrom timeDate timeDate
@@ -152,28 +176,20 @@ payoff_rollup <- R6::R6Class("payoff_rollup", inherit = payoff_guarantee,
 #' @field the_penalty (\code{private}) A scalar with the withdrawal penalty.
 #' Must be between 0 and 1.
 #' @section Methods:
-#' \describe{
-#'   \item{\code{new}}{Constructor method which takes as arguments:
-#'   \describe{
-#'     \item{\code{payoff}}{ \code{\link{payoff_guarantee}} object with the type of payoff (e.g: roll-up, ratchet)}
-#' \item{\code{prod_times}}{ \code{\link{timeSequence}} object with the product timeline}
-#' \item{\code{fee}}{ positive scalar with the fee. If not provided defaults to 0.02}
-#' \item{\code{barrier}}{ positive scalar with the barrier. If not provided defaults to 0}
-#' \item{\code{penalty}}{ scalar between 0 and 1 with the withdrawal penalty. If not provided defaults to \code{Inf}}
+#'  \describe{
+#'    \item{\code{new}}{Constructor method}
+#'    \item{\code{get_times}}{get method for the product time-line. Returns a \code{\link{timeDate}} object}
+#'    \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
+#'    \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Within this base class the method simply returns the product time-line.}
+#'    \item{\code{cash_flows}}{returns a \code{numeric} vector with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying fund this method will calculate the cash flows from}
 #' }
-#' }
-#'   \item{\code{get_times}}{get method for the product time-line. Retuns a \code{\link{timeDate}} object}
-#'   \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
-#'   \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Within this base class the method simply returns the product time-line.}
-#'   \item{\code{cash_flows}}{returns a \code{\link{cash_flows}} object with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying asset this method will calculate the cash flows from}
-#'   }
 #' @references
 #' \enumerate{
 #' \item{\cite{ Bacinello A.R., Millossovich P., Olivieri A., Pitacco  E.,
-#' "Variable annuities: a unifying valuation approach." In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.
-#' }}
+  #' "Variable annuities: a unifying valuation approach." In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.
+  #' }}
 #' \item{\cite{Bernard C., Hardy M. and Mackay A. "State-dependent fees for variable
-#'  annuity guarantees." In: Astin Bulletin 44 (2014), pp. 559-585.}}
+  #'  annuity guarantees." In: Astin Bulletin 44 (2014), pp. 559-585.}}
 #'  }
 #'@usage
 #'#Sets up the payoff as a roll-up with roll-up rate 1%
@@ -186,9 +202,9 @@ payoff_rollup <- R6::R6Class("payoff_rollup", inherit = payoff_guarantee,
 #'#Five years time-line
 #'times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
 #'
-#'fee <- 0.02
+#'fee <- constant_parameters$new(0.02, 365)
 #'barrier <- 200
-#'penalty <- 0.1
+#'penalty <- 0.01
 #'
 #'#It shouldn't be instantiated as it's a generic contract base class.
 #'va <- va_product$new(rollup, times, fee, barrier, penalty)
@@ -204,15 +220,24 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
             else stop("Please provide a guarantee payoff object\n")
 
             if (!missing(prod_times))
-              if (are_dates(prod_times)) private$times <- prod_times
-              else stop(error_msg_1("timeSequence"))
-                #The default is a five year time sequence.
-            else private$times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+              if (are_dates(prod_times)){
+                private$times <- prod_times
+                # Normalizes the product time line into year fractions
+                private$times_yrs <- yr_fractions(prod_times)
+
+              } else stop(error_msg_1("timeSequence"))
+            #The default is a five year time sequence.
+            else {
+
+              t <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+              private$times <- t
+              private$times_yrs <- yr_fractions(t)
+            }
 
             if (!missing(fee))
-             if(is_positive_scalar(fee)) private$the_fee <- fee
-             else stop(error_msg_3)
-            else private$the_fee <- 0.02
+             if(inherits(fee, "constant_parameters")) private$the_fee <- fee
+             else stop(error_msg_1("constant_parameters"))
+            else private$the_fee <- constant_parameters$new(0.02, 365)
 
             if (!missing(barrier))
              if (is_positive_scalar(barrier)) private$the_barrier <- barrier
@@ -225,44 +250,123 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
             else private$the_penalty <- 0
 
 
-           }
-
+           },
+           times_in_yrs = function() private$times_yrs
          ),
          private = list(
            the_payoff = "payoff_guarantee",
-           the_fee = "numeric",
+           the_fee = "constant_parameters",
            the_barrier = "numeric",
-           the_penalty = "numeric"
+           the_penalty = "numeric",
+           times_yrs = "numeric"
 
          )
         )
 
 
 
-#' @useDynLib valuer
+
+#' Variable Annuity with GMAB guarantee
+#' @description  Class for a  VA product object with Guaranteed Minimum Accumulation Benefit (GMAB). \cr It inherits from \code{\link{va_product}}.
+#' It supports a simple state-dependent fee structure with a single barrier.
+#' See \bold{References} for a description of variable annuities life insurance products, their guarantees and fee structures.
+#' @docType class
+#' @importFrom R6 R6Class
 #' @importFrom Rcpp evalCpp sourceCpp
+#' @importFrom timeDate timeDate timeSequence
+#' @importClassesFrom timeDate timeDate
+#' @useDynLib valuer
+#' @export
+#' @return Object of \code{\link{R6Class}}
+#' @format \code{\link{R6Class}} object.
+#' @field the_payoff (\code{private}) A \code{\link{payoff_guarantee}} object which stores the type of payoff
+#' (e.g: roll-up, ratchet, etc).
+#' @field the_fee (\code{private}) A positive scalar with the annual VA contract fee.
+#' @field the_barrier (\code{private}) A positive scalar with the barrier for state-dependent fees. The fee will be applied only if the value of the account is below the barrier.
+#' @field the_penalty (\code{private}) A scalar with the withdrawal penalty in case the insured surrenders the contract.
+#' Must be between 0 and 1.
+#' @section Methods:
+#'  \describe{
+#'    \item{\code{new}}{Constructor method}
+#'    \item{\code{get_times}}{get method for the product time-line. Returns a \code{\link{timeDate}} object}
+#'    \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
+#'    \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Takes as argument a \code{\link{timeDate}} object with the time of death}
+#'    \item{\code{cash_flows}}{returns a \code{numeric} vector with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying fund this method will calculate the cash flows from and a \code{\link{timeDate}} object with the time of death of the insured.}
+#' }
+#' @references
+#' \enumerate{
+#' \item{\cite{ Bacinello A.R., Millossovich P., Olivieri A., Pitacco  E.,
+  #' "Variable annuities: a unifying valuation approach." In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.
+  #' }}
+#' \item{\cite{Bernard C., Hardy M. and Mackay A. "State-dependent fees for variable
+  #'  annuity guarantees." In: Astin Bulletin 44 (2014), pp. 559-585.}}
+#'  }
+#'@usage
+#'#Sets up the payoff as a roll-up with roll-up rate 1%
+#'
+#'rate <- constant_parameters$new(0.01)
+#'
+#'premium <- 100
+#'rollup <- payoff_rollup$new(premium, rate)
+#'
+#'#Five years time-line
+#'times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+#'
+#'# A constant fee of 2% per year (365 days)
+#'fee <- constant_parameters$new(0.02, 365)
+#'
+#'#Barrier for a state-dependent fee. The fee will be applied only if
+#'#the value of the account is below the barrier
+#'barrier <- 200
+#'
+#'#Withdrawal penalty applied in case the insured surrenders the contract.
+#'penalty <- 0.01
+#'
+#'VA_GMAB <- GMAB$new(rollup, times, fee, barrier, penalty)
+
+
 
 GMAB <- R6::R6Class("GMAB", inherit = va_product,
           public = list(
 
             max_number_cfs = function(){
 
-                length(private$time_index) - 1
+                length(private$times)
             },
 
-            cash_flows_times = function(){
-              private$time_index[-1]
+            cash_flow_times = function(death_time){
+
+              delivery <- which(private$times == death_time)
+
+              if (length(delivery) != 0)
+                res <- private$times[1:delivery]
+              else res <- private$times
+
+             res
             },
 
             cash_flows = function(spot_values, death_time){
 
-              if (death_time >= tail(private$time_index, 1))
-                  delivery <- tail(private$time_index, 1)
-              else    delivery <- death_time
+              t1 <- tail(private$times, 1)
+              fee <- private$the_fee$get()
+              barrier <- private$the_barrier
+              penalty <- private$the_penalty
 
+              if (death_time < t1){
 
+                delivery <- which(death_time == private$times)
+                out <- calc_account(spot_values[1:delivery], fee, barrier, penalty)
 
+              } else {
 
+                t0 <- head(private$times, 1)
+                out <- calc_account(spot_values, fee, barrier, penalty)
+                last <- length(out)
+                out[last] <- private$the_payoff$get_payoff(out[last], c(t0, t1))
+
+              }
+
+              out
 
             }
 

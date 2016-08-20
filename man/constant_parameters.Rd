@@ -32,6 +32,7 @@ Class providing a constant parameter object with methods to calculate the integr
 \describe{
   \item{\code{integral} (\code{public})}{Calculates the integral given the initial and final times. The arguments are two \code{\link{timeDate}} object with the initial  and final times. It returns a \code{numeric} scalar with the integral}
   \item{\code{integral_square} (\code{public})}{Calculates the integral of the squared constant parameter given the initial and final times. The arguments are two \code{\link{timeDate}} object with the initial  and final times. It returns a \code{numeric} scalar with the integral}
+  \item{\code{get} (\code{public})}{ get the constant}
   }
 }
 \keyword{datasets}

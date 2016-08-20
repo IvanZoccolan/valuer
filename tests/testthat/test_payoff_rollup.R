@@ -18,9 +18,9 @@ test_that("get_payoff method works", {
 
   rollup <- payoff_rollup$new(100,rate)
 
-  expect_equal(rollup$get_payoff(120,head(tt, 1), tail(tt, 1)), 120)
-  expect_equal(rollup$get_payoff(c(120,130), head(tt, 1), tail(tt, 1)), c(120,130))
-  expect_gt(rollup$get_payoff(100,head(tt, 1), tail(tt, 1)), 100)
+  expect_equal(rollup$get_payoff(120,c(head(tt, 1), tail(tt, 1))), 120)
+  expect_equal(rollup$get_payoff(c(120,130), c(head(tt, 1), tail(tt, 1))), c(120,130))
+  expect_gt(rollup$get_payoff(100,c(head(tt, 1), tail(tt, 1))), 100)
 
 
 })

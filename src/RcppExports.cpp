@@ -6,15 +6,16 @@
 using namespace Rcpp;
 
 // calc_account
-NumericVector calc_account(const NumericVector& spot, double fee, double barrier);
-RcppExport SEXP valuer_calc_account(SEXP spotSEXP, SEXP feeSEXP, SEXP barrierSEXP) {
+NumericVector calc_account(const NumericVector& spot, double fee, double barrier, double penalty);
+RcppExport SEXP valuer_calc_account(SEXP spotSEXP, SEXP feeSEXP, SEXP barrierSEXP, SEXP penaltySEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const NumericVector& >::type spot(spotSEXP);
     Rcpp::traits::input_parameter< double >::type fee(feeSEXP);
     Rcpp::traits::input_parameter< double >::type barrier(barrierSEXP);
-    __result = Rcpp::wrap(calc_account(spot, fee, barrier));
+    Rcpp::traits::input_parameter< double >::type penalty(penaltySEXP);
+    __result = Rcpp::wrap(calc_account(spot, fee, barrier, penalty));
     return __result;
 END_RCPP
 }

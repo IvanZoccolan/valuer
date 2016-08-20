@@ -152,6 +152,7 @@ parameters <- R6::R6Class("parameters", public = list(
 #' \describe{
 #'   \item{\code{integral} (\code{public})}{Calculates the integral given the initial and final times. The arguments are two \code{\link{timeDate}} object with the initial  and final times. It returns a \code{numeric} scalar with the integral}
 #'   \item{\code{integral_square} (\code{public})}{Calculates the integral of the squared constant parameter given the initial and final times. The arguments are two \code{\link{timeDate}} object with the initial  and final times. It returns a \code{numeric} scalar with the integral}
+#'   \item{\code{get} (\code{public})}{ get the constant}
 #'   }
 
 constant_parameters <- R6::R6Class("constant_parameters", public = list(
@@ -176,7 +177,8 @@ constant_parameters <- R6::R6Class("constant_parameters", public = list(
   },
   integral_square = function(t1, t2){
     as.numeric((t2 - t1) * private$constant_square)
-  }
+  },
+  get = function() private$constant
  ),
   private = list(
     time_span = "numeric",
