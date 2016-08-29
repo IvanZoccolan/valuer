@@ -32,7 +32,7 @@ derivative product it inherits from the path_dependent base class.
   \item{\code{get_times}}{get method for the product time-line. Retuns a \code{\link{timeDate}} object}
   \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
   \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. It returns the first date and the  delivery date of the arithmetic asian option}
-  \item{\code{cash_flows}}{returns a \code{\link{cash_flows}} object with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying asset this method will calculate the cash flows from}
+  \item{\code{cash_flows}}{returns a \code{numeric} vector with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying asset this method will calculate the cash flows from}
   }
 }
 \keyword{datasets}

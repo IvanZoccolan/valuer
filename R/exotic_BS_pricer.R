@@ -1,7 +1,7 @@
 #Extends the base exotic engine by implementing its get_one_path() method.
-#get_one_path() will pull a sample path from a risk-neutral geometric Brownian motion process.
-#It also changes the base class initialize method  to get parameters objects
-#with the volatility and continuous dividend rate.
+#get_one_path() will pull a sample path from a risk-neutral geometric Brownian
+#motion process.It also changes the base class initialize method  to get
+#parameters objects with the volatility and continuous dividend rate.
 
 #' Class for a  pricing engine of a path dependent derivative.
 #' @description Class for a  pricing engine of a path dependent derivative
@@ -33,13 +33,15 @@
 #' @field variates (\code{private}) A \code{numeric} vector holding the simulated standard normal values.
 #' @field spot (\code{private}) A \code{numeric} scalar holding the initial value of the underlying asset.
 #' @field no_time_intervals (\code{private}) A \code{numeric} vector holding the number of time intervals (\code{times[j] - times[j - 1]})
+#' @field discount_factors \code{private}) A \code{numeric} vector holding the discount factors.
 #' @section Methods:
 #' \describe{
 #'   \item{\code{new} (\code{public})}{Constructor method. It takes as arguments: \code{product} a \code{\link{path_dependent}} object, \code{interest} a \code{\link{parameters}} object carrying the interest rate, \code{spot} a \code{numeric} positive scalar which is the initial value of the underlying asset, \code{volatility} a \code{parameters} object carrying the volatility of the underlying asset and \code{dividends} a \code{parameters} object carrying the continuous dividend payout rate}
 #'   \item{\code{get_one_path} (\code{public})}{Returns a \code{numeric} vector with a simulated path of the product underlying asset modeled as a risk neutral geometric Brownian motion process.}
 #'   \item{\code{run_simulation} (\code{public})}{Runs the Monte Carlo simulation and stores the results in a \code{\link{gatherer}} object. Takes as arguments a \code{\link{gatherer}} object to store the results and an \code{integer} scalar with the number of paths to simulate.}
 #'   \item{\code{discount_one_path} (\code{public})}{Discounts a simulated path of the underlying asset. It takes as argument \code{spot_values} a \code{numeric} vector of simulated values of the underlying asset, calculates the cash flows and takes their present value given the discount factors. Returns a \code{numeric} scalar with the present value of the discounted product cash flows.}
-#'   \item{\code{discounts} (\code{public})}{\code{\link{R6Class}} active binding which calculates the discount factors.}
+#'   \item{\code{discounts} (\code{public})}{\code{\link{R6Class}} active binding which calculates the discount factors. It is called during the initialize method given the interest rate
+#'   is constant with this implementation.}
 #'   }
 
 
@@ -80,6 +82,8 @@ exotic_bs_engine <- R6::R6Class("exotic_bs_engine", inherit= exotic_engine,
             }
           }else stop(error_msg_2("parameters"))
       } else stop(error_msg_2("parameters"))
+
+      private$discount_factors <- self$discounts
     },
 
     get_one_path = function(){
@@ -90,6 +94,10 @@ exotic_bs_engine <- R6::R6Class("exotic_bs_engine", inherit= exotic_engine,
       current_log_spot <- cumsum(current_log_spot)
       c(spot, spot*exp(current_log_spot))
 
+    },
+    discount_one_path = function(spot_values){
+      these_cash_flows <- private$the_product$cash_flows(spot_values)
+      sum(these_cash_flows * private$discount_factors)
     }
   ),
   private = list(
@@ -98,7 +106,8 @@ exotic_bs_engine <- R6::R6Class("exotic_bs_engine", inherit= exotic_engine,
     standard_deviations = "numeric",
     variates = "numeric",
     spot = "numeric",
-    no_time_intervals = "numeric"
+    no_time_intervals = "numeric",
+    discount_factors = "numeric"
   )
 )
 

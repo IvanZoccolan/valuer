@@ -43,6 +43,8 @@ product with an underlying asset modeled as a geometric Brownian motion.
 \item{\code{spot}}{(\code{private}) A \code{numeric} scalar holding the initial value of the underlying asset.}
 
 \item{\code{no_time_intervals}}{(\code{private}) A \code{numeric} vector holding the number of time intervals (\code{times[j] - times[j - 1]})}
+
+\item{\code{discount_factors}}{\code{private}) A \code{numeric} vector holding the discount factors.}
 }}
 \section{Methods}{
 
@@ -51,7 +53,8 @@ product with an underlying asset modeled as a geometric Brownian motion.
   \item{\code{get_one_path} (\code{public})}{Returns a \code{numeric} vector with a simulated path of the product underlying asset modeled as a risk neutral geometric Brownian motion process.}
   \item{\code{run_simulation} (\code{public})}{Runs the Monte Carlo simulation and stores the results in a \code{\link{gatherer}} object. Takes as arguments a \code{\link{gatherer}} object to store the results and an \code{integer} scalar with the number of paths to simulate.}
   \item{\code{discount_one_path} (\code{public})}{Discounts a simulated path of the underlying asset. It takes as argument \code{spot_values} a \code{numeric} vector of simulated values of the underlying asset, calculates the cash flows and takes their present value given the discount factors. Returns a \code{numeric} scalar with the present value of the discounted product cash flows.}
-  \item{\code{discounts} (\code{public})}{\code{\link{R6Class}} active binding which calculates the discount factors.}
+  \item{\code{discounts} (\code{public})}{\code{\link{R6Class}} active binding which calculates the discount factors. It is called during the initialize method given the interest rate
+  is constant with this implementation.}
   }
 }
 \keyword{datasets}

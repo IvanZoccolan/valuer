@@ -73,7 +73,7 @@ cash_flows <- R6::R6Class("cash_flows", public = list(
 #'   \item{\code{get_times}}{get method for the product time-line. Returns a \code{\link{timeDate}} object}
 #'   \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
 #'   \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Within this base class the method simply returns the product time-line.}
-#'   \item{\code{cash_flows}}{returns a \code{\link{cash_flows}} object with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying asset this method will calculate the cash flows from}
+#'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying asset this method will calculate the cash flows from}
 #'   }
 
 path_dependent <- R6::R6Class("path_dependent", public = list(
@@ -87,8 +87,7 @@ path_dependent <- R6::R6Class("path_dependent", public = list(
     max_number_cfs = function() length(private$times),
     cash_flow_times = function() private$times,
     cash_flows = function(spot_values){
-      tt  <- self$cash_flow_times()
-      cash_flows$new(tt, spot_values)
+      spot_values
     }
     ),
   private = list(
@@ -127,14 +126,15 @@ exotic_engine <- R6Class("exotic_engine",
       if(!missing(product))
         if (inherits(product, "path_dependent")) {
           private$the_product <- product
-        } else stop("argument must be a path_dependent object")
-      else stop("argument must be a path_dependent object")
+        } else stop(error_msg_1(" path_dependent"))
+      else stop(error_msg_1(" path_dependent"))
 
       if(!missing(interest))
         if(inherits(interest, "parameters")) {
           private$r <- interest
-        } else stop("argument must be a parameters object")
-      else stop("argument must be a parameters object")
+        } else stop(error_msg_1("parameters"))
+      else stop(error_msg_1("parameters"))
+
     },
 
     get_one_path = function(){},
@@ -149,7 +149,7 @@ exotic_engine <- R6Class("exotic_engine",
 
     discount_one_path = function(spot_values){
       these_cash_flows <- private$the_product$cash_flows(spot_values)
-      sum(these_cash_flows$get_amounts() * self$discounts)
+      sum(these_cash_flows * self$discounts)
     }
   ),
   active = list(

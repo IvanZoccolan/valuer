@@ -6,7 +6,7 @@
 \title{Generic Variable Annuity  product class}
 \format{\code{\link{R6Class}} object.}
 \usage{
-#Sets up the payoff as a roll-up with roll-up rate 1%
+#Sets up the payoff as a roll-up of premiums with roll-up rate 1%
 
 rate <- constant_parameters$new(0.01)
 
@@ -43,15 +43,22 @@ See \bold{References} for a description of variable annuities life insurance pro
 
 \item{\code{the_penalty}}{(\code{private}) A scalar with the withdrawal penalty.
 Must be between 0 and 1.}
+
+\item{\code{times_yrs}}{(\code{private}) A numeric vector with the product time-line in fraction of years}
 }}
 \section{Methods}{
 
  \describe{
    \item{\code{new}}{Constructor method}
    \item{\code{get_times}}{get method for the product time-line. Returns a \code{\link{timeDate}} object}
+ \item{\code{survival_benefit_times}}{retuns a \code{numeric} vector with the survival benefit time indexes.}
+   \item{\code{surrender_times}}{retuns a \code{numeric} vector with the surrender time indexes. Takes as argument a string with the frequency of the decision if surrendering the contract,  e.g. "3m"  corresponds to a surrender decision taken every 3 months.}
+   \item{\code{death_benefit_times}}{retuns a \code{numeric} vector with the death benefit time indexes if a death benefit is present in the rider.}
+   \item{\code{times_in_yrs}}{get method for the product time-line in fraction of year}
    \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
    \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Within this base class the method simply returns the product time-line.}
    \item{\code{cash_flows}}{returns a \code{numeric} vector with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying fund this method will calculate the cash flows from}
+   \item{\code{get_premium}}{Returns the premium as non negative scalar}
 }
 }
 \references{
