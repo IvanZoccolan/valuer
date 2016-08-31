@@ -64,6 +64,7 @@
 #' @importClassesFrom timeDate timeDate
 #' @importFrom timeDate timeDate timeSequence
 #' @importFrom orthopolynom laguerre.polynomials
+#' @importFrom polynom polynomial
 #' @importFrom RcppEigen fastLmPure
 #' @export
 
@@ -129,32 +130,63 @@ va_engine <- R6Class("va_engine",
    private$discounts <- exp(log_discounts)
 
   },
-  run_simulation = function(the_gatherer, npaths, degree = 3){
+  do_static = function(the_gatherer, npaths, simulate = TRUE){
+
    times <- private$the_product$get_times()
    m = length(times)
    ind <- seq(npaths)
+
+   if(simulate){
+    #Simulates financials
+    self$simulate_fin_paths(npaths)
+    #Simulates times of death
+    private$tau <- sapply(ind, function(i){
+     self$death_time()
+    })
+   }
+
+   #Initial cash flow matrix
+   cash <- matrix(NA, nrow = npaths, ncol = m)
+   old_penalty <- private$the_product$get_penalty()
+   private$the_product$set_penalty(penalty=1)
+   for (i in ind){
+    cash[i, ] <- private$the_product$cash_flows(private$fund[i, ], private$tau[i])
+   }
+   res <- sapply(ind, function(i){
+     sum(cash[i, 1:private$tau[i]] *
+           self$get_discount(i, 1:private$tau[i]))
+   })
+   the_gatherer$dump_result(res)
+   private$the_product$set_penalty(penalty=old_penalty)
+  },
+  do_mixed = function(the_gatherer, npaths, degree = 3, freq = "3m", simulate=TRUE){
+   times <- private$the_product$get_times()
+   m = length(times)
+   ind <- seq(npaths)
+   if(simulate){
    #Simulates financials
    self$simulate_fin_paths(npaths)
    #Simulates times of death
-   tau <- sapply(ind, function(i){
+   private$tau <- sapply(ind, function(i){
      self$death_time()
    })
+   }
    #Initial cash flow matrix
    cash <- matrix(NA, nrow = npaths, ncol = m)
    for (i in ind){
-     cash[i, ] <- private$the_product$cash_flows(private$fund[i, ], tau[i])
+     cash[i, ] <- private$the_product$cash_flows(private$fund[i, ], private$tau[i])
    }
    #Initial surrender times vector
-   sur_ts <- tau
+   sur_ts <- private$tau
    ##
-   surrender_range <- c(1, VA_GMAB$surrender_times("3m"))
-   survival_times <- VA_GMAB$survival_benefit_times()
+   surrender_range <- c(1, private$the_product$surrender_times(freq))
+   survival_times <- private$the_product$survival_benefit_times()
    tt <- c(surrender_range, survival_times)
-   for(i in ind) cash[i, -sort(unique(c(tt, tau[i])))] <- 0
+   for(i in ind) cash[i, -sort(unique(c(tt, private$tau[i])))] <- 0
 
    for(t in rev(surrender_range)){
     if(!any(t == survival_times)){
-     h_t <- which(tau > t)
+     h_t <- which(private$tau > t)
      #Continuation value at time t
      c_t <- sapply(h_t, function(i){
        sum(cash[i, (t+1):sur_ts[i]] *
@@ -206,7 +238,8 @@ va_engine <- R6Class("va_engine",
   mu_1 = 90.43,
   mu_2 = 10.36,
   fund = "matrix",
-  discounts = "numeric"
+  discounts = "numeric",
+  tau = "numeric"
  )
 )
 

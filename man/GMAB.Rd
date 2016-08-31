@@ -57,11 +57,15 @@ Must be between 0 and 1.}
    \item{\code{new}}{Constructor method}
    \item{\code{get_times}}{get method for the product time-line. Returns a \code{\link{timeDate}} object}
    \item{\code{times_in_yrs}}{get method for the product time-line in fraction of year}
+   \item{\code{get_barrier}}{get method for the state=dependent fee barrier. Returns a positive scalar with the barrier}
+   \item{\code{set_barrier}}{set method for the state=dependent fee barrier. Argument must be a positive scalar.}
+   \item{\code{set_penalty}}{set method for the penalty applied in case of surrender. Argument must be a scalar between 0 and 1.}
+   \item{\code{get_penalty}}{get method for the penalty applied in case of surrender. It returns a scalar between 0 and 1.}
+    \item{\code{set_fee}}{set method for the contract fee. The argument is a \code{\link} constant_parameters object with the fee.}
    \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
    \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Takes as argument a \code{\link{timeDate}} object with the time of death}
    \item{\code{survival_benefit_times}}{retuns a \code{numeric} vector with the survival benefit time indexes.}
    \item{\code{surrender_times}}{retuns a \code{numeric} vector with the surrender time indexes. Takes as argument a string with the frequency of the decision if surrendering the contract,  e.g. "3m"  corresponds to a surrender decision taken every 3 months.}
-   \item{\code{death_benefit_times}}{retuns a \code{numeric} vector with the death benefit time indexes if a death benefit is present in the rider.}
    \item{\code{cash_flows}}{returns a \code{numeric} vector with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying fund, \code{death_time} the  index of the \code{times} vector corresponding to the time of death and the last index in case the insured survives.}
    \item{\code{get_premium}}{Returns the premium as non negative scalar}
 }

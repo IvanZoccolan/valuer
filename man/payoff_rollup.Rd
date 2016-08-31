@@ -31,8 +31,7 @@ Class providing a roll-up of premiums payoff object. Provides methods to get/set
  \describe{
   \item{\code{new} (\code{public})}{Initialize method. The arguments are a non negative scalar
    with the premium and a \code{\link{constant_parameters}} object with the roll-up rate.}
-  \item{\code{set_premium} (\code{public})}{Sets the the_premium private field.
-   The argument is a non negative scalar}
+  \item{\code{set_premium} (\code{public})}{Sets the the_premium private field. The argument is a non negative scalar}
   \item{\code{get_premium} (\code{public})}{Returns the premium as non negative scalar}
   \item{\code{set_rate} (\code{public})}{Sets the roll-up rate private field.
    The argument is a \code{\link{constant_parameters object}}}
