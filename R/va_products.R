@@ -24,9 +24,8 @@
 #dependends on the previuos one.
 #So for performance reasons it is implemented in C++ and interfaced with Rcpp
 #This is the calc_account function
-#Three public methods will return the times of survival benifit payments, death
-#benefit payment if any and the possible surrender times depending on the time of
-#death.
+#Two public methods will return the times of survival benifit payments,
+#the possible surrender times
 ##########################DESIGN COMMENTS END###################################
 
 
@@ -153,6 +152,7 @@ payoff_rollup <- R6::R6Class("payoff_rollup", inherit = payoff_guarantee,
 #' @format \code{\link{R6Class}} object.
 #' @field the_payoff (\code{private}) A \code{\link{payoff_guarantee}} object which stores the type of payoff
 #' (e.g: roll-up, ratchet, etc).
+#' @field the_age (\code{private}) A posite scalar with the age of the insured.
 #' @field the_fee (\code{private}) A positive scalar with the annual VA contract fee.
 #' @field the_barrier (\code{private}) A positive scalar with the barrier for state-dependent fees.
 #' @field the_penalty (\code{private}) A scalar with the withdrawal penalty.
@@ -162,6 +162,8 @@ payoff_rollup <- R6::R6Class("payoff_rollup", inherit = payoff_guarantee,
 #'  \describe{
 #'    \item{\code{new}}{Constructor method}
 #'    \item{\code{get_times}}{get method for the product time-line. Returns a \code{\link{timeDate}} object}
+#'    \item{\code{get_age}}{get method for the age of the insured}
+#'    \item{\code{set_age}}{set method for the age of the insured}
 #'    \item{\code{get_barrier}}{get method for the state=dependent fee barrier. Returns a positive scalar with the barrier}
 #'    \item{\code{set_barrier}}{set method for the state=dependent fee barrier. Argument must be a positive scalar.}
 #'    \item{\code{set_penalty}}{set method for the penalty applied in case of surrender. Argument must be a scalar between 0 and 1.}
@@ -193,18 +195,18 @@ payoff_rollup <- R6::R6Class("payoff_rollup", inherit = payoff_guarantee,
 #'
 #'#Five years time-line
 #'times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
-#'
+#'age <- 60
 #'fee <- constant_parameters$new(0.02, 365)
 #'barrier <- 200
 #'penalty <- 0.01
 #'
 #'#It shouldn't be instantiated as it's a generic contract base class.
-#'va <- va_product$new(rollup, times, fee, barrier, penalty)
+#'va <- va_product$new(rollup, times, age, fee, barrier, penalty)
 
 
 va_product <- R6::R6Class("va_product",  inherit = path_dependent,
  public = list(
-  initialize = function(payoff, prod_times, fee, barrier, penalty){
+  initialize = function(payoff, prod_times, age, fee, barrier, penalty){
    if (!missing(payoff))
     if (inherits(payoff, "payoff_guarantee")) private$the_payoff <- payoff
     else stop(error_msg_1("payoff_guarantee"))
@@ -222,6 +224,11 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
     private$times <- t
     private$times_yrs <- yr_fractions(t)
    }
+   if(!missing(age))
+    if (is_positive_integer(age))
+     private$the_age <- age
+    else stop(error_msg_4("age"))
+   else private$the_age <- 60
    if (!missing(fee))
     if(inherits(fee, "constant_parameters")) private$the_fee <- fee
     else stop(error_msg_1("constant_parameters"))
@@ -237,6 +244,14 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
     else stop(error_msg_8("penalty"))
    else private$the_penalty <- 0
   },
+  get_age = function() private$the_age,
+  set_age = function(age){
+   if(!missing(age))
+    if (is_positive_integer(age))
+     private$the_age <- age
+    else stop(error_msg_4("age"))
+   else private$the_age <- 60
+  },
   get_barrier = function() private$the_barrier,
   set_barrier = function(barrier) {
    if (!missing(barrier))
@@ -247,7 +262,7 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
   get_penalty = function() private$the_penalty,
   set_penalty = function(penalty) {
    if (!missing(penalty))
-    if (is_between(penalty,0,1)) private$the_penalty <- penalty
+    if (is_between(penalty, 0, 1)) private$the_penalty <- penalty
     else stop(error_msg_8("penalty"))
   else private$the_penalty <- 0
   },
@@ -264,6 +279,7 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
  ),
  private = list(
   the_payoff = "payoff_guarantee",
+  the_age = "numeric",
   the_fee = "constant_parameters",
   the_barrier = "numeric",
   the_penalty = "numeric",
@@ -287,6 +303,7 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
 #' @format \code{\link{R6Class}} object.
 #' @field the_payoff (\code{private}) A \code{\link{payoff_guarantee}} object which stores the type of payoff
 #' (e.g: roll-up, ratchet, etc).
+#' @field the_age (\code{private}) A posite scalar with the age of the insured.
 #' @field the_fee (\code{private}) A positive scalar with the annual VA contract fee.
 #' @field the_barrier (\code{private}) A positive scalar with the barrier for state-dependent fees. The fee will be applied only if the value of the account is below the barrier.
 #' @field the_penalty (\code{private}) A scalar with the withdrawal penalty in case the insured surrenders the contract.
@@ -297,11 +314,13 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
 #'    \item{\code{new}}{Constructor method}
 #'    \item{\code{get_times}}{get method for the product time-line. Returns a \code{\link{timeDate}} object}
 #'    \item{\code{times_in_yrs}}{get method for the product time-line in fraction of year}
+#'    \item{\code{get_age}}{get method for the age of the insured}
+#'    \item{\code{set_age}}{set method for the age of the insured}
 #'    \item{\code{get_barrier}}{get method for the state=dependent fee barrier. Returns a positive scalar with the barrier}
 #'    \item{\code{set_barrier}}{set method for the state=dependent fee barrier. Argument must be a positive scalar.}
 #'    \item{\code{set_penalty}}{set method for the penalty applied in case of surrender. Argument must be a scalar between 0 and 1.}
 #'    \item{\code{get_penalty}}{get method for the penalty applied in case of surrender. It returns a scalar between 0 and 1.}
-#'     \item{\code{set_fee}}{set method for the contract fee. The argument is a \code{\link} constant_parameters object with the fee.}
+#'    \item{\code{set_fee}}{set method for the contract fee. The argument is a \code{\link} constant_parameters object with the fee.}
 #'    \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
 #'    \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Takes as argument a \code{\link{timeDate}} object with the time of death}
 #'    \item{\code{survival_benefit_times}}{retuns a \code{numeric} vector with the survival benefit time indexes.}
@@ -328,6 +347,7 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
 #'#Five years time-line
 #'times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
 #'
+#'age <- 60
 #'# A constant fee of 2% per year (365 days)
 #'fee <- constant_parameters$new(0.02, 365)
 #'
@@ -338,7 +358,7 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
 #'#Withdrawal penalty applied in case the insured surrenders the contract.
 #'penalty <- 0.01
 #'
-#'VA_GMAB <- GMAB$new(rollup, times, fee, barrier, penalty)
+#'VA_GMAB <- GMAB$new(rollup, times, age, fee, barrier, penalty)
 
 
 

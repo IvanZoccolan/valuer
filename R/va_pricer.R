@@ -57,8 +57,13 @@
 ######################END DESIGN  COMMENTS#####################################
 
 #' Generic Variable Annuity  pricer engine
-#' @description  Class providing an interface for a generic VA pricer engine.
-#' See \bold{References} for a description of variable annuities life insurance products, their guarantees and fee structures.
+#' @description  Class providing an interface for a generic VA pricer engine.\cr
+#' This class shouldn't be instantiated but used as base class for variable annuity
+#' pricer engines.  It implements the static approach to estimate the value of a VA
+#' contract by means of the Monte Carlo method and the mixed approach by means
+#' of Least Squares Monte Carlo.\cr
+#' See \bold{References} for a description of the mixed and static approaches and
+#' Least Squares Monte Carlo.
 #' @docType class
 #' @importFrom R6 R6Class
 #' @importClassesFrom timeDate timeDate
@@ -67,12 +72,89 @@
 #' @importFrom polynom polynomial
 #' @importFrom RcppEigen fastLmPure
 #' @export
-
+#' @return Object of \code{\link{R6Class}}
+#' @format \code{\link{R6Class}} object.
+#' @field the_product (\code{private}) A \code{\link{va_product}} object with
+#' the VA contract.
+#' @section Methods:
+#' \describe{
+#'  \item{\code{new}}{Constructor method}
+#'  \item{\code{get_mortality}}{Returns the integrals of the intensity of
+#'  mortality along the product time-line. It is not implemented in
+#'   this base class.}
+#'  \item{\code{death_time}}{Returns the time of death index. If the
+#'  death doesn't occur during the product time-line it returns the
+#'  last index of the product time-line}
+#'  \item{\code{simulate_financial_paths}}{Simulates \code{npaths} paths
+#'  of the underlying fund of the VA contract and the discount factors (interest
+#'   rate). This must be implemented in a sub-class.}
+#'  \item{\code{get_fund}}{Gets the \code{i}-th path of the underlying fund where
+#'   \code{i} goes from 1 to \code{npaths}. This method must be implemented
+#'   by sub-classes}
+#'  \item{\code{do_static}}{Estimates the VA contract value by means of
+#'  the static approach (Monte Carlo), see \bold{References}. It takes as
+#'  arguments:
+#'   \describe{
+#'     \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+#'     the point estimates}
+#'     \item{\code{npaths}}{positive integer with the number of paths to
+#'     simulate}
+#'     \item{\code{simulate}}{boolean to specify if the paths should be
+#'     simulated from scratch, default is TRUE.}
+#'   }
+#'  }
+#'  \item{\code{do_mixed}}{Estimates the VA contract by means of
+#'  the mixed approach (Least Squares Monte Carlo), see \bold{References}.
+#'  It takes as arguments:
+#'   \describe{
+#'    \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+#'     the point estimates}
+#'     \item{\code{npaths}}{positive integer with the number of paths to
+#'     simulate}
+#'     \item{\code{degree}}{positive integer with the maximum degree of
+#'     the weighted Laguerre polynomials used in the least squares by LSMC}
+#'     \item{\code{freq}}{string which contains the frequency of the surrender
+#'     decision. The default is \code{"3m"} which corresponds to deciding every
+#'     three months if surrendering the contract or not.}
+#'     \item{\code{simulate}}{boolean to specify if the paths should be
+#'     simulated from scratch, default is TRUE.}
+#'   }
+#'  }
+#'  \item{\code{get_discount}}{Arguments are \code{i,j}.
+#'  Gets the \code{j}-th discount factor corresponding to the \code{i}-th
+#'  simulated path of the discount factors. This method must be implemented
+#'  by sub-classes.}
+#'  \item{\code{bases}}{Interface to get Laguerre polynomials of  state variables.
+#'  It is implemented in sub-classes since state variables may differ depending
+#'  on the dynamics of financial and mortality processes.
+#'  For example if we're modeling just the undelying fund as a
+#'  stochastic process (all rest deterministic), the state variable
+#'  process will be just the fund, no need to include interest rate or mortality.
+#'  \cr
+#'  Arguments are:
+#'  \describe{
+#'   \item{\code{paths}}{numeric vector of indexes of the financial path processes}
+#'   \item{\code{time}}{numeric scalar with the time index}
+#'   \item{\code{degree}}{positive scalar with the max degree of the Laguerre
+#'  polynomials}
+#'   }
+#'  }
+#' }
+#' @references
+#' \enumerate{
+#'  \item{\cite{ Bacinello A.R., Millossovich P., Olivieri A., Pitacco  E.,
+#'  "Variable annuities: a unifying valuation approach."
+#'  In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.
+#' }}
+#'  \item{\cite{Longstaff F.A. e Schwartz E.S. Valuing american options by simulation:
+#'  a simple least-squares approach. In: Review of Financial studies
+#'  14 (2001), pp. 113-147}}
+#'  }
 
 
 va_engine <- R6Class("va_engine",
  public = list(
-  initialize = function(product, interest, age, c1, c2){
+  initialize = function(product){
 
    if(!missing(product))
     if (inherits(product, "va_product")) {
@@ -80,33 +162,9 @@ va_engine <- R6Class("va_engine",
     } else stop(error_msg_1(" va_product"))
    else stop(error_msg_1(" va_product"))
 
-   if(!missing(interest))
-    if(inherits(interest, "parameters")) {
-     private$r <- interest
-    } else stop(error_msg_1("parameters"))
-   else stop(error_msg_1("parameters"))
-
-   if(!missing(age))
-    if (is_positive_integer(age))
-     private$the_age <- age
-    else stop(error_msg_4("age"))
-   else private$the_age <- 60
-
-   if(!missing(c1))
-    if (is_positive_scalar(c1))
-    private$mu_1 <- c1
-    else stop(error_msg_5("c1"))
-   else private$mu_1 <- 90.43
-
-   if(!missing(c2))
-    if(is_positive_scalar(c2))
-    private$mu_2 <- c2
-    else stop(error_msg_5("c2"))
-   else private$mu_2 <- 10.36
   },
   get_mortality = function(){
-   times <- private$the_product$get_times()
-   x <- rep(0, length(times))
+
   },
   death_time = function(){
     mu_integrals <- self$get_mortality()
@@ -116,29 +174,22 @@ va_engine <- R6Class("va_engine",
     else res <- lenght(mu_integrals)
     res
   },
-  get_fund_path = function(){},
-  simulate_fin_paths = function(npaths){
-   #This should be moved into the sub class
-   #while the base class just defines the interface
-   cf_times <- private$the_product$get_times()
-   private$fund <- t(vapply(seq(npaths), function(index) {
-    self$get_fund_path()
-   }, FUN.VALUE = vector("numeric", length(cf_times))))
+  simulate_financial_paths = function(npaths){
 
-   t0 <- cf_times[1]
-   log_discounts <- sapply(cf_times, function(t) -private$r$integral(t0, t))
-   private$discounts <- exp(log_discounts)
+  },
+  get_fund = function(i) {
 
   },
   do_static = function(the_gatherer, npaths, simulate = TRUE){
-
+   #Estimates the VA by means of the static approach
+   #implemented with Monte Carlo
    times <- private$the_product$get_times()
    m = length(times)
    ind <- seq(npaths)
 
    if(simulate){
     #Simulates financials
-    self$simulate_fin_paths(npaths)
+    self$simulate_financial_paths(npaths)
     #Simulates times of death
     private$tau <- sapply(ind, function(i){
      self$death_time()
@@ -148,24 +199,27 @@ va_engine <- R6Class("va_engine",
    #Initial cash flow matrix
    cash <- matrix(NA, nrow = npaths, ncol = m)
    old_penalty <- private$the_product$get_penalty()
-   private$the_product$set_penalty(penalty=1)
+   private$the_product$set_penalty(penalty = 1)
    for (i in ind){
-    cash[i, ] <- private$the_product$cash_flows(private$fund[i, ], private$tau[i])
+    cash[i, ] <- private$the_product$cash_flows(self$get_fund(i),
+                                                private$tau[i])
    }
    res <- sapply(ind, function(i){
      sum(cash[i, 1:private$tau[i]] *
            self$get_discount(i, 1:private$tau[i]))
    })
+   private$the_product$set_penalty(penalty = old_penalty)
    the_gatherer$dump_result(res)
-   private$the_product$set_penalty(penalty=old_penalty)
   },
-  do_mixed = function(the_gatherer, npaths, degree = 3, freq = "3m", simulate=TRUE){
+  do_mixed = function(the_gatherer, npaths, degree = 3, freq = "3m", simulate = TRUE){
+   #Estimates the VA by means of the mixed approach
+   #implemented with Least Squares Monte Carlo
    times <- private$the_product$get_times()
    m = length(times)
    ind <- seq(npaths)
    if(simulate){
    #Simulates financials
-   self$simulate_fin_paths(npaths)
+   self$simulate_financial_paths(npaths)
    #Simulates times of death
    private$tau <- sapply(ind, function(i){
      self$death_time()
@@ -174,7 +228,8 @@ va_engine <- R6Class("va_engine",
    #Initial cash flow matrix
    cash <- matrix(NA, nrow = npaths, ncol = m)
    for (i in ind){
-     cash[i, ] <- private$the_product$cash_flows(private$fund[i, ], private$tau[i])
+     cash[i, ] <- private$the_product$cash_flows(self$get_fund(i),
+                                                 private$tau[i])
    }
    #Initial surrender times vector
    sur_ts <- private$tau
@@ -185,7 +240,6 @@ va_engine <- R6Class("va_engine",
    for(i in ind) cash[i, -sort(unique(c(tt, private$tau[i])))] <- 0
 
    for(t in rev(surrender_range)){
-    if(!any(t == survival_times)){
      h_t <- which(private$tau > t)
      #Continuation value at time t
      c_t <- sapply(h_t, function(i){
@@ -202,56 +256,170 @@ va_engine <- R6Class("va_engine",
      for (i in seq_along(h_t))
        if (cash[h_t[i], t] > chat_t[i])
          sur_ts[h_t[i]] <- t
-     else cash[h_t[i], t] <- 0
+     else if(!any(t == survival_times)) cash[h_t[i], t] <- 0
     }
-   }
-
    res <- sapply(seq_along(sur_ts), function(i) {
      sum(cash[i, 1:sur_ts[i]] *
        self$get_discount(i, 1:sur_ts[i]))
      })
-
    the_gatherer$dump_result(res)
   },
-  get_discount = function(i,j) private$discounts[j],
+  get_discount = function(i, j) {
+
+    },
   bases = function(paths, time, degree){
     NULL
-    #Interface to get Laguerre polynomials of  state variables.
-    #It is implemented in sub classes since state variables
-    #may differ depending on the dynamics of financial and
-    #mortality processes.
-    #For example if we're modeling just the undelying fund as
-    #a stochastic process (all rest deterministic), the state variable
-    #process will be just the fund, no need to include interest rate or
-    #mortality
-    #paths numeric vector of indexes of the financial path processes
-    #t numeric scalaer with the time index
-    #degree is a positive scalaer with the max degree of the Laguerre
-    #polynomials
   }
  ),
  private = list(
   the_product = "va_product",
-  r = "parameters",
-  #Initial age
-  the_age = 60,
-  mu_1 = 90.43,
-  mu_2 = 10.36,
-  fund = "matrix",
-  discounts = "numeric",
   tau = "numeric"
  )
 )
 
 
-#Variable annuity pricing engine with the underlying reference fund model with a GBM
-#and the intensity of mortality is modeled by the Weibull mortality function
+#
 
-#'@export
+#' Variable Annuity  pricer engine with GBM
+#' @description
+#' Class providing a variable annuity pricing engine with the underlying
+#' reference risk neutral fund modeled as a Geometric Brownian Motion and the
+#' intensity of mortality  modeled by the Weibull intensity of mortality.
+#' It implements the static approach to estimate the value of a VA
+#' contract by means of the Monte Carlo method and the mixed approach by means
+#' of Least Squares Monte Carlo.\cr
+#' See \bold{References} for a description of the mixed and static approaches and
+#' Least Squares Monte Carlo.
+#' @docType class
+#' @importFrom R6 R6Class
+#' @importClassesFrom timeDate timeDate
+#' @importFrom timeDate timeDate timeSequence
+#' @importFrom orthopolynom laguerre.polynomials
+#' @importFrom polynom polynomial
+#' @importFrom RcppEigen fastLmPure
+#' @export
+#' @return Object of \code{\link{R6Class}}
+#' @format \code{\link{R6Class}} object.
+#' @field the_product (\code{private}) A \code{\link{va_product}} object with
+#' the VA contract.
+#' @field times (\code{private}) \code{\link{timeDate}} object with the product time-line
+#' @field r (\code{private}) \code{\link{parameters}} object with the risk-neutral interest rate
+#' @field drifts (\code{private}) \code{numeric} vector with the drifts of the underlying
+#' fund.
+#' @field standard_deviations (\code{numeric}) vector with the standard_deviations of the
+#' underlying fund.
+#' @field spot (\code{numeric}) numeric scalar with the initial value of the underlying fund
+#' @field mu_integrals (\code{numeric}) vector with the integrals along the product
+#' time-line of the intensity of mortality
+#' @field fund (\code{matrix}) with  simulated paths of the underlying fund
+#' @field discounts (\code{numeric}) vector with the discount factors
+#' @field mu_1,mu_2 (\code{numeric}) scalars with the parameters for the Weibull
+#' intensity of mortality
+#' @section Methods:
+#' \describe{
+#'  \item{\code{new}}{Constructor method}
+#'  \item{\code{get_mortality}}{Returns the integrals of the intensity of
+#'  mortality along the product time-line.}
+#'  \item{\code{death_time}}{Returns the time of death index. If the
+#'  death doesn't occur during the product time-line it returns the
+#'  last index of the product time-line.}
+#'  \item{\code{simulate_financial_paths}}{Simulates \code{npaths} paths
+#'  of the underlying fund of the VA contract and the discount factors (interest
+#'   rate). It saves the paths into the \code{fund} matrix and
+#'   the \code{discounts} vector.}
+#'  \item{\code{get_fund}}{Gets the \code{i}-th path of the underlying fund where
+#'   \code{i} goes from 1 to \code{npaths}.}
+#'  \item{\code{do_static}}{Estimates the VA contract value by means of
+#'  the static approach (Monte Carlo), see \bold{References}. It takes as
+#'  arguments:
+#'   \describe{
+#'     \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+#'     the point estimates}
+#'     \item{\code{npaths}}{positive integer with the number of paths to
+#'     simulate}
+#'     \item{\code{simulate}}{boolean to specify if the paths should be
+#'     simulated from scratch, default is TRUE.}
+#'   }
+#'  }
+#'  \item{\code{do_mixed}}{Estimates the VA contract by means of
+#'  the mixed approach (Least Squares Monte Carlo), see \bold{References}.
+#'  It takes as arguments:
+#'   \describe{
+#'    \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+#'     the point estimates}
+#'     \item{\code{npaths}}{positive integer with the number of paths to
+#'     simulate}
+#'     \item{\code{degree}}{positive integer with the maximum degree of
+#'     the weighted Laguerre polynomials used in the least squares by LSMC}
+#'     \item{\code{freq}}{string which contains the frequency of the surrender
+#'     decision. The default is \code{"3m"} which corresponds to deciding every
+#'     three months if surrendering the contract or not.}
+#'     \item{\code{simulate}}{boolean to specify if the paths should be
+#'     simulated from scratch, default is TRUE.}
+#'   }
+#'  }
+#'  \item{\code{get_discount}}{Arguments are \code{i,j}.
+#'  Gets the \code{j}-th discount factor corresponding to the \code{i}-th
+#'  simulated path of the discount factors.}
+#'  \item{\code{bases}}{Interface to get Laguerre polynomials of  state variables.
+#'  It is implemented in sub-classes since state variables may differ depending
+#'  on the dynamics of financial and mortality processes.
+#'  For example if we're modeling just the undelying fund as a
+#'  stochastic process (all rest deterministic), the state variable
+#'  process will be just the fund, no need to include interest rate or mortality.
+#'  \cr
+#'  Arguments are:
+#'  \describe{
+#'   \item{\code{paths}}{numeric vector of indexes of the financial path processes}
+#'   \item{\code{time}}{numeric scalar with the time index}
+#'   \item{\code{degree}}{positive scalar with the max degree of the Laguerre
+#'  polynomials}
+#'   }
+#'  }
+#' }
+#' @references
+#' \enumerate{
+#'  \item{\cite{ Bacinello A.R., Millossovich P., Olivieri A., Pitacco  E.,
+  #'  "Variable annuities: a unifying valuation approach."
+  #'  In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.
+  #' }}
+#'  \item{\cite{Longstaff F.A. e Schwartz E.S. Valuing american options by simulation:
+  #'  a simple least-squares approach. In: Review of Financial studies
+  #'  14 (2001), pp. 113-147}}
+#'  }
+#'@usage
+#'contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+#'
+#'r <- constant_parameters$new(0.01)
+#'spot <- 100
+#'vol <- constant_parameters$new(0.2)
+#'div <- constant_parameters$new(0.0)
+#'
+#'gatherer_mean <- statistics_mean$new()
+#'no_of_paths <- 1e4
+#'
+#'engine <- va_bs_engine$new(contract, r, c1=90.43, c2=10.36, spot, volatility=vol, dividends=div)
+#'
+#'#Estimates the contract value by means of the static approach.
+#'
+#'engine$do_static(gatherer_mean, no_of_paths)
+#'gatherer_mean$get_results()
+#'
+#'#Estimates the contract value by means of the mixed approach.
+#'#To compare with the static approach we won't simulate the underlying
+#'#fund paths again.
+#'
+#'gatherer_mean_2 <- statistics_mean$new()
+#'
+#'engine$do_mixed(gatherer_mean_2, no_of_paths, degree = 3, freq = "3m", simulate = FALSE)
+#'gatherer_mean_2$get_results()
+
+
+
 
 va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
  public = list(
-  initialize = function(product, interest, age, c1, c2, spot, volatility, dividends){
+  initialize = function(product, interest, c1, c2, spot, volatility, dividends){
    if(!missing(product))
     if (inherits(product, "va_product")){
      private$the_product <- product
@@ -268,12 +436,6 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
      private$r <- interest
     } else stop(error_msg_1("parameters"))
    else stop(error_msg_1("parameters"))
-
-   if(!missing(age))
-    if (is_positive_integer(age))
-     private$the_age <- age
-    else stop(error_msg_4("age"))
-   else private$the_age <- 60
 
    if(!missing(c1))
     if (is_positive_scalar(c1))
@@ -307,19 +469,28 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
 
    private$mu_integrals <- self$get_mortality()
   },
-  get_fund_path = function(){
+  simulate_fund_path = function(){
    private$variates <- rnorm(private$no_time_intervals)
    current_log_spot <- private$drifts +
             private$standard_deviations * private$variates
    current_log_spot <- cumsum(current_log_spot)
    c(spot, spot*exp(current_log_spot))
   },
-  discount_one_path = function(spot_values){
-   these_cash_flows <- private$the_product$cash_flows(spot_values)
-   sum(these_cash_flows * private$discount_factors)
+  simulate_financial_paths = function(npaths){
+    #This should be moved into the sub class
+    #while the base class just defines the interface
+    cf_times <- private$the_product$get_times()
+    private$fund <- t(vapply(seq(npaths), function(index) {
+      self$simulate_fund_path()
+    }, FUN.VALUE = vector("numeric", length(cf_times))))
+    t0 <- cf_times[1]
+    log_discounts <- sapply(cf_times, function(t) -private$r$integral(t0, t))
+    private$discounts <- exp(log_discounts)
   },
+  get_fund = function(i) private$fund[i, ],
+  get_discount = function(i,j) private$discounts[j],
   get_mortality = function(){
-   age <- private$the_age
+   age <- private$the_product$get_age()
    c1 <- private$mu_1
    c2 <- private$mu_2
    times <- private$the_product$get_times()
@@ -339,22 +510,9 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
     else res <- length(private$times)
     res
   },
-  get_discount = function(i,j) private$discounts[j],
   bases = function(paths, time, degree){
-    #Interface to get Laguerre polynomials of  state variables.
-    #It is implemented in sub classes since state variables
-    #may differ depending on the dynamics of financial and
-    #mortality processes.
-    #For example if we're modeling just the undelying fund as
-    #a stochastic process (all rest deterministic), the state variable
-    #process will be just the fund, no need to include interest rate or
-    #mortality
-    #paths numeric vector of indexes of the financial path processes
-    #t numeric scalaer with the time index
-    #degree is a positive scalaer with the max degree of the Laguerre
-    #polynomials
 
-    res <- orthopolynom::laguerre.polynomials(degree,normalized=TRUE)
+    res <- orthopolynom::laguerre.polynomials(degree, normalized = TRUE)
     x <- private$fund[paths, time]
     #Normalizes to avoid underflows in calculating
     #the exponential below.
@@ -363,20 +521,23 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
     sapply(seq_along(res), function(i){
       exp(-0.5 * x) * (as.function(res[[i]])(x))
     })
-  },
-  get_fund_paths = function(){
-    #To be removed. Debug only
-    private$fund}
+  }
  ),
  private = list(
   times = "timeDate",
+  r = "parameters",
   drifts = "numeric",
   standard_deviations = "numeric",
   variates = "numeric",
   spot = "numeric",
   no_time_intervals = "numeric",
-  mu_integrals = "numeric"
-    )
+  mu_integrals = "numeric",
+  fund = "matrix",
+  discounts = "numeric",
+  #Intensity of mortality parameters
+  mu_1 = 90.43,
+  mu_2 = 10.36
+ )
 )
 
 

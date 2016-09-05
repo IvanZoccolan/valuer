@@ -16,6 +16,7 @@ rollup <- payoff_rollup$new(premium, rate)
 #Five years time-line
 times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
 
+age <- 60
 # A constant fee of 2% per year (365 days)
 fee <- constant_parameters$new(0.02, 365)
 
@@ -26,7 +27,7 @@ barrier <- 200
 #Withdrawal penalty applied in case the insured surrenders the contract.
 penalty <- 0.01
 
-VA_GMAB <- GMAB$new(rollup, times, fee, barrier, penalty)
+VA_GMAB <- GMAB$new(rollup, times, age, fee, barrier, penalty)
 }
 \value{
 Object of \code{\link{R6Class}}
@@ -41,6 +42,8 @@ See \bold{References} for a description of variable annuities life insurance pro
 \describe{
 \item{\code{the_payoff}}{(\code{private}) A \code{\link{payoff_guarantee}} object which stores the type of payoff
 (e.g: roll-up, ratchet, etc).}
+
+\item{\code{the_age}}{(\code{private}) A posite scalar with the age of the insured.}
 
 \item{\code{the_fee}}{(\code{private}) A positive scalar with the annual VA contract fee.}
 
@@ -57,11 +60,13 @@ Must be between 0 and 1.}
    \item{\code{new}}{Constructor method}
    \item{\code{get_times}}{get method for the product time-line. Returns a \code{\link{timeDate}} object}
    \item{\code{times_in_yrs}}{get method for the product time-line in fraction of year}
+   \item{\code{get_age}}{get method for the age of the insured}
+   \item{\code{set_age}}{set method for the age of the insured}
    \item{\code{get_barrier}}{get method for the state=dependent fee barrier. Returns a positive scalar with the barrier}
    \item{\code{set_barrier}}{set method for the state=dependent fee barrier. Argument must be a positive scalar.}
    \item{\code{set_penalty}}{set method for the penalty applied in case of surrender. Argument must be a scalar between 0 and 1.}
    \item{\code{get_penalty}}{get method for the penalty applied in case of surrender. It returns a scalar between 0 and 1.}
-    \item{\code{set_fee}}{set method for the contract fee. The argument is a \code{\link} constant_parameters object with the fee.}
+   \item{\code{set_fee}}{set method for the contract fee. The argument is a \code{\link} constant_parameters object with the fee.}
    \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
    \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Takes as argument a \code{\link{timeDate}} object with the time of death}
    \item{\code{survival_benefit_times}}{retuns a \code{numeric} vector with the survival benefit time indexes.}

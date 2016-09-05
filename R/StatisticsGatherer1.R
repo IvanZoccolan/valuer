@@ -14,6 +14,8 @@ gatherer <-  R6::R6Class("gatherer",
 #Implementation of a statistic gatherer class which returns the mean
 #of its values
 
+#' @export
+#'
 statistics_mean <- R6::R6Class("statistics_mean", inherit = gatherer,
 
                   public = list(
