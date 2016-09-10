@@ -175,6 +175,10 @@ payoff_rollup <- R6::R6Class("payoff_rollup", inherit = payoff_guarantee,
 #'    \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
 #'    \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Within this base class the method simply returns the product time-line.}
 #'    \item{\code{cash_flows}}{returns a \code{numeric} vector with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying fund this method will calculate the cash flows from}
+#'    \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to the survival benefit.
+#'    The arguments are \code{spot_values} vector which holds the values of the underlying fund and
+#'    \code{t} the time index of the survival benefit. The function will return 0 if there's no survival
+#'    benefit at the specified time}
 #'    \item{\code{get_premium}}{Returns the premium as non negative scalar}
 #' }
 #' @references
@@ -326,6 +330,10 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
 #'    \item{\code{survival_benefit_times}}{retuns a \code{numeric} vector with the survival benefit time indexes.}
 #'    \item{\code{surrender_times}}{retuns a \code{numeric} vector with the surrender time indexes. Takes as argument a string with the frequency of the decision if surrendering the contract,  e.g. "3m"  corresponds to a surrender decision taken every 3 months.}
 #'    \item{\code{cash_flows}}{returns a \code{numeric} vector with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying fund, \code{death_time} the  index of the \code{times} vector corresponding to the time of death and the last index in case the insured survives.}
+#'    \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to the survival benefit.
+#'    The arguments are \code{spot_values} vector which holds the values of the underlying fund and
+#'    \code{t} the time index of the survival benefit. The function will return 0 if there's no survival
+#'    benefit at the specified time}
 #'    \item{\code{get_premium}}{Returns the premium as non negative scalar}
 #' }
 #' @references
@@ -358,7 +366,7 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
 #'#Withdrawal penalty applied in case the insured surrenders the contract.
 #'penalty <- 0.01
 #'
-#'VA_GMAB <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+#'contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
 
 
 
@@ -377,7 +385,7 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
   surrender_times = function(freq){
     surr_dates <- timeDate::periods(private$times, freq, freq)$to
     surr_idx <- sapply(surr_dates, function(x) which(x == times))
-    head(surr_idx, -1)
+    c(1, head(surr_idx, -1))
   },
   cash_flows = function(spot_values, death_time){
    fee <- private$the_fee$get()
@@ -397,6 +405,19 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
     out[last] <- private$the_payoff$get_payoff(out[last], c(t0, t1))
    }
    out
+  },
+  survival_benefit = function(spot_values, t){
+    last <- length(private$times)
+    if (t == last){
+      fee <- private$the_fee$get()
+      barrier <- private$the_barrier
+      penalty <- private$the_penalty
+      t0 <- head(private$times, 1)
+      t1 <- tail(private$times, 1)
+      out <- calc_account(spot_values, fee, barrier, penalty)
+      out <-private$the_payoff$get_payoff(out[last], c(t0, t1))
+    } else out <- 0
+    out
   }
  )
 )

@@ -231,15 +231,18 @@ va_engine <- R6Class("va_engine",
      cash[i, ] <- private$the_product$cash_flows(self$get_fund(i),
                                                  private$tau[i])
    }
+
    #Initial surrender times vector
    sur_ts <- private$tau
    ##
-   surrender_range <- c(1, private$the_product$surrender_times(freq))
+   surrender_times <- private$the_product$surrender_times(freq)
    survival_times <- private$the_product$survival_benefit_times()
-   tt <- c(surrender_range, survival_times)
+   tt <- c(surrender_times, survival_times)
+   #Sets all zero in the cash flow matrix but for times corresponding
+   #to surrender decision, living benefit times and death-times.
    for(i in ind) cash[i, -sort(unique(c(tt, private$tau[i])))] <- 0
 
-   for(t in rev(surrender_range)){
+   for(t in rev(surrender_times)){
      h_t <- which(private$tau > t)
      #Continuation value at time t
      c_t <- sapply(h_t, function(i){
@@ -253,11 +256,14 @@ va_engine <- R6Class("va_engine",
      chat_t <- RcppEigen::fastLmPure(x_t, c_t)$fitted.values
      #### Comparison between surrender values and estimated
      #### continuation values ####
-     for (i in seq_along(h_t))
-       if (cash[h_t[i], t] > chat_t[i])
-         sur_ts[h_t[i]] <- t
-     else if(!any(t == survival_times)) cash[h_t[i], t] <- 0
-    }
+     for (i in seq_along(h_t)){
+      surv_ben <- private$the_product$survival_benefit(self$get_fund(h_t[i]), t)
+      surrender <-  cash[h_t[i], t] - surv_ben
+      if (surrender > chat_t[i])
+       sur_ts[h_t[i]] <- t
+      else cash[h_t[i], t] <- surv_ben
+     }
+   }
    res <- sapply(seq_along(sur_ts), function(i) {
      sum(cash[i, 1:sur_ts[i]] *
        self$get_discount(i, 1:sur_ts[i]))

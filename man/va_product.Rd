@@ -66,6 +66,10 @@ Must be between 0 and 1.}
    \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
    \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Within this base class the method simply returns the product time-line.}
    \item{\code{cash_flows}}{returns a \code{numeric} vector with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying fund this method will calculate the cash flows from}
+   \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to the survival benefit.
+   The arguments are \code{spot_values} vector which holds the values of the underlying fund and
+   \code{t} the time index of the survival benefit. The function will return 0 if there's no survival
+   benefit at the specified time}
    \item{\code{get_premium}}{Returns the premium as non negative scalar}
 }
 }

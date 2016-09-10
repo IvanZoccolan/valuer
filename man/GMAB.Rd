@@ -27,7 +27,7 @@ barrier <- 200
 #Withdrawal penalty applied in case the insured surrenders the contract.
 penalty <- 0.01
 
-VA_GMAB <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
 }
 \value{
 Object of \code{\link{R6Class}}
@@ -72,6 +72,10 @@ Must be between 0 and 1.}
    \item{\code{survival_benefit_times}}{retuns a \code{numeric} vector with the survival benefit time indexes.}
    \item{\code{surrender_times}}{retuns a \code{numeric} vector with the surrender time indexes. Takes as argument a string with the frequency of the decision if surrendering the contract,  e.g. "3m"  corresponds to a surrender decision taken every 3 months.}
    \item{\code{cash_flows}}{returns a \code{numeric} vector with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying fund, \code{death_time} the  index of the \code{times} vector corresponding to the time of death and the last index in case the insured survives.}
+   \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to the survival benefit.
+   The arguments are \code{spot_values} vector which holds the values of the underlying fund and
+   \code{t} the time index of the survival benefit. The function will return 0 if there's no survival
+   benefit at the specified time}
    \item{\code{get_premium}}{Returns the premium as non negative scalar}
 }
 }
