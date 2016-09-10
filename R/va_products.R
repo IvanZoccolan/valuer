@@ -210,7 +210,7 @@ payoff_rollup <- R6::R6Class("payoff_rollup", inherit = payoff_guarantee,
 
 va_product <- R6::R6Class("va_product",  inherit = path_dependent,
  public = list(
-  initialize = function(payoff, prod_times, age, fee, barrier, penalty){
+  initialize = function(payoff, prod_times, age, fee, barrier, penalty, ...){
    if (!missing(payoff))
     if (inherits(payoff, "payoff_guarantee")) private$the_payoff <- payoff
     else stop(error_msg_1("payoff_guarantee"))
@@ -401,6 +401,7 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
     t0 <- head(private$times, 1)
     t1 <- tail(private$times, 1)
     out <- calc_account(spot_values, fee, barrier, penalty)
+    #GMAB living benefit
     last <- length(out)
     out[last] <- private$the_payoff$get_payoff(out[last], c(t0, t1))
    }
@@ -423,8 +424,123 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 )
 
 
+#' Variable Annuity with GMAB and GMDB guarantees
+#' @description  Class for a  VA product object with Guaranteed Minimum Accumulation Benefit (GMAB)
+#' and Guaranteed Minimun Accumulation Benefit (GMDB). \cr It inherits from \code{\link{GMAB}}.
+#' It supports a simple state-dependent fee structure with a single barrier.
+#' See \bold{References} for a description of variable annuities life insurance products, their guarantees and fee structures.
+#' @docType class
+#' @importFrom R6 R6Class
+#' @importFrom Rcpp evalCpp sourceCpp
+#' @importFrom timeDate timeDate timeSequence
+#' @importClassesFrom timeDate timeDate
+#' @useDynLib valuer
+#' @export
+#' @return Object of \code{\link{R6Class}}
+#' @format \code{\link{R6Class}} object.
+#' @field the_payoff (\code{private}) A \code{\link{payoff_guarantee}} object which stores the type of payoff
+#' (e.g: roll-up, ratchet, etc).
+#' @field the_age (\code{private}) A posite scalar with the age of the insured.
+#' @field the_fee (\code{private}) A positive scalar with the annual VA contract fee.
+#' @field the_barrier (\code{private}) A positive scalar with the barrier for state-dependent fees. The fee will be applied only if the value of the account is below the barrier.
+#' @field the_penalty (\code{private}) A scalar with the withdrawal penalty in case the insured surrenders the contract.
+#' Must be between 0 and 1.
+#' @field times_yrs (\code{private}) A numeric vector with the product time-line in fraction of years
+#' @field the_death_payoff (\code{private}) A \code{\link{payoff_guarantee}} object which stores the type
+#'  of payoff (e.g: roll-up, ratchet, etc) for the death benefit.
+#' @section Methods:
+#'  \describe{
+#'    \item{\code{new}}{Constructor method}
+#'    \item{\code{get_times}}{get method for the product time-line. Returns a \code{\link{timeDate}} object}
+#'    \item{\code{times_in_yrs}}{get method for the product time-line in fraction of year}
+#'    \item{\code{get_age}}{get method for the age of the insured}
+#'    \item{\code{set_age}}{set method for the age of the insured}
+#'    \item{\code{get_barrier}}{get method for the state=dependent fee barrier. Returns a positive scalar with the barrier}
+#'    \item{\code{set_barrier}}{set method for the state=dependent fee barrier. Argument must be a positive scalar.}
+#'    \item{\code{set_penalty}}{set method for the penalty applied in case of surrender. Argument must be a scalar between 0 and 1.}
+#'    \item{\code{get_penalty}}{get method for the penalty applied in case of surrender. It returns a scalar between 0 and 1.}
+#'    \item{\code{set_fee}}{set method for the contract fee. The argument is a \code{\link} constant_parameters object with the fee.}
+#'    \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
+#'    \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Takes as argument a \code{\link{timeDate}} object with the time of death}
+#'    \item{\code{survival_benefit_times}}{retuns a \code{numeric} vector with the survival benefit time indexes.}
+#'    \item{\code{surrender_times}}{retuns a \code{numeric} vector with the surrender time indexes. Takes as argument a string with the frequency of the decision if surrendering the contract,  e.g. "3m"  corresponds to a surrender decision taken every 3 months.}
+#'    \item{\code{cash_flows}}{returns a \code{numeric} vector with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying fund, \code{death_time} the  index of the \code{times} vector corresponding to the time of death and the last index in case the insured survives.}
+#'    \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to the survival benefit.
+#'    The arguments are \code{spot_values} vector which holds the values of the underlying fund and
+#'    \code{t} the time index of the survival benefit. The function will return 0 if there's no survival
+#'    benefit at the specified time}
+#'    \item{\code{get_premium}}{Returns the premium as non negative scalar}
+#' }
+#' @references
+#' \enumerate{
+#' \item{\cite{ Bacinello A.R., Millossovich P., Olivieri A., Pitacco  E.,
+  #' "Variable annuities: a unifying valuation approach." In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.
+  #' }}
+#' \item{\cite{Bernard C., Hardy M. and Mackay A. "State-dependent fees for variable
+  #'  annuity guarantees." In: Astin Bulletin 44 (2014), pp. 559-585.}}
+#'  }
+#'@usage
+#'#Sets up the payoff as a roll-up of premiums with roll-up rate 1%
+#'
+#'rate <- constant_parameters$new(0.01)
+#'
+#'premium <- 100
+#'rollup <- payoff_rollup$new(premium, rate)
+#'
+#'#Five years time-line
+#'times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+#'#Age of the insured
+#'age <- 60
+#'# A constant fee of 2% per year (365 days)
+#'fee <- constant_parameters$new(0.02, 365)
+#'
+#'#Barrier for a state-dependent fee. The fee will be applied only if
+#'#the value of the account is below the barrier
+#'barrier <- 200
+#'
+#'#Withdrawal penalty applied in case the insured surrenders the contract.
+#'penalty <- 0.01
+#'#Sets up the GMAB + GMDB with the same payoff for survival and death benefits
+#'contract <- GMAB_GMDB$new(rollup, times, age, fee, barrier, penalty, rollup)
 
-
+GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
+ public = list(
+  initialize = function(payoff, prod_times, age, fee, barrier, penalty, death_payoff){
+   super$initialize(payoff, prod_times, age, fee, barrier, penalty)
+   if (!missing(death_payoff))
+     if (inherits(death_payoff, "payoff_guarantee"))
+     private$the_death_payoff <- death_payoff
+     else stop(error_msg_1("payoff_guarantee"))
+   else stop("Please provide a guarantee payoff object\n")
+   },
+  cash_flows = function(spot_values, death_time){
+   fee <- private$the_fee$get()
+   barrier <- private$the_barrier
+   penalty <- private$the_penalty
+   len <- length(spot_values)
+   t0 <- head(private$times, 1)
+   if (death_time < length(private$times)){
+    out <- calc_account(spot_values[1:death_time], fee, barrier, penalty)
+    #GMDB death benefit
+    last <- length(out)
+    t1 <- private$times[death_time]
+    out[last] <- private$the_death_payoff$get_payoff(out[last], c(t0, t1))
+    out <- rep(out, length.out=len)
+    out[(death_time+1):len] <- 0
+   } else {
+    t1 <- tail(private$times, 1)
+    out <- calc_account(spot_values, fee, barrier, penalty)
+    #GMAB living benefit
+    last <- length(out)
+    out[last] <- private$the_payoff$get_payoff(out[last], c(t0, t1))
+   }
+   out
+  }
+ ),
+ private = list(
+  the_death_payoff = "payoff_guarantee"
+ )
+)
 
 
 
