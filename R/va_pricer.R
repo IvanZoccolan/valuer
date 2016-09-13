@@ -154,7 +154,7 @@
 
 va_engine <- R6Class("va_engine",
  public = list(
-  initialize = function(product){
+  initialize = function(product, ...){
 
    if(!missing(product))
     if (inherits(product, "va_product")) {
@@ -163,16 +163,11 @@ va_engine <- R6Class("va_engine",
    else stop(error_msg_1(" va_product"))
 
   },
-  get_mortality = function(){
+  simulate_mortality_paths = function(npaths){
 
   },
-  death_time = function(){
-    mu_integrals <- self$get_mortality()
-    ind <- which(mu_integrals > rexp(1))
-    if (length(ind) != 0)
-      res <- min(ind)
-    else res <- lenght(mu_integrals)
-    res
+  death_time = function(i){
+
   },
   simulate_financial_paths = function(npaths){
 
@@ -190,9 +185,11 @@ va_engine <- R6Class("va_engine",
    if(simulate){
     #Simulates financials
     self$simulate_financial_paths(npaths)
+    #Simulates mortality paths
+    self$simulate_mortality_paths(npaths)
     #Simulates times of death
     private$tau <- sapply(ind, function(i){
-     self$death_time()
+     self$death_time(i)
     })
    }
 
@@ -220,9 +217,11 @@ va_engine <- R6Class("va_engine",
    if(simulate){
    #Simulates financials
    self$simulate_financial_paths(npaths)
+   #Simulates mortality paths
+   self$simulate_mortality_paths(npaths)
    #Simulates times of death
    private$tau <- sapply(ind, function(i){
-     self$death_time()
+     self$death_time(i)
    })
    }
    #Initial cash flow matrix
@@ -251,7 +250,7 @@ va_engine <- R6Class("va_engine",
        })
      #### Regression ####
      #Regressors
-     x_t <- self$bases(h_t, t, degree)
+     x_t <- private$bases(h_t, t, degree)
      #Estimated continuation values
      chat_t <- RcppEigen::fastLmPure(x_t, c_t)$fitted.values
      #### Comparison between surrender values and estimated
@@ -272,14 +271,14 @@ va_engine <- R6Class("va_engine",
   },
   get_discount = function(i, j) {
 
-    },
-  bases = function(paths, time, degree){
-    NULL
-  }
+    }
  ),
  private = list(
   the_product = "va_product",
-  tau = "numeric"
+  tau = "numeric",
+  bases = function(paths, time, degree){
+    NULL
+  }
  )
 )
 
@@ -473,21 +472,12 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
     }else stop(error_msg_2("parameters"))
    } else stop(error_msg_2("parameters"))
 
-   private$mu_integrals <- self$get_mortality()
-  },
-  simulate_fund_path = function(){
-   private$variates <- rnorm(private$no_time_intervals)
-   current_log_spot <- private$drifts +
-            private$standard_deviations * private$variates
-   current_log_spot <- cumsum(current_log_spot)
-   c(spot, spot*exp(current_log_spot))
+   private$mu_integrals <- self$simulate_mortality_paths()
   },
   simulate_financial_paths = function(npaths){
-    #This should be moved into the sub class
-    #while the base class just defines the interface
     cf_times <- private$the_product$get_times()
     private$fund <- t(vapply(seq(npaths), function(index) {
-      self$simulate_fund_path()
+      private$simulate_financial_path()
     }, FUN.VALUE = vector("numeric", length(cf_times))))
     t0 <- cf_times[1]
     log_discounts <- sapply(cf_times, function(t) -private$r$integral(t0, t))
@@ -495,38 +485,25 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
   },
   get_fund = function(i) private$fund[i, ],
   get_discount = function(i,j) private$discounts[j],
-  get_mortality = function(){
-   age <- private$the_product$get_age()
-   c1 <- private$mu_1
-   c2 <- private$mu_2
-   times <- private$the_product$get_times()
-   t_yrs  <- private$the_product$times_in_yrs()
-   #Deterministic intensity of mortality ( Weibull )
-   mu <- (c1 ^ (-c2)) * c2 * ((age + t_yrs) ^ (c2 - 1))
-   #Integrals of the intensity of mortality
-   dt <- diff(t_yrs)
-   mu_ <- head(mu, -1)
-   mu_integrals <- cumsum(c(0, mu_ * dt))
-   mu_integrals
+  simulate_mortality_paths = function(npaths){
+    age <- private$the_product$get_age()
+    c1 <- private$mu_1
+    c2 <- private$mu_2
+    t_yrs  <- head(private$the_product$times_in_yrs(), -1)
+    #Deterministic intensity of mortality ( Weibull )
+    mu <- (c1 ^ (-c2)) * c2 * ((age + t_yrs) ^ (c2 - 1))
+    #Integrals of the intensity of mortality
+    dt <- diff(t_yrs)
+    mu_ <- head(mu, -1)
+    mu_integrals <- cumsum(c(0, mu_ * dt))
+    mu_integrals
   },
-  death_time = function(){
+  death_time = function(i){
     ind <- which(private$mu_integrals > rexp(1))
     if (length(ind) != 0)
       res <- min(ind)
     else res <- length(private$times)
     res
-  },
-  bases = function(paths, time, degree){
-
-    res <- orthopolynom::laguerre.polynomials(degree, normalized = TRUE)
-    x <- private$fund[paths, time]
-    #Normalizes to avoid underflows in calculating
-    #the exponential below.
-    x <- x / private$the_product$get_premium()
-
-    sapply(seq_along(res), function(i){
-      exp(-0.5 * x) * (as.function(res[[i]])(x))
-    })
   }
  ),
  private = list(
@@ -542,11 +519,27 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
   discounts = "numeric",
   #Intensity of mortality parameters
   mu_1 = 90.43,
-  mu_2 = 10.36
+  mu_2 = 10.36,
+  simulate_financial_path = function(){
+    private$variates <- rnorm(private$no_time_intervals)
+    current_log_spot <- private$drifts +
+      private$standard_deviations * private$variates
+    current_log_spot <- cumsum(current_log_spot)
+    c(spot, spot*exp(current_log_spot))
+  },
+  bases = function(paths, time, degree){
+
+    res <- orthopolynom::laguerre.polynomials(degree, normalized = TRUE)
+    x <- private$fund[paths, time]
+    #Normalizes to avoid underflows in calculating
+    #the exponential below.
+    x <- x / private$the_product$get_premium()
+
+    sapply(seq_along(res), function(i){
+      exp(-0.5 * x) * (as.function(res[[i]])(x))
+    })
+  }
  )
 )
-
-
-
 
 

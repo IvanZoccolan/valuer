@@ -64,7 +64,7 @@ yr_fractions <- function(times){
  t_diffs <- as.numeric(timeDate::difftimeDate(t_periods$to, t_periods$from)) + 1
  ind <- seq_along(t_diffs)
  out <- sapply(ind, function(i) i - 1 + seq(t_diffs[i]) / t_diffs[i])
- unlist(out)
+ c(0, unlist(out))
 
 }
 
