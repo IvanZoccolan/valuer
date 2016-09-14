@@ -3,9 +3,15 @@
 
 #'@export
 
-va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine, public = list(
+va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine,
+ public = list(
   initialize = function(product, financial_parms, financial_setModel,
                         mortality_parms, mortality_setModel){
+
+    if (!requireNamespace("yuima", quietly = TRUE))
+      stop("This class needs the yuima pkg. Please install it.",
+           call. = FALSE)
+
     super$initialize(product)
     private$financial_parms <- financial_parms
     private$financial_model <- try(yuima::setModel(
