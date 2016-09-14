@@ -36,31 +36,28 @@ va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine, public = list
   },
   simulate_financial_paths = function(npaths, ind = c(1,3)){
    len <-  length(private$the_product$get_times())
-   data <- lapply(seq(npaths), function(idx) private$simulate_financial_path(ind))
-   #Saves the fund
-   private$fund <- t(vapply(seq(npaths), function(idx) {
-    data[[idx]]$fund
-    }, FUN.VALUE = vector("numeric", len)))
-   private$r <- t(vapply(seq(npaths), function(idx) {
-     data[[idx]]$r
-   }, FUN.VALUE = vector("numeric", len)))
-   #Saves the discounts
-   private$discounts <- t(vapply(seq(npaths), function(idx) {
-    exp(-cumsum(c(0, head(data[[idx]]$r, -1))* private$samp@delta))
-    }, FUN.VALUE = vector("numeric", len)))
+   private$fund <- matrix(NA, npaths, len)
+   private$r <- matrix(NA, npaths, len)
+   private$discounts <- matrix(NA, npaths, len)
+   for (i in seq(npaths)){
+     tmp  <- private$simulate_financial_path(ind)
+     private$fund[i, ] <- tmp$fund
+     private$r[i, ] <- tmp$r
+     private$discounts[i, ] <- exp(-cumsum(c(0, head(tmp$r, -1)) *                                           private$samp@delta))
+   }
+
   },
   get_fund = function(i) private$fund[i, ],
   get_discount = function(i,j) private$discounts[i, j],
   simulate_mortality_paths = function(npaths){
    len <-  length(private$the_product$get_times())
-   data <- lapply(seq(npaths), function(idx)
-                     private$simulate_mortality_path())
-   private$mu <- t(vapply(seq(npaths), function(idx) {
-     data[[idx]]$mu
-   }, FUN.VALUE = vector("numeric", len)))
-   private$mu_integrals <- t(vapply(seq(npaths), function(idx) {
-     data[[idx]]$mu_integral
-   }, FUN.VALUE = vector("numeric", len)))
+   private$mu <- matrix(NA, npaths, len)
+   private$mu_integrals <- matrix(NA, npaths, len)
+   for(i in seq(npaths)){
+     tmp <- private$simulate_mortality_path()
+     private$mu[i, ] <- tmp$mu
+     private$mu_integrals[i, ] <- tmp$mu_integrals
+   }
   },
   death_time = function(i){
     ind <- which(private$mu_integrals[i, ] > rexp(1))
