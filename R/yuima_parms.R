@@ -1,11 +1,4 @@
 
-#Takes square root if positive otherwise returns zero.
-#To be used with mean reverting squared root processes (CIR SDE)
-sq <- function(x){y = 0;if(x>0){y = sqrt(x);};return(y);}
-
-#Deterministic intensity of mortality ( Weibull )
-mu <-  function(t, x, c1, c2) {(c1^(-c2))*c2*((x + t)^(c2 -1))}
-
 
 financial_parms <- list(
   #Interest rate parameters
@@ -41,9 +34,13 @@ financial_setModel <- list(
 
 )
 
+financials  <- list(financial_parms, financial_setModel, ind = c(1, 3))
+
 
 mortality_parms <- list(
+  #Initial age
   x = 40,
+  #
   e = 0.5,
   #
   sigma.mu = 0.03,
@@ -51,8 +48,10 @@ mortality_parms <- list(
   c1 = 83.70,
   #
   c2 = 8.30,
-  xinit =mu(0, x = 40 , c1 = 83.70, c2 = 8.30)
+  #
+  xinit = mu(0, x = 40 , c1 = 83.70, c2 = 8.30)
   )
+
 
 mortality_setModel <- list(
  drift="e * (mu(t, mortality_parms$x, mortality_parms$c1, mortality_parms$c2) - m)",
@@ -63,4 +62,12 @@ mortality_setModel <- list(
  solve.variable=c("m")
 )
 
+mortality <- list(mortality_parms, mortality_setModel, ind = c(1))
 
+#The initial age should be set in the mortality parms before the
+#engine is initialized
+#For example:
+# mortality[[1]]$x <- contract$get_age()
+# mortality[[1]]$xinit <-  mu(0, x = contract$get_age() , c1 = 83.70, c2 = 8.30)
+#It can't be done programmatically inside the engine
+#since we don't want to enforce specific parameter names.
