@@ -76,4 +76,3 @@ sq <- function(x){y = 0;if(x>0){y = sqrt(x);};return(y);}
 #Deterministic intensity of mortality ( Weibull )
 mu <-  function(t, x, c1, c2) {(c1^(-c2))*c2*((x + t)^(c2 -1))}
 
-
