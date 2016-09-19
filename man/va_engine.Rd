@@ -3,7 +3,7 @@
 \docType{class}
 \name{va_engine}
 \alias{va_engine}
-\title{Generic Variable Annuity  pricer engine}
+\title{Generic Variable Annuity  pricing engine}
 \format{\code{\link{R6Class}} object.}
 \usage{
 va_engine

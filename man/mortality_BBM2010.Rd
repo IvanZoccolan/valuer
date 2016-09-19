@@ -18,10 +18,10 @@ engine <- va_sde_engine$new(contract, financials_BBM2010, mortality_BBM2010)
 List of parameters to initialize a va_sde_engine object to
 simulate the intensity of mortality process
 according to the stochastic differential equation specified
-in BBM2010 - See References.
+in BBM2010 -  See \bold{References}.
 }
 \references{
-\describe{
+\enumerate{
 \item{[BBM2010]}{
  \cite{Bacinello A.R., Biffis E. e Millossovich P.
        "Regression-based algorithms

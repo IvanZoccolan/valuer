@@ -3,7 +3,7 @@
 #'List of parameters to initialize a va_sde_engine object to
 #'simulate the interest rate, volatility and log price processes
 #'according to the stochastic differential equations specified
-#'in BBM2010 - See References.
+#'in BBM2010 -  See \bold{References}.
 #'@usage
 #'engine <- va_sde_engine$new(contract, financials_BBM2010, mortality_BBM2010)
 #'
@@ -15,7 +15,7 @@
 #' in solve.variable \code{\link{setModel}}}
 #'}
 #'@references
-#'\describe{
+#'\enumerate{
 #' \item{[BBM2010]}{
 #'  \cite{Bacinello A.R., Biffis E. e Millossovich P.
 #'        "Regression-based algorithms
@@ -32,7 +32,7 @@
 #'List of parameters to initialize a va_sde_engine object to
 #'simulate the intensity of mortality process
 #'according to the stochastic differential equation specified
-#'in BBM2010 - See References.
+#'in BBM2010 -  See \bold{References}.
 #'@usage
 #'engine <- va_sde_engine$new(contract, financials_BBM2010, mortality_BBM2010)
 #'
@@ -44,7 +44,7 @@
 #' in solve.variable \code{\link{setModel}}}
 #'}
 #'@references
-#'\describe{
+#'\enumerate{
 #' \item{[BBM2010]}{
 #'  \cite{Bacinello A.R., Biffis E. e Millossovich P.
 #'        "Regression-based algorithms
@@ -60,7 +60,7 @@
 #'List of parameters to initialize a va_sde_engine object to
 #'simulate the interest rate, volatility and log price processes
 #'according to the stochastic differential equations specified
-#'in BMOP2011 - See References.
+#'in BMOP2011 -  See \bold{References}.
 #'@usage
 #'engine <- va_sde_engine$new(contract, financials_BMOP2011, mortality_BMOP2011)
 #'
@@ -72,7 +72,7 @@
 #' in solve.variable \code{\link{setModel}}}
 #'}
 #'@references
-#'\describe{
+#'\enumerate{
 #' \item{[BMOP2011]}{
 #'  \cite{Bacinello A.R., Millossovich P., Olivieri A. e Pitacco E.
 #'        "Variable annuities: a unifying valuation approach."
@@ -88,7 +88,7 @@
 #'List of parameters to initialize a va_sde_engine object to
 #'simulate the intensity of mortality process
 #'according to the stochastic differential equation specified
-#'in BMOP2011 - See References.
+#'in BMOP2011 - See \bold{References}.
 #'@usage
 #'engine <- va_sde_engine$new(contract, financials_BMOP2011, mortality_BMOP2011)
 #'
@@ -100,7 +100,7 @@
 #' in solve.variable \code{\link{setModel}}}
 #'}
 #'@references
-#'\describe{
+#'\enumerate{
 #' \item{[BMOP2011]}{
 #'  \cite{Bacinello A.R., Millossovich P., Olivieri A. e Pitacco E.
 #'        "Variable annuities: a unifying valuation approach."

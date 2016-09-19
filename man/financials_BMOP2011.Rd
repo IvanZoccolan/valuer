@@ -18,10 +18,10 @@ engine <- va_sde_engine$new(contract, financials_BMOP2011, mortality_BMOP2011)
 List of parameters to initialize a va_sde_engine object to
 simulate the interest rate, volatility and log price processes
 according to the stochastic differential equations specified
-in BMOP2011 - See References.
+in BMOP2011 -  See \bold{References}.
 }
 \references{
-\describe{
+\enumerate{
 \item{[BMOP2011]}{
  \cite{Bacinello A.R., Millossovich P., Olivieri A. e Pitacco E.
        "Variable annuities: a unifying valuation approach."

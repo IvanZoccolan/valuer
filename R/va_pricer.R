@@ -56,7 +56,7 @@
 #so that it will return the cash_flows up to death time.
 ######################END DESIGN  COMMENTS#####################################
 
-#' Generic Variable Annuity  pricer engine
+#' Generic Variable Annuity  pricing engine
 #' @description  Class providing an interface for a generic VA pricer engine.\cr
 #' This class shouldn't be instantiated but used as base class for variable annuity
 #' pricer engines.  It implements the static approach to estimate the value of a VA
@@ -285,7 +285,7 @@ va_engine <- R6Class("va_engine",
 
 #
 
-#' Variable Annuity  pricer engine with GBM
+#' Variable Annuity  pricing engine with GBM
 #' @description
 #' Class providing a variable annuity pricing engine with the underlying
 #' reference risk neutral fund modeled as a Geometric Brownian Motion and the

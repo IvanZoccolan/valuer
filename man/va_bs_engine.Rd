@@ -3,7 +3,7 @@
 \docType{class}
 \name{va_bs_engine}
 \alias{va_bs_engine}
-\title{Variable Annuity  pricer engine with GBM}
+\title{Variable Annuity  pricing engine with GBM}
 \format{\code{\link{R6Class}} object.}
 \usage{
 contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)

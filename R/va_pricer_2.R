@@ -1,7 +1,151 @@
 
 
+#' General Variable Annuity pricing engine
+#' @description
+#' Class providing a variable annuity pricing engine where the underlying
+#' reference fund and intensity of mortality are specified by an arbitrary
+#' system of stochastic differential equations. The simulation is done
+#' by means of the \code{yuima} package. \cr
+#' The value of the VA contract is estimated by means of the Monte Carlo
+#' method if the policyholder cannot surrender (the so called "static"
+#' approach), and by means of Least Squares Monte Carlo in case the
+#' policyholder can surrender the contract (the "mixed" approach).\cr
+#' See \bold{References} for a description of the mixed and static approaches,
+#' Least Squares Monte Carlo and \code{yuima}.
+#' @docType class
+#' @importFrom R6 R6Class
+#' @importClassesFrom timeDate timeDate
+#' @importFrom timeDate timeDate timeSequence
+#' @importFrom orthopolynom laguerre.polynomials
+#' @importFrom polynom polynomial
+#' @importFrom RcppEigen fastLmPure
+#' @importFrom yuima setModel simulate setSampling get.zoo.data
+#' @export
+#' @return Object of \code{\link{R6Class}}
+#' @format \code{\link{R6Class}} object.
+#' @section Methods:
+#' \describe{
+#'  \item{\code{new}}{Constructor method with arguments:
+#'   \describe{
+#'    \item{\code{product}}{A \code{\link{va_product}}
+#'    object with the VA product.}
+#'    \item{\code{financial_parms}}{A list of parameters
+#'    specifying the financial risk factors.
+#'    See \code{\link{financials_BMOP2011}} for an example.}
+#'    \item{\code{mortality_parms}}{A list of parameters
+#'    specifying the demographic risk factors.
+#'    See \code{\link{mortality_BMOP2011}} for an example.}
+#'   }
+#'  }
+#'  \item{\code{death_time}}{Returns the time of death index. If the
+#'  death doesn't occur during the product time-line it returns the
+#'  last index of the product time-line.}
+#'  \item{\code{simulate_financial_paths}}{Simulates \code{npaths} paths
+#'  of the underlying fund of the VA contract and the discount factors
+#'  (interest rate).}
+#'  \item{\code{simulate_mortality_paths}}{Simulates \code{npaths} paths
+#'  of the intensity of mortality}
+#'  \item{\code{get_fund}}{Gets the \code{i}-th path of the underlying fund
+#'  where \code{i} goes from 1 to \code{npaths}.}
+#'  \item{\code{do_static}}{Estimates the VA contract value by means of
+#'  the static approach (Monte Carlo), see \bold{References}. It takes as
+#'  arguments:
+#'   \describe{
+#'     \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+#'     the point estimates}
+#'     \item{\code{npaths}}{positive integer with the number of paths to
+#'     simulate}
+#'     \item{\code{simulate}}{boolean to specify if the paths should be
+#'     simulated from scratch, default is TRUE.}
+#'   }
+#'  }
+#'  \item{\code{do_mixed}}{Estimates the VA contract by means of
+#'  the mixed approach (Least Squares Monte Carlo), see \bold{References}.
+#'  It takes as arguments:
+#'   \describe{
+#'    \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+#'     the point estimates}
+#'     \item{\code{npaths}}{positive integer with the number of paths to
+#'     simulate}
+#'     \item{\code{degree}}{positive integer with the maximum degree of
+#'     the weighted Laguerre polynomials used in the least squares by LSMC}
+#'     \item{\code{freq}}{string which contains the frequency of the surrender
+#'     decision. The default is \code{"3m"} which corresponds to deciding every
+#'     three months if surrendering the contract or not.}
+#'     \item{\code{simulate}}{boolean to specify if the paths should be
+#'     simulated from scratch, default is TRUE.}
+#'   }
+#'  }
+#'  \item{\code{get_discount}}{Arguments are \code{i,j}.
+#'  Gets the \code{j}-th discount factor corresponding to the \code{i}-th
+#'  simulated path of the discount factors.}
+#' }
+#' @references
+#' \enumerate{
+#'  \item{[BMOP201]}{ \cite{Bacinello A.R., Millossovich P., Olivieri A.
+#'  ,Pitacco  E., "Variable annuities: a unifying valuation approach."
+#'  In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.}}
+#'  \item{[LS2001]}{ \cite{Longstaff F.A. e Schwartz E.S. Valuing
+#'  american options by simulation: a simple least-squares approach.
+#'  In: Review of Financial studies 14 (2001), pp. 113-147}}
+#'  \item{[YUIMA2014]}{ \cite{Alexandre Brouste, Masaaki Fukasawa, Hideitsu
+#'   Hino, Stefano M. Iacus, Kengo Kamatani, Yuta Koike, Hiroki Masuda,
+#'   Ryosuke Nomura, Teppei Ogihara, Yasutaka Shimuzu, Masayuki Uchida,
+#'   Nakahiro Yoshida (2014). The YUIMA Project: A Computational
+#'   Framework for Simulation and Inference of Stochastic Differential
+#'   Equations. Journal of Statistical Software, 57(4), 1-51.
+#'   URL http://www.jstatsoft.org/v57/i04/.}}
+#'  }
+#'@usage
+#'engine <- va_sde_engine$new(contract, financial_parms, mortality_parms)
+#'@examples
+#'#Sets up the payoff as a roll-up of premiums with roll-up rate 2%
+#'
+#'rate <- constant_parameters$new(0.01)
+#'
+#'premium <- 100
+#'rollup <- payoff_rollup$new(premium, rate)
+#'
+#'#Five years time-line
+#'times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+#'
+#'#Age of the policyholder.
+#'age <- 60
+#'# A constant fee of 2% per year (365 days)
+#'fee <- constant_parameters$new(0.02, 365)
+#'
+#'#Barrier for a state-dependent fee. The fee will be applied only if
+#'#the value of the account is below the barrier
+#'barrier <- 200
+#'#Withdrawal penalty applied in case the insured surrenders the contract.
+#'penalty <- 0.02
+#'#Sets up the contract with GMAB guarantee
+#'contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+#'
+#'#Sets up a gatherer of the MC point estimates
+#'the_gatherer  <- mc_gatherer$new()
+#'no_of_paths <- 100
+#'
+#'engine <- va_sde_engine$new(contract, financials_BMOP2011,
+#'mortality_BMOP2011)
+#'
+#'#Estimates the contract value by means of the static approach.
+#'
+#'engine$do_static(the_gatherer, no_of_paths)
+#'the_gatherer$get_results()
+#'
+#'
+#'#Estimates the contract value by means of the mixed approach.
+#'#To compare with the static approach we won't simulate the underlying
+#'#fund paths again.
+#'
+#'the_gatherer_2 <- mc_gatherer$new()
+#'
+#'engine$do_mixed(the_gatherer_2, no_of_paths, degree = 3, freq = "3m",
+#'simulate = FALSE)
+#'the_gatherer_2$get_results()
 
-#'@export
+
 
 va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine,
  public = list(
@@ -53,7 +197,6 @@ va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine,
   },
   get_fund = function(i) private$fund[i, ],
   get_discount = function(i,j) private$discounts[i, j],
-  get_int = function(i) private$mu_integrals[i, ],
   simulate_mortality_paths = function(npaths){
 
    ind <- private$mortality_parms[[3]]
