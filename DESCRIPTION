@@ -15,7 +15,8 @@ Depends: R (>= 3.2.5)
 Imports: R6 (>= 2.1.2),
     orthopolynom (>= 1.0-5),
     RcppEigen (>= 0.3.2.8.1),
-    timeDate (>= 3012.100)
+    timeDate (>= 3012.100),
+    ggplot2 (>= 2.1.0)
 Suggests: testthat,
     yuima (>= 1.1.6)
 LinkingTo: Rcpp

@@ -76,3 +76,15 @@ sq <- function(x){y = 0;if(x>0){y = sqrt(x);};return(y);}
 #Deterministic intensity of mortality ( Weibull )
 mu <-  function(t, x, c1, c2) {(c1^(-c2))*c2*((x + t)^(c2 -1))}
 
+
+#Cumulative standard deviation
+#http://stackoverflow.com/questions/2765374/
+#efficient-calculation-of-matrix-cumulative-standard-deviation-in-r
+
+cumsd <- function(x) {
+  ind_na <- !is.na(x)
+  nn <- cumsum(ind_na)
+  x[!ind_na] <- 0
+  sqrt(cumsum(x^2) / (nn-1) - (cumsum(x))^2/(nn-1)/nn)
+}
+
