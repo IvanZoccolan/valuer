@@ -3,15 +3,18 @@
 #' General Variable Annuity pricing engine
 #' @description
 #' Class providing a variable annuity pricing engine where the underlying
-#' reference fund and intensity of mortality are specified by an arbitrary
+#' reference fund and the intensity of mortality are specified by an arbitrary
 #' system of stochastic differential equations. The simulation is done
-#' by means of the \code{yuima} package. \cr
+#' by means of the
+#' \href{https://CRAN.R-project.org/package=yuima}{yuima} package. \cr
 #' The value of the VA contract is estimated by means of the Monte Carlo
 #' method if the policyholder cannot surrender (the so called "static"
 #' approach), and by means of Least Squares Monte Carlo in case the
 #' policyholder can surrender the contract (the "mixed" approach).\cr
-#' See \bold{References} for a description of the mixed and static approaches,
-#' Least Squares Monte Carlo and \code{yuima}.
+#' See \bold{References} -\code{[BMOP2011]} for a description of the mixed
+#' and static approaches and the algorithm implemented by this class,
+#' \code{[LS2001]} for Least Squares Monte Carlo and \code{[YUIMA2014]}
+#' for \code{yuima}.
 #' @docType class
 #' @importFrom R6 R6Class
 #' @importClassesFrom timeDate timeDate
@@ -82,7 +85,7 @@
 #' }
 #' @references
 #' \enumerate{
-#'  \item{[BMOP201]}{ \cite{Bacinello A.R., Millossovich P., Olivieri A.
+#'  \item{[BMOP2011]}{ \cite{Bacinello A.R., Millossovich P., Olivieri A.
 #'  ,Pitacco  E., "Variable annuities: a unifying valuation approach."
 #'  In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.}}
 #'  \item{[LS2001]}{ \cite{Longstaff F.A. e Schwartz E.S. Valuing
@@ -101,7 +104,7 @@
 #'@examples
 #'#Sets up the payoff as a roll-up of premiums with roll-up rate 2%
 #'
-#'rate <- constant_parameters$new(0.01)
+#'rate <- constant_parameters$new(0.02)
 #'
 #'premium <- 100
 #'rollup <- payoff_rollup$new(premium, rate)
@@ -112,12 +115,12 @@
 #'#Age of the policyholder.
 #'age <- 60
 #'# A constant fee of 2% per year (365 days)
-#'fee <- constant_parameters$new(0.02, 365)
+#'fee <- constant_parameters$new(0.02)
 #'
 #'#Barrier for a state-dependent fee. The fee will be applied only if
 #'#the value of the account is below the barrier
 #'barrier <- 200
-#'#Withdrawal penalty applied in case the insured surrenders the contract.
+#'#Withdrawal penalty applied in case the insured surrenders the contract
 #'penalty <- 0.02
 #'#Sets up the contract with GMAB guarantee
 #'contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
@@ -126,17 +129,18 @@
 #'the_gatherer  <- mc_gatherer$new()
 #'no_of_paths <- 100
 #'
+#'#Sets up the pricing engine
 #'engine <- va_sde_engine$new(contract, financials_BMOP2011,
 #'mortality_BMOP2011)
 #'
-#'#Estimates the contract value by means of the static approach.
+#'#Estimates the contract value by means of the static approach
 #'
 #'engine$do_static(the_gatherer, no_of_paths)
 #'the_gatherer$get_results()
 #'
 #'
-#'#Estimates the contract value by means of the mixed approach.
-#'#To compare with the static approach we won't simulate the underlying
+#'#Estimates the contract value by means of the mixed approach
+#'#To compare with the static approach we don't simulate the underlying
 #'#fund paths again.
 #'
 #'the_gatherer_2 <- mc_gatherer$new()
@@ -213,7 +217,7 @@ va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine,
    private$mu <- matrix(NA, npaths, len)
    private$mu_integrals <- matrix(NA, npaths, len)
    #Sets up the intensity of mortality and
-   #calculates the int of mortality integrals
+   #calculates the integrals of the intensity of mortality
    for(i in seq(npaths)){
     zoo_paths <- do.call(yuima::simulate, parms)
     private$mu[i, ] <- yuima::get.zoo.data(zoo_paths)[[ind]]
@@ -231,16 +235,40 @@ va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine,
   }
  ),
  private = list(
+  #Stores the yuima financial model
   financial_model = "yuima.model-class",
+  #Stores the financial parameters needed to
+  #set the model above by yuima::setModel and
+  #run yuima::simulate
   financial_parms = "list",
+  #Stores the intensity of mortality model
   mortality_model = "yuima.model-class",
+  #Stores the demographic parameters needed to
+  #set the model above by yuima::setModel and
+  #run yuima::simulate
   mortality_parms ="list",
+  #Stores the times of a simulate path
   samp = "yuima.sampling-class",
+  #Matrix to hold the simulated paths of the
+  #underlying fund
   fund = "matrix",
+  #Matrix to hold the simulated paths of the
+  #stochastic interest rate
   r = "matrix",
+  #Matrixs to hold the simulated paths of the
+  #stochastic discount factors
   discounts = "matrix",
+  #Matrix to hold the simulated paths of the
+  #stochastic intensity of mortality
   mu = "matrix",
+  #Matrix to hold the integrals of the simulated paths
+  #of stochastic intensity of mortality
   mu_integrals = "matrix",
+  #Method to get Laguerre polynomials of state variables.
+  #Arguments are:
+  #paths - numeric vector of indexes of the paths to consider
+  #time - numeric scalar with the time index
+  #degree - positive scalar with the max degree of the Laguerre polynomials
   bases = function(paths, time, degree){
    res <- orthopolynom::laguerre.polynomials(degree, normalized = TRUE)
    x <- private$fund[paths, time]

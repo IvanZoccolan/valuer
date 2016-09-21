@@ -6,39 +6,46 @@
 \title{Roll-up of premiums payoff class}
 \format{\code{\link{R6Class}} object.}
 \usage{
+rollup <- payoff_rollup$new(premium, rate)
+}
+\value{
+Object of \code{\link{R6Class}}
+}
+\description{
+Class providing a roll-up of premiums payoff object.
+Provides methods to get/set the base premium \eqn{P}{P}
+and set the roll-up rate  \eqn{\delta} passed as a
+\code{\link{constant_parameters}} object. There is a method
+to calculate the payoff following the formula
+\deqn{\max(A, G_t^P)}{max(A, G_t)}  where \eqn{G_t}{G_t}
+is given by \deqn{Pe^{\delta(t_2 - t_1)}}{G_t = Pexp(\delta(t_2 - t_1))}
+}
+\section{Methods}{
+
+ \describe{
+  \item{\code{new}}{Initialize method.
+   The arguments are a non negative scalar with the premium and a
+   \code{\link{constant_parameters}} object with the roll-up rate.}
+  \item{\code{set_premium}}{Stores the premium in a
+   private field. The argument is a non negative scalar}
+  \item{\code{get_premium}}{Returns the premium
+  as non negative scalar}
+  \item{\code{set_rate}}{Sets the roll-up rate into a private
+  field. The argument is a \code{\link{constant_parameters}} object}
+  \item{\code{get_payoff}}{Gets the payoff.
+   The arguments are a \code{numeric} vector
+   with the amounts and a vector of \code{\link{timeDate}} objects
+   with the start and end dates to calculate the roll-up amount
+   (see \bold{Examples})}
+}
+}
+\examples{
 rate <- constant_parameters$new(0.01)
 premium <- 100
 rollup <- payoff_rollup$new(premium, rate)
 t1 <- timeDate::timeDate("2016-01-01")
 t2 <- timeDate::timeDate("2016-12-31")
 rollup$get_payoff(c(120,100), c(t1,t2))
-}
-\value{
-Object of \code{\link{R6Class}}
-}
-\description{
-Class providing a roll-up of premiums payoff object. Provides methods to get/set the base premium \eqn{P}{P} and set the roll-up rate  \eqn{\delta} passed as a \code{\link{constant_parameters}} object. There is a method to calculate the payoff following the formula \deqn{\max(A, G_t^P)}{max(A, G_t)}  where \eqn{G_t}{G_t} is given by \deqn{Pe^{\delta(t_2 - t_1)}}{G_t = Pexp(\delta(t_2 - t_1))}
-}
-\section{Fields}{
-
-\describe{
-\item{\code{the_premium}}{(\code{private}) A \code{numeric} which stores the premium.}
-
-\item{\code{the_rate}}{(\code{private}) A \code{\link{constant_parameters}} object which stores the roll-up rate.}
-}}
-\section{Methods}{
-
- \describe{
-  \item{\code{new} (\code{public})}{Initialize method. The arguments are a non negative scalar
-   with the premium and a \code{\link{constant_parameters}} object with the roll-up rate.}
-  \item{\code{set_premium} (\code{public})}{Sets the the_premium private field. The argument is a non negative scalar}
-  \item{\code{get_premium} (\code{public})}{Returns the premium as non negative scalar}
-  \item{\code{set_rate} (\code{public})}{Sets the roll-up rate private field.
-   The argument is a \code{\link{constant_parameters object}}}
-  \item{\code{get_payoff} (\code{public})}{Gets the payoff. The arguments are a \code{numeric} vector
-   with the amounts and a vector of\code{\link{timeDate}} objects with the start and end dates
-   to calculate the roll-up amount (see \bold{Usage})}
-}
 }
 \keyword{datasets}
 

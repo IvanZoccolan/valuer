@@ -6,31 +6,8 @@
 \title{Variable Annuity  pricing engine with GBM}
 \format{\code{\link{R6Class}} object.}
 \usage{
-contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
-
-r <- constant_parameters$new(0.01)
-spot <- 100
-vol <- constant_parameters$new(0.2)
-div <- constant_parameters$new(0.0)
-
-gatherer_mean <- statistics_mean$new()
-no_of_paths <- 1e4
-
-engine <- va_bs_engine$new(contract, r, c1=90.43, c2=10.36, spot, volatility=vol, dividends=div)
-
-#Estimates the contract value by means of the static approach.
-
-engine$do_static(gatherer_mean, no_of_paths)
-gatherer_mean$get_results()
-
-#Estimates the contract value by means of the mixed approach.
-#To compare with the static approach we won't simulate the underlying
-#fund paths again.
-
-gatherer_mean_2 <- statistics_mean$new()
-
-engine$do_mixed(gatherer_mean_2, no_of_paths, degree = 3, freq = "3m", simulate = FALSE)
-gatherer_mean_2$get_results()
+engine <- va_bs_engine$new(contract, r, c1=90.43, c2=10.36, spot,
+volatility=vol, dividends=div)
 }
 \value{
 Object of \code{\link{R6Class}}
@@ -39,114 +16,127 @@ Object of \code{\link{R6Class}}
 Class providing a variable annuity pricing engine with the underlying
 reference risk neutral fund modeled as a Geometric Brownian Motion and the
 intensity of mortality  modeled by the Weibull intensity of mortality.
-It implements the static approach to estimate the value of a VA
-contract by means of the Monte Carlo method and the mixed approach by means
-of Least Squares Monte Carlo.\cr
-See \bold{References} for a description of the mixed and static approaches and
-Least Squares Monte Carlo.
+The value of the VA contract is estimated by means of the Monte Carlo
+method if the policyholder cannot surrender (the so called "static"
+approach), and by means of Least Squares Monte Carlo in case the
+policyholder can surrender the contract (the "mixed" approach).\cr
+See \bold{References} -\code{[BMOP2011]} for a description of the mixed
+and static approaches and the algorithm implemented by this class,
+\code{[LS2001]} for Least Squares Monte Carlo.
 }
-\section{Fields}{
-
-\describe{
-\item{\code{the_product}}{(\code{private}) A \code{\link{va_product}} object with
-the VA contract.}
-
-\item{\code{times}}{(\code{private}) \code{\link{timeDate}} object with the product time-line}
-
-\item{\code{r}}{(\code{private}) \code{\link{parameters}} object with the risk-neutral interest rate}
-
-\item{\code{drifts}}{(\code{private}) \code{numeric} vector with the drifts of the underlying
-fund.}
-
-\item{\code{standard_deviations}}{(\code{numeric}) vector with the standard_deviations of the
-underlying fund.}
-
-\item{\code{spot}}{(\code{numeric}) numeric scalar with the initial value of the underlying fund}
-
-\item{\code{mu_integrals}}{(\code{numeric}) vector with the integrals along the product
-time-line of the intensity of mortality}
-
-\item{\code{fund}}{(\code{matrix}) with  simulated paths of the underlying fund}
-
-\item{\code{discounts}}{(\code{numeric}) vector with the discount factors}
-
-\item{\code{mu_1,mu_2}}{(\code{numeric}) scalars with the parameters for the Weibull
-intensity of mortality}
-}}
 \section{Methods}{
 
 \describe{
  \item{\code{new}}{Constructor method}
- \item{\code{get_mortality}}{Returns the integrals of the intensity of
- mortality along the product time-line.}
  \item{\code{death_time}}{Returns the time of death index. If the
  death doesn't occur during the product time-line it returns the
- last index of the product time-line.}
+ last index of the product time-line}
  \item{\code{simulate_financial_paths}}{Simulates \code{npaths} paths
- of the underlying fund of the VA contract and the discount factors (interest
-  rate). It saves the paths into the \code{fund} matrix and
-  the \code{discounts} vector.}
- \item{\code{get_fund}}{Gets the \code{i}-th path of the underlying fund where
-  \code{i} goes from 1 to \code{npaths}.}
+ of the underlying fund of the VA contract and the discount factors
+ (interest rate)}
+ \item{\code{get_fund}}{Gets the \code{i}-th path of the underlying fund
+  where \code{i} goes from 1 to \code{npaths}}
  \item{\code{do_static}}{Estimates the VA contract value by means of
- the static approach (Monte Carlo), see \bold{References}. It takes as
- arguments:
-  \describe{
-    \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
-    the point estimates}
-    \item{\code{npaths}}{positive integer with the number of paths to
-    simulate}
-    \item{\code{simulate}}{boolean to specify if the paths should be
-    simulated from scratch, default is TRUE.}
+  the static approach (Monte Carlo), see \bold{References}. It takes as
+  arguments:
+ \describe{
+  \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+   the point estimates}
+  \item{\code{npaths}}{positive integer with the number of paths to
+   simulate}
+  \item{\code{simulate}}{boolean to specify if the paths should be
+   simulated from scratch, default is TRUE.}
   }
  }
  \item{\code{do_mixed}}{Estimates the VA contract by means of
  the mixed approach (Least Squares Monte Carlo), see \bold{References}.
  It takes as arguments:
-  \describe{
-   \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
-    the point estimates}
-    \item{\code{npaths}}{positive integer with the number of paths to
-    simulate}
-    \item{\code{degree}}{positive integer with the maximum degree of
-    the weighted Laguerre polynomials used in the least squares by LSMC}
-    \item{\code{freq}}{string which contains the frequency of the surrender
-    decision. The default is \code{"3m"} which corresponds to deciding every
-    three months if surrendering the contract or not.}
-    \item{\code{simulate}}{boolean to specify if the paths should be
-    simulated from scratch, default is TRUE.}
+ \describe{
+  \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+   the point estimates}
+  \item{\code{npaths}}{positive integer with the number of paths to
+   simulate}
+  \item{\code{degree}}{positive integer with the maximum degree of
+   the weighted Laguerre polynomials used in the least squares by LSMC}
+  \item{\code{freq}}{string which contains the frequency of the surrender
+   decision. The default is \code{"3m"} which corresponds to deciding
+   every three months if surrendering the contract or not.}
+  \item{\code{simulate}}{boolean to specify if the paths should be
+   simulated from scratch, default is TRUE.}
   }
  }
  \item{\code{get_discount}}{Arguments are \code{i,j}.
  Gets the \code{j}-th discount factor corresponding to the \code{i}-th
- simulated path of the discount factors.}
- \item{\code{bases}}{Interface to get Laguerre polynomials of  state variables.
- It is implemented in sub-classes since state variables may differ depending
- on the dynamics of financial and mortality processes.
- For example if we're modeling just the undelying fund as a
- stochastic process (all rest deterministic), the state variable
- process will be just the fund, no need to include interest rate or mortality.
- \cr
- Arguments are:
- \describe{
-  \item{\code{paths}}{numeric vector of indexes of the financial path processes}
-  \item{\code{time}}{numeric scalar with the time index}
-  \item{\code{degree}}{positive scalar with the max degree of the Laguerre
- polynomials}
-  }
- }
+ simulated path of the discount factors. This method must be implemented
+ by sub-classes.}
 }
+}
+\examples{
+#Sets up the payoff as a roll-up of premiums with roll-up rate 1\%
+
+rate <- constant_parameters$new(0.01)
+
+premium <- 100
+rollup <- payoff_rollup$new(premium, rate)
+
+#Ten years time-line
+times <- timeDate::timeSequence(from="2016-01-01", to="2025-12-31")
+
+#Age of the policyholder.
+age <- 60
+# A constant fee of 6\% per year (365 days)
+fee <- constant_parameters$new(0.04)
+
+#Barrier for a state-dependent fee. The fee will be applied only if
+#the value of the account is below the barrier
+barrier <- Inf
+#Withdrawal penalty applied in case the insured surrenders the contract
+penalty <- 0.01
+#Sets up the contract with GMAB guarantee
+contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+#Interest rate
+r <- constant_parameters$new(0.03)
+#Initial value of the underlying fund
+spot <- 100
+#Volatility
+vol <- constant_parameters$new(0.2)
+#Dividend rate
+div <- constant_parameters$new(0.0)
+#Gatherer for the MC point estimates
+the_gatherer <- mc_gatherer$new()
+#Number of paths to simulate
+no_of_paths <- 1e3
+
+#Sets up the pricing engine specifying the va_contract, the interest rate
+#the parameters of the Weibull intensity of mortality, the initial fund
+#value, the volatility and dividends rate
+engine <- va_bs_engine$new(contract, r, c1=90.43, c2=10.36, spot,
+volatility=vol, dividends=div)
+
+#Estimates the contract value by means of the static approach.
+
+engine$do_static(the_gatherer, no_of_paths)
+the_gatherer$get_results()
+
+#Estimates the contract value by means of the mixed approach.
+#To compare with the static approach we won't simulate the underlying
+#fund paths again.
+
+the_gatherer_2 <- mc_gatherer$new()
+
+engine$do_mixed(the_gatherer_2, no_of_paths, degree = 3,
+freq = "3m", simulate = FALSE)
+the_gatherer_2$get_results()
 }
 \references{
 \enumerate{
- \item{\cite{ Bacinello A.R., Millossovich P., Olivieri A., Pitacco  E.,
- "Variable annuities: a unifying valuation approach."
- In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.
-}}
- \item{\cite{Longstaff F.A. e Schwartz E.S. Valuing american options by simulation:
- a simple least-squares approach. In: Review of Financial studies
- 14 (2001), pp. 113-147}}
- }
+ \item{[BMOP2011]}{ \cite{Bacinello A.R., Millossovich P., Olivieri A.
+ ,Pitacco  E., "Variable annuities: a unifying valuation approach."
+ In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.}}
+ \item{[LS2001]}{ \cite{Longstaff F.A. e Schwartz E.S. Valuing
+ american options by simulation: a simple least-squares approach.
+ In: Review of Financial studies 14 (2001), pp. 113-147}}
+}
 }
 \keyword{datasets}
 

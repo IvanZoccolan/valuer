@@ -71,9 +71,11 @@ yr_fractions <- function(times){
 
 #Takes square root if positive otherwise returns zero.
 #To be used with mean reverting squared root processes (CIR SDE)
+#'@export
 sq <- function(x){y = 0;if(x>0){y = sqrt(x);};return(y);}
 
 #Deterministic intensity of mortality ( Weibull )
+#'@export
 mu <-  function(t, x, c1, c2) {(c1^(-c2))*c2*((x + t)^(c2 -1))}
 
 

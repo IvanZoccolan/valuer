@@ -6,81 +6,72 @@
 \title{Generic Variable Annuity  product class}
 \format{\code{\link{R6Class}} object.}
 \usage{
-#Sets up the payoff as a roll-up of premiums with roll-up rate 1%
-
-rate <- constant_parameters$new(0.01)
-
-premium <- 100
-rollup <- payoff_rollup$new(premium, rate)
-
-#Five years time-line
-times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
-age <- 60
-fee <- constant_parameters$new(0.02, 365)
-barrier <- 200
-penalty <- 0.01
-
-#It shouldn't be instantiated as it's a generic contract base class.
 va <- va_product$new(rollup, times, age, fee, barrier, penalty)
 }
 \value{
 Object of \code{\link{R6Class}}
 }
 \description{
-Class providing an interface for a generic VA product object. It inherits from \code{\link{path_dependent}}. \cr This class shouldn't be instantiated but used as base class for implementing  products with contract riders such as GMAB, GMIB, etc.
-It supports a simple state-dependent fee structure with a single barrier. \cr
-See \bold{References} for a description of variable annuities life insurance products, their guarantees and fee structures.
+Class providing an interface for a generic VA product object.
+This class shouldn't be instantiated but used as base class for
+implementing  products with contract riders such as GMAB, GMIB, etc.
+It supports a simple state-dependent fee structure with a single barrier.\cr
+See \bold{References} for a description of variable annuities life
+insurance products, their guarantees and fee structures.
 }
-\section{Fields}{
-
-\describe{
-\item{\code{the_payoff}}{(\code{private}) A \code{\link{payoff_guarantee}} object which stores the type of payoff
-(e.g: roll-up, ratchet, etc).}
-
-\item{\code{the_age}}{(\code{private}) A posite scalar with the age of the insured.}
-
-\item{\code{the_fee}}{(\code{private}) A positive scalar with the annual VA contract fee.}
-
-\item{\code{the_barrier}}{(\code{private}) A positive scalar with the barrier for state-dependent fees.}
-
-\item{\code{the_penalty}}{(\code{private}) A scalar with the withdrawal penalty.
-Must be between 0 and 1.}
-
-\item{\code{times_yrs}}{(\code{private}) A numeric vector with the product time-line in fraction of years}
-}}
 \section{Methods}{
 
  \describe{
-   \item{\code{new}}{Constructor method}
-   \item{\code{get_times}}{get method for the product time-line. Returns a \code{\link{timeDate}} object}
-   \item{\code{get_age}}{get method for the age of the insured}
-   \item{\code{set_age}}{set method for the age of the insured}
-   \item{\code{get_barrier}}{get method for the state=dependent fee barrier. Returns a positive scalar with the barrier}
-   \item{\code{set_barrier}}{set method for the state=dependent fee barrier. Argument must be a positive scalar.}
-   \item{\code{set_penalty}}{set method for the penalty applied in case of surrender. Argument must be a scalar between 0 and 1.}
-   \item{\code{get_penalty}}{get method for the penalty applied in case of surrender. It returns a scalar between 0 and 1.}
-    \item{\code{set_fee}}{set method for the contract fee. The argument is a \code{\link} constant_parameters object with the fee.}
- \item{\code{survival_benefit_times}}{retuns a \code{numeric} vector with the survival benefit time indexes.}
-   \item{\code{surrender_times}}{retuns a \code{numeric} vector with the surrender time indexes. Takes as argument a string with the frequency of the decision if surrendering the contract,  e.g. "3m"  corresponds to a surrender decision taken every 3 months.}
-   \item{\code{times_in_yrs}}{get method for the product time-line in fraction of year}
-   \item{\code{max_number_cfs}}{ returns an \code{integer} with the maximun number of cash flows the product can generate}
-   \item{\code{cash_flow_times}}{retuns a \code{\link{timeDate}} object with the possible cash flow times. Within this base class the method simply returns the product time-line.}
-   \item{\code{cash_flows}}{returns a \code{numeric} vector with the cash flows of the product. It takes as argument \code{spot_values} a \code{numeric} vector which holds the values of the underlying fund this method will calculate the cash flows from}
-   \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to the survival benefit.
-   The arguments are \code{spot_values} vector which holds the values of the underlying fund and
-   \code{t} the time index of the survival benefit. The function will return 0 if there's no survival
-   benefit at the specified time}
-   \item{\code{get_premium}}{Returns the premium as non negative scalar}
+  \item{\code{new}}{Constructor method}
+  \item{\code{get_times}}{get method for the product time-line.
+   Returns a \code{\link{timeDate}} object}
+  \item{\code{get_age}}{get method for the age of the insured}
+  \item{\code{set_age}}{set method for the age of the insured}
+  \item{\code{get_barrier}}{get method for the state-dependent fee barrier.
+   Returns a positive scalar with the barrier}
+  \item{\code{set_barrier}}{set method for the state-dependent fee barrier.
+    Argument must be a positive scalar.}
+  \item{\code{set_penalty}}{set method for the penalty applied in case of
+   surrender. Argument must be a scalar between 0 and 1.}
+  \item{\code{get_penalty}}{get method for the penalty applied in case of
+    surrender. It returns a scalar between 0 and 1.}
+  \item{\code{set_fee}}{set method for the contract fee. The argument is
+     a \code{\link{constant_parameters}} object with the fee.}
+  \item{\code{survival_benefit_times}}{returns a \code{numeric} vector with
+   the survival benefit time indexes.}
+  \item{\code{surrender_times}}{returns a \code{numeric} vector with the
+   surrender time indexes. Takes as argument a string with the frequency
+   of the decision if surrendering the contract,  e.g. "3m"
+   corresponds to a surrender decision taken every 3 months.}
+ \item{\code{times_in_yrs}}{returns the product time-line in
+   fraction of year}
+  \item{\code{max_number_cfs}}{returns an \code{integer} with the maximun
+   number of cash flows the product can generate}
+  \item{\code{cash_flow_times}}{returns a \code{\link{timeDate}} object
+   with the possible cash flow times.}
+  \item{\code{cash_flows}}{returns a \code{numeric} vector with the
+   cash flows of the product. It takes as argument \code{spot_values} a
+   \code{numeric} vector which holds the values of the underlying fund this
+   method will calculate the cash flows from}
+  \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to
+   the survival benefit.
+   The arguments are \code{spot_values} vector which holds the values of
+   the underlying fund and \code{t} the time index of the survival benefit.
+   The function will return 0 if there's no survival benefit at the
+   specified time}
+  \item{\code{get_premium}}{Returns the premium as non negative scalar}
 }
 }
 \references{
 \enumerate{
-\item{\cite{ Bacinello A.R., Millossovich P., Olivieri A., Pitacco  E.,
-"Variable annuities: a unifying valuation approach." In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.
+\item{[BMOP2011]}{ \cite{Bacinello A.R., Millossovich P., Olivieri A.,
+ Pitacco  E., "Variable annuities: a unifying valuation approach."
+In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.
 }}
-\item{\cite{Bernard C., Hardy M. and Mackay A. "State-dependent fees for variable
- annuity guarantees." In: Astin Bulletin 44 (2014), pp. 559-585.}}
- }
+\item{[BHM2014]}{ \cite{Bernard C., Hardy M. and Mackay A. "State-dependent
+fees for variable annuity guarantees." In: Astin Bulletin 44 (2014),
+pp. 559-585.}}
+}
 }
 \keyword{datasets}
 

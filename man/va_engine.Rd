@@ -12,36 +12,29 @@ va_engine
 Object of \code{\link{R6Class}}
 }
 \description{
-Class providing an interface for a generic VA pricer engine.\cr
-This class shouldn't be instantiated but used as base class for variable annuity
-pricer engines.  It implements the static approach to estimate the value of a VA
-contract by means of the Monte Carlo method and the mixed approach by means
-of Least Squares Monte Carlo.\cr
-See \bold{References} for a description of the mixed and static approaches and
-Least Squares Monte Carlo.
+Class providing an interface for a generic VA pricing engine.\cr
+This class shouldn't be instantiated but used as base class for
+variable annuity pricing engines.
+The value of the VA contract is estimated by means of the Monte Carlo
+method if the policyholder cannot surrender (the so called "static"
+approach), and by means of Least Squares Monte Carlo in case the
+policyholder can surrender the contract (the "mixed" approach).\cr
+See \bold{References} -\code{[BMOP2011]} for a description of the mixed
+and static approaches and the algorithm implemented by this class,
+\code{[LS2001]} for Least Squares Monte Carlo.
 }
-\section{Fields}{
-
-\describe{
-\item{\code{the_product}}{(\code{private}) A \code{\link{va_product}} object with
-the VA contract.}
-}}
 \section{Methods}{
 
 \describe{
  \item{\code{new}}{Constructor method}
- \item{\code{get_mortality}}{Returns the integrals of the intensity of
- mortality along the product time-line. It is not implemented in
-  this base class.}
  \item{\code{death_time}}{Returns the time of death index. If the
  death doesn't occur during the product time-line it returns the
  last index of the product time-line}
  \item{\code{simulate_financial_paths}}{Simulates \code{npaths} paths
- of the underlying fund of the VA contract and the discount factors (interest
-  rate). This must be implemented in a sub-class.}
- \item{\code{get_fund}}{Gets the \code{i}-th path of the underlying fund where
-  \code{i} goes from 1 to \code{npaths}. This method must be implemented
-  by sub-classes}
+ of the underlying fund of the VA contract and the discount factors
+ (interest rate)}
+ \item{\code{get_fund}}{Gets the \code{i}-th path of the underlying fund
+  where \code{i} goes from 1 to \code{npaths}}
  \item{\code{do_static}}{Estimates the VA contract value by means of
  the static approach (Monte Carlo), see \bold{References}. It takes as
  arguments:
@@ -57,51 +50,35 @@ the VA contract.}
  \item{\code{do_mixed}}{Estimates the VA contract by means of
  the mixed approach (Least Squares Monte Carlo), see \bold{References}.
  It takes as arguments:
-  \describe{
-   \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
-    the point estimates}
-    \item{\code{npaths}}{positive integer with the number of paths to
-    simulate}
-    \item{\code{degree}}{positive integer with the maximum degree of
-    the weighted Laguerre polynomials used in the least squares by LSMC}
-    \item{\code{freq}}{string which contains the frequency of the surrender
-    decision. The default is \code{"3m"} which corresponds to deciding every
-    three months if surrendering the contract or not.}
-    \item{\code{simulate}}{boolean to specify if the paths should be
-    simulated from scratch, default is TRUE.}
+ \describe{
+  \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+   the point estimates}
+  \item{\code{npaths}}{positive integer with the number of paths to
+   simulate}
+  \item{\code{degree}}{positive integer with the maximum degree of
+   the weighted Laguerre polynomials used in the least squares by LSMC}
+  \item{\code{freq}}{string which contains the frequency of the surrender
+   decision. The default is \code{"3m"} which corresponds to deciding
+   every three months if surrendering the contract or not.}
+  \item{\code{simulate}}{boolean to specify if the paths should be
+   simulated from scratch, default is TRUE.}
   }
  }
  \item{\code{get_discount}}{Arguments are \code{i,j}.
  Gets the \code{j}-th discount factor corresponding to the \code{i}-th
  simulated path of the discount factors. This method must be implemented
  by sub-classes.}
- \item{\code{bases}}{Interface to get Laguerre polynomials of  state variables.
- It is implemented in sub-classes since state variables may differ depending
- on the dynamics of financial and mortality processes.
- For example if we're modeling just the undelying fund as a
- stochastic process (all rest deterministic), the state variable
- process will be just the fund, no need to include interest rate or mortality.
- \cr
- Arguments are:
- \describe{
-  \item{\code{paths}}{numeric vector of indexes of the financial path processes}
-  \item{\code{time}}{numeric scalar with the time index}
-  \item{\code{degree}}{positive scalar with the max degree of the Laguerre
- polynomials}
-  }
- }
 }
 }
 \references{
 \enumerate{
- \item{\cite{ Bacinello A.R., Millossovich P., Olivieri A., Pitacco  E.,
- "Variable annuities: a unifying valuation approach."
- In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.
-}}
- \item{\cite{Longstaff F.A. e Schwartz E.S. Valuing american options by simulation:
- a simple least-squares approach. In: Review of Financial studies
- 14 (2001), pp. 113-147}}
- }
+ \item{[BMOP2011]}{ \cite{Bacinello A.R., Millossovich P., Olivieri A.
+ ,Pitacco  E., "Variable annuities: a unifying valuation approach."
+ In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.}}
+ \item{[LS2001]}{ \cite{Longstaff F.A. e Schwartz E.S. Valuing
+ american options by simulation: a simple least-squares approach.
+ In: Review of Financial studies 14 (2001), pp. 113-147}}
+}
 }
 \keyword{datasets}
 

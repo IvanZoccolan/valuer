@@ -13,15 +13,18 @@ Object of \code{\link{R6Class}}
 }
 \description{
 Class providing a variable annuity pricing engine where the underlying
-reference fund and intensity of mortality are specified by an arbitrary
+reference fund and the intensity of mortality are specified by an arbitrary
 system of stochastic differential equations. The simulation is done
-by means of the \code{yuima} package. \cr
+by means of the
+\href{https://CRAN.R-project.org/package=yuima}{yuima} package. \cr
 The value of the VA contract is estimated by means of the Monte Carlo
 method if the policyholder cannot surrender (the so called "static"
 approach), and by means of Least Squares Monte Carlo in case the
 policyholder can surrender the contract (the "mixed" approach).\cr
-See \bold{References} for a description of the mixed and static approaches,
-Least Squares Monte Carlo and \code{yuima}.
+See \bold{References} -\code{[BMOP2011]} for a description of the mixed
+and static approaches and the algorithm implemented by this class,
+\code{[LS2001]} for Least Squares Monte Carlo and \code{[YUIMA2014]}
+for \code{yuima}.
 }
 \section{Methods}{
 
@@ -85,7 +88,7 @@ Least Squares Monte Carlo and \code{yuima}.
 \examples{
 #Sets up the payoff as a roll-up of premiums with roll-up rate 2\%
 
-rate <- constant_parameters$new(0.01)
+rate <- constant_parameters$new(0.02)
 
 premium <- 100
 rollup <- payoff_rollup$new(premium, rate)
@@ -96,12 +99,12 @@ times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
 #Age of the policyholder.
 age <- 60
 # A constant fee of 2\% per year (365 days)
-fee <- constant_parameters$new(0.02, 365)
+fee <- constant_parameters$new(0.02)
 
 #Barrier for a state-dependent fee. The fee will be applied only if
 #the value of the account is below the barrier
 barrier <- 200
-#Withdrawal penalty applied in case the insured surrenders the contract.
+#Withdrawal penalty applied in case the insured surrenders the contract
 penalty <- 0.02
 #Sets up the contract with GMAB guarantee
 contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
@@ -110,17 +113,18 @@ contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
 the_gatherer  <- mc_gatherer$new()
 no_of_paths <- 100
 
+#Sets up the pricing engine
 engine <- va_sde_engine$new(contract, financials_BMOP2011,
 mortality_BMOP2011)
 
-#Estimates the contract value by means of the static approach.
+#Estimates the contract value by means of the static approach
 
 engine$do_static(the_gatherer, no_of_paths)
 the_gatherer$get_results()
 
 
-#Estimates the contract value by means of the mixed approach.
-#To compare with the static approach we won't simulate the underlying
+#Estimates the contract value by means of the mixed approach
+#To compare with the static approach we don't simulate the underlying
 #fund paths again.
 
 the_gatherer_2 <- mc_gatherer$new()
@@ -131,7 +135,7 @@ the_gatherer_2$get_results()
 }
 \references{
 \enumerate{
- \item{[BMOP201]}{ \cite{Bacinello A.R., Millossovich P., Olivieri A.
+ \item{[BMOP2011]}{ \cite{Bacinello A.R., Millossovich P., Olivieri A.
  ,Pitacco  E., "Variable annuities: a unifying valuation approach."
  In: Insurance: Mathematics and Economics 49 (2011), pp. 285-297.}}
  \item{[LS2001]}{ \cite{Longstaff F.A. e Schwartz E.S. Valuing

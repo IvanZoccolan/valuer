@@ -12,23 +12,24 @@ payoff_guarantee
 Object of \code{\link{R6Class}}
 }
 \description{
-Class providing an interface for guarantee payoff objects. This class shouldn't be instantiated but used as
-base class for more specialized implementations such as a roll-up or ratchet payoff classes.
+Class providing an interface for guarantee payoff objects.
+This class shouldn't be instantiated but used as base class
+for more specialized implementations such as a roll-up or
+ratchet payoff classes.
 }
-\section{Fields}{
-
-\describe{
-\item{\code{the_premium}}{(\code{private}) A \code{numeric} which stores the premium.}
-}}
 \section{Methods}{
 
  \describe{
-  \item{\code{new} (\code{public})}{Initialize method. The argument is  a non negative scalar
-   with the premium.}
-  \item{\code{set_premium} (\code{public})}{Sets the the_premium private field.
-   The argument is a non negative scalar}
-  \item{\code{get_premium} (\code{public})}{Returns the premium as non negative scalar}
-  \item{\code{get_payoff} (\code{public})}{Gets a zero payoff in this base class.The arguments are a \code{numeric} vector with the amounts and a vector of \code{\link{timeDate}} objects to calculate the payoff}
+  \item{\code{new} (\code{public})}{Initialize method.
+  The argument is a non negative scalar with the premium.}
+  \item{\code{set_premium} (\code{public})}{Stores the
+  premium in a private field. The argument is a non negative scalar}
+  \item{\code{get_premium} (\code{public})}{Returns the premium
+  as non negative scalar}
+  \item{\code{get_payoff} (\code{public})}{Gets a zero payoff in this
+   base class.The arguments are a \code{numeric} vector with
+   the amounts and a vector of \code{\link{timeDate}}
+   objects to calculate the payoff}
 }
 }
 \keyword{datasets}
