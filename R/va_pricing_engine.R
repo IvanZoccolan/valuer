@@ -509,7 +509,7 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
   #numeric vector with the standard_deviations of the
   #underlying fund
   standard_deviations = "numeric",
-  #numeric vector with the variates
+  #A numeric vector holding the simulated standard normal values
   variates = "numeric",
   #numeric scalar with the initial value of the underlying fund
   spot = "numeric",

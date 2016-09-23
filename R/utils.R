@@ -43,14 +43,21 @@ is_between <- function(x,lower,upper, ...) tryCatch(isTRUE(x >= lower) & isTRUE(
 
 #Error messages
 
-error_msg_1 <- function(object) paste("argument must be a ", object, " object\n")
-error_msg_2 <- function(object) paste("arguments must be ", object, " objects\n")
-error_msg_3 <- "argument must be a positive scalar\n"
-error_msg_4 <- function(arg) paste("argument", arg, "must be a positive integer\n")
-error_msg_5 <- function(arg) paste("argument", arg, "must be a numeric scalar\n")
+error_msg_1 <- function(object) paste("Argument must be a ", object, " object\n")
+error_msg_2 <- function(object) paste("Arguments must be ", object, " objects\n")
+error_msg_3 <- "Argument must be a positive scalar\n"
+error_msg_3_ <- function(arg) paste("Argument ", arg, " must be a positive scalar\n")
+error_msg_1_ <- function(arg, object) paste("Argument ", arg, "must be a ",
+                                            object, "object\n")
+error_msg_4 <- function(arg) paste("argument", arg, "must be a positive
+                                   integer\n")
+error_msg_5 <- function(arg) paste("Argument ", arg, " must be a numeric
+                                   scalar\n")
 error_msg_6 <- "The delivery time should be one of the possible product dates\n"
-error_msg_7 <- function(arg) paste("argument", arg, "must be a non negative scalar\n")
-error_msg_8 <- function(arg) paste("argument", arg, "must be between 0 and 1\n")
+error_msg_7 <- function(arg) paste("Argument ", arg, " must be a non negative
+                                   scalar\n")
+error_msg_8 <- function(arg) paste("Argument ", arg, " must be between 0 and 1\n")
+error_msg_9 <- function(arg) paste("Argument ", arg, " must be a numeric vector")
 
 
 

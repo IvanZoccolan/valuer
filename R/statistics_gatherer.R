@@ -10,9 +10,8 @@
 
 
 gatherer <-  R6::R6Class("gatherer",
-  public = list( dump_result = function(result) {},
+ public = list( dump_result = function(result) {},
                  get_results = function() {})
-
 )
 
 
@@ -49,13 +48,10 @@ mc_gatherer  <- R6::R6Class("mc_gatherer", inherit = gatherer,
               se  =  sd(private$values) / sqrt(length(private$values))
    )},
   convergence_table = function(){
-   if(!is.null(private$conv_table)) private$conv_table
-   else {
     cum_mean <- cumsum(private$values) / seq_along(private$values)
     cum_se <- cumsd(private$values) / sqrt(seq_along(private$values))
     private$conv_table <- data.frame(mean = cum_mean, se = cum_se)
     private$conv_table
-   }
   },
   path_done = function() length(private$values)
  ),
