@@ -46,14 +46,14 @@ exotic_engine <- R6Class("exotic_engine",
    if(!missing(product))
     if (inherits(product, "path_dependent")){
      private$the_product <- product
-    } else stop(error_msg_1(" path_dependent"))
-   else stop(error_msg_1(" path_dependent"))
+    } else stop(error_msg_1_("product", "path_dependent"))
+   else stop(error_msg_1_("product", "path_dependent"))
 
    if(!missing(interest))
     if(inherits(interest, "parameters")){
      private$r <- interest
-     } else stop(error_msg_1("parameters"))
-   else stop(error_msg_1("parameters"))
+     } else stop(error_msg_1_("interest", "parameters"))
+   else stop(error_msg_1_("interest", "parameters"))
   },
   get_one_path = function(){},
   run_simulation = function(the_gatherer, number_of_paths){

@@ -65,20 +65,20 @@ exotic_bs_engine <- R6::R6Class("exotic_bs_engine", inherit= exotic_engine,
      private$drifts <- numeric(private$no_time_intervals)
      private$standard_deviations <- numeric(private$no_time_intervals)
      private$variates <- numeric(private$no_time_intervals)
-    } else stop(error_msg_1("path_dependent"))
-    else stop(error_msg_1("path_dependent"))
+    } else stop(error_msg_1_("product", "path_dependent"))
+    else stop(error_msg_1_("product", "path_dependent"))
 
    if(!missing(interest))
     if(inherits(interest, "parameters")){
      private$r <- interest
-    } else stop(error_msg_1("parameters"))
-    else stop(error_msg_1("parameters"))
+    } else stop(error_msg_1_("interest", "parameters"))
+    else stop(error_msg_1_("interest", "parameters"))
 
    if(!missing(spot))
     if (is_positive_scalar(spot)){
      private$spot <- spot
-    } else stop(error_msg_3)
-   else stop(error_msg_3)
+    } else stop(error_msg_3_("spot"))
+   else stop(error_msg_3_("spot"))
 
    if(!missing(volatility) & !missing(dividends)){
     if(inherits(volatility, "parameters") & inherits(dividends, "parameters")){

@@ -32,8 +32,6 @@ Monte Carlo simulation.
 This function is a simple
 \href{https://en.wikipedia.org/wiki/Monte_Carlo_method}{Monte Carlo} routine
 to estimate the value of an european derivative.
-It's a porting from C++ code by M. Joshi  published in his
-C++ Design Patterns and Derivatives Pricing
 }
 \examples{
 the_gatherer <- mc_gatherer$new()
@@ -50,5 +48,10 @@ monte_carlo(call_option, spot = 100, vol_param, r_param, path_num = 1e4,
 the_gatherer)
 
 the_gatherer$get_results()
+}
+\references{
+It's a porting from C++ code in \cr
+M. S. Joshi. 2008. C++ Design Patterns and Derivatives Pricing (2nd ed.).
+Cambridge University Press, New York, NY, USA.
 }
 

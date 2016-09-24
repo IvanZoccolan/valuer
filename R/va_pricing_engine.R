@@ -75,7 +75,6 @@
 #' @importFrom orthopolynom laguerre.polynomials
 #' @importFrom polynom polynomial
 #' @importFrom RcppEigen fastLmPure
-#' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:
@@ -141,8 +140,8 @@ va_engine <- R6Class("va_engine",
    if(!missing(product))
     if (inherits(product, "va_product")) {
      private$the_product <- product
-    } else stop(error_msg_1(" va_product"))
-   else stop(error_msg_1(" va_product"))
+    } else stop(error_msg_1_("product", "va_product"))
+   else stop(error_msg_1_("product", "va_product"))
 
   },
   simulate_mortality_paths = function(npaths){
@@ -424,14 +423,14 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
      private$drifts <- numeric(private$no_time_intervals)
      private$standard_deviations <- numeric(private$no_time_intervals)
      private$variates <- numeric(private$no_time_intervals)
-    } else stop(error_msg_1("va_product"))
-   else stop(error_msg_1("va_product"))
+    } else stop(error_msg_1_("product", "va_product"))
+   else stop(error_msg_1_("product", "va_product"))
 
    if(!missing(interest))
     if(inherits(interest, "parameters")){
      private$r <- interest
-    } else stop(error_msg_1("parameters"))
-   else stop(error_msg_1("parameters"))
+    } else stop(error_msg_1_("interest", "parameters"))
+   else stop(error_msg_1_("interest", "parameters"))
 
    if(!missing(c1))
     if (is_positive_scalar(c1))
@@ -448,8 +447,8 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
    if(!missing(spot))
     if (is_positive_scalar(spot)){
      private$spot <- spot
-    } else stop(error_msg_3)
-   else stop(error_msg_3)
+    } else stop(error_msg_3_("spot"))
+   else stop(error_msg_3_("spot"))
 
    if(!missing(volatility) & !missing(dividends)){
     if(inherits(volatility, "parameters") & inherits(dividends, "parameters")){

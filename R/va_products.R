@@ -114,7 +114,7 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
      private$times <- prod_times
      # Normalizes the product time line into year fractions
      private$times_yrs <- yr_fractions(prod_times)
-     } else stop(error_msg_1("timeSequence"))
+     } else stop(error_msg_1_("prod_times", "timeSequence"))
    #The default is a five year time sequence.
    else {
     t <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
@@ -128,12 +128,12 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
    else private$the_age <- 60
    if (!missing(fee))
     if(inherits(fee, "constant_parameters")) private$the_fee <- fee
-    else stop(error_msg_1("constant_parameters"))
+    else stop(error_msg_1_("fee", "constant_parameters"))
    else private$the_fee <- constant_parameters$new(0.02, 365)
 
    if (!missing(barrier))
     if (is_positive_scalar(barrier)) private$the_barrier <- barrier
-    else stop(error_msg_3)
+    else stop(error_msg_3_("barrier"))
    else private$the_barrier <- Inf
 
    if (!missing(penalty))
@@ -153,7 +153,7 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
   set_barrier = function(barrier) {
    if (!missing(barrier))
     if (is_positive_scalar(barrier)) private$the_barrier <- barrier
-    else stop(error_msg_3)
+    else stop(error_msg_3_("barrier"))
    else private$the_barrier <- Inf
   },
   get_penalty = function() private$the_penalty,
@@ -166,7 +166,7 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
   set_fee = function(fee){
     if (!missing(fee))
       if(inherits(fee, "constant_parameters")) private$the_fee <- fee
-      else stop(error_msg_1("constant_parameters"))
+      else stop(error_msg_1_("fee", "constant_parameters"))
       else private$the_fee <- constant_parameters$new(0.02, 365)
   },
   times_in_yrs = function() private$times_yrs,
@@ -445,7 +445,7 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
    if (!missing(death_payoff))
      if (inherits(death_payoff, "payoff_guarantee"))
      private$the_death_payoff <- death_payoff
-     else stop(error_msg_1("payoff_guarantee"))
+     else stop(error_msg_1_("death_payoff", "payoff_guarantee"))
    else stop("Please provide a guarantee payoff object\n")
    },
   cash_flows = function(spot_values, death_time){

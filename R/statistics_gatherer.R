@@ -41,7 +41,7 @@ mc_gatherer  <- R6::R6Class("mc_gatherer", inherit = gatherer,
   initialize = function(){ private$values <- 0.0 },
   dump_result = function(result){
    if (inherits(result, "numeric")) private$values <- result
-   else stop("result must be a numeric vector\n")
+   else stop(error_msg_9("result"))
   },
   get_results = function(){
    data.frame(mean = mean(private$values),
