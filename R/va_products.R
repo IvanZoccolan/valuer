@@ -1,31 +1,29 @@
-#Implementation of VA products.
-#
+
 ######################### DESIGN COMMENTS ######################################
+#Implementation of VA products
 #
-#The path_dependent class will be the base class of a VA product
+#The path_dependent class is the base class of a VA product
 #A new path_dependent subclass is needed for each VA contract rider
-#For example we will have a specialized GMAB path_dependent class for VA with
+#For example we have a specialized GMAB path_dependent class for VA with
 #GMAB rider, etc.
-#Will implement GMAB, GMDB and GMAB + GMDB first. Will leave GMIB, GMIB + GMDB,
-#GMWB for a later stage.
 #A base class for riders is needed to make a standard interface as each product
-#will have to store the same info such as fee,
-#barrier (for state-dependent fees), penalties for withdrawals,
-#type of gurantee payoff (rollup / ratchet).
+#has to store the same info such as fee, barrier (for state-dependent fees),
+#penalties for withdrawals, type of guarantee payoff (rollup / ratchet).
 #A roll-up payoff or ratchet payoff object will be passed into the initialize
 #of the product.
-#The cash_flows method will return all possible  cash_flows, so withdrawal in case
-#the insured surrenders the contract or if there's a GMWB rider as well as other
-#living / death benefits depending on the riders.
+#The cash_flows method returns all possible  cash_flows, so withdrawal in case
+#the insured surrenders the contract or if there's a GMWB rider
+#as well as other living / death benefits depending on the riders.
 #The engine will use the cash_flows depending if we're doing static or mixed
 #The cash flows will be saved in private field of the engine.
-#To calculate the cash flows we need first to calcualte the account of the insured
-#The formula which calculates the account cannot be vectorized since each value
-#dependends on the previuos one.
+#To calculate the cash flows we need first to calculate the account of the
+#insured. The formula which calculates the account cannot be vectored since
+#each value depends on the previous one.
 #So for performance reasons it is implemented in C++ and interfaced with Rcpp
-#This is the calc_account function
-#Two public methods will return the times of survival benifit payments,
-#the possible surrender times
+#This is the calc_account function.
+#Two public methods will return the times of survival benefit payments
+#and the possible surrender times.
+#A public method returns the survival benefit at any given time.
 ##########################DESIGN COMMENTS END###################################
 
 
