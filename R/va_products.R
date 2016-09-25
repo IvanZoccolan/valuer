@@ -21,6 +21,8 @@
 #each value depends on the previous one.
 #So for performance reasons it is implemented in C++ and interfaced with Rcpp
 #This is the calc_account function.
+#A simple state-dependent fee structure with a single barrier is implemented
+#in the calc_account function.
 #Two public methods will return the times of survival benefit payments
 #and the possible surrender times.
 #A public method returns the survival benefit at any given time.

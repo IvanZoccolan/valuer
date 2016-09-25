@@ -1,14 +1,16 @@
 Package: valuer
 Type: Package
-Title: Implements algorithms to price Variable Annuities
-Version: 0.0.0.9000
-Authors@R: person("Ivan", "Zoccolan", email = "ivan.zoccolan@gmail.com", role = c("aut", "cre"))
-Description: An implementation of the static and mixed approach to estimate
-    the value of Variable Annuities Life Insurance contracts via ordinary and
-    least squares Monte Carlo methods. It follows the general framework proposed
-    by Bacinello, Millossovich, Olivieri, Pitacco. It also provides functions to find
-    the fair fee of a VA contract. State-dependent fees are considered.
-License: What license is it under?
+Title: Pricing of  Variable Annuities
+Version: 1.0.0.9000
+Authors@R:
+person("Ivan", "Zoccolan", email = "ivan.zoccolan@gmail.com", role = c("aut", "cre"))
+Description:Provides R6 pricing engines for Variable Annuities life insurance
+contracts. These engines implement different models to simulate the financial and
+demographic sources of risk. A simple Monte Carlo method is used to price the contract
+in case the policyholder cannot surrender while Least Squares Monte Carlo is used if
+the insured can surrender. A state-dependent fee structure with single barrier
+is also implemented.
+License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Depends: R (>= 3.2.5)
