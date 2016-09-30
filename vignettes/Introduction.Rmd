@@ -1,0 +1,291 @@
+---
+title: "Introduction to valuer"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Introduction to valuer}
+  %\usepackage[utf8]{inputenc}
+---
+
+This document introduces  to valuer and shows how to use its classes and methods to price variable annuity contracts by means of Monte Carlo methods.  
+The term variable annuities refers to a wide range of life insurance products whose benefits can be protected by guarantees. A variable annuity is backed by a unit-linked fund and the guarantees are financed by a fee deducted from the account on a yearly basis. The reader may refer to [BMOP2011](#BMOP2011) for a description of variable annuity contracts. 
+The package valuer is written using [R6](https://cran.r-project.org/web/packages/R6/vignettes/Introduction.html) and comes with classes which can be used to describe the variable annuity contracts and other classes, called pricing engines, which are used to price those contracts.
+The idea is that the information about the policyholder and the contract riders is kept by an object of a specific  "product" class  while the "engine" knows about the financial and demographic risks so that it can run the Monte Carlo simulations. You can plug the product object  into the engine  and get a price for it by means of the engine's public methods. To run the simulation the engine will get the information it needs from the product object through its interface.  
+In order to read through this vignette the reader should probably have a basic understanding of variable annuities even though some terminology is recalled here. On the contrary,  it is not necessary to know about programming with R6 and it should be enough to read the examples to learn  how to use valuer classes.
+
+## Product classes ##
+A variable annuity (VA) contract is backed by a unit link fund which we assume to be  financed by a single premium at issue time. In fact,  valuer is implemented with this single premium setup in mind. The VA contract offers guarantees on the policy account value which are referred to by the acronym GMxB or Guaranteed Minimum Benefit of type X. Specifically, they are:
+
+* Guaranteed Minimum Death Benefits (GMDB)
+* Guaranteed Minimum Accumulation Benefits (GMAB)
+* Guaranteed Minimum Income Benefits (GMIB)
+* Guaranteed Minimum Withdrawal Benefits (GMWB). 
+
+It is possible to combine these guarantees and for example have both a GMAB and GMDB rider with the same variable annuity contract. 
+Valuer has classes to represent a variable annuity contract whose names reflect the contractual riders, so for example the class GMAB (see ?GMAB)  represents a contract with the GMAB rider and the class GMAB\_GMDB (see ?GMAB\_GMDB) represents a VA contract with both the GMAB and the GMDB riders. The list of the VA product classes currently developed is the following: 
+
+* GMAB
+* GMAB_GMDB. 
+
+
+### Payoff of guarantees ###
+
+The above classes need  to be passed during initialization a guarantee\_payoff class object. For example a payoff\_rollup class is a type of guarantee_payoff (a sub class actually) which represents a payoff which is the maximum between the account value at the time of the payment and the rollup of the premium at a given rate from issue time till the time of the payment. Currently the payoff classes implemented are: 
+
+* payoff_rollup
+
+So let's begin by initializing a  payoff_rollup object  after choosing a 2% yearly roll-up rate  and a single premium of $100 to finance the underlying fund of the policy:
+
+```{r}
+library(valuer)
+library(orthopolynom)
+
+rate <- constant_parameters$new(0.02)
+
+premium <- 100
+
+```
+
+Above we have instantiated a constant\_parameters (?constant\_parameters) class object to hold the rollup rate. At this point we pass these info into the initialize (new) method of the payoff_rollup class.
+
+```{r}
+
+rollup <- payoff_rollup$new(premium, rate)
+
+```
+
+We now have an object of class payoff_rollup called rollup. If we want to see what is the payoff of a contract starting 2016-01-01 with expiration on 2020-12-31 assuming the account value is 108 at expiration we can type:
+```{r}
+
+t1 <- timeDate::timeDate("2016-01-01")
+
+t2 <- timeDate::timeDate("2020-12-31")
+
+rollup$get_payoff(108, c(t1,t2))
+
+
+```
+
+Above the initial time t1 and expiration t2 were defined as timeDate (?timeDate) objects. The public method get_payoff of the rollup object is passed the account value and a vector with these times to get the payoff. It's clear in this case the roll up of premium from 2016-01-01 to 2016-12-31 was payed since greater than the account value.
+
+### Contract fees ###
+
+To finance the guarantees a fee is deducted from the policy account on a yearly basis.
+As said,  in valuer an object of a VA product class holds all info about the contract and the policyholder. So in order to initialize an object representing a VA contract we need to pass the fee to the new method of this object. In addition, since valuer implements a simple state-dependent fee structure where the fee is payed only when the account is below a certain barrier, we would need to pass the value of that barrier as well. In case a barrier is not provided, the fee is assumed to be fixed (not state-dependent).
+
+```{r}
+
+# A constant fee of 2% per year
+fee <- constant_parameters$new(0.02)
+
+#Barrier for a state-dependent fee. The fee will be applied only if
+#the value of the account is below the barrier
+barrier <- 200
+
+```
+
+### Surrender guarantee ###
+
+A VA contract may embed a surrender guarantee in case the policyholder is allowed to surrender the contract. Usually in this case a penalty is applied and the amount withdrawn would be the account value at the time of surrender multiplied by the penalty.
+
+```{r}
+#Withdrawal penalty applied in case the insured surrenders the contract
+penalty <- 0.01
+
+```
+
+### Initializing a VA product object ###
+
+We now need to set the time-line of the product, the age of the insured when the contract is issued and pass all other contractual features discussed above. For example if we want to set up a VA with a GMAB rider: 
+
+```{r}
+#Five years time-line
+times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+
+age <- 60
+
+
+#Sets up a VA contract with GMAB guarantee.
+contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+
+```
+
+The contract fee, state-dependent fee barrier, initial age of the insured, withdrawal penalty can be changed later on by means of the corresponding set methods. Their values can be checked using the get methods: 
+
+```{r}
+
+contract$set_age(50)
+contract$get_age()
+
+contract$set_barrier(200)
+contract$get_barrier()
+
+contract$set_penalty(0.02)
+contract$get_penalty()
+
+contract$set_fee(constant_parameters$new(0.03))
+
+```
+These set methods are useful when we want to get estimates of the contract value corresponding to different feature of the contract but using the same simulated paths.  As an example of this usage scenario, the set_fee method would be called repeatedly while estimating the fair fee of a contract.  
+
+## Pricing engines ##
+
+Now that we have a VA product  we just need to set up the pricing engine to price it. As said above the engines have the info about the financial and demographic risk factors  needed to run the Monte Carlo simulation. Concretely, the engines implement models for the underlying risk neutral  unit-link fund, the spot interest rate (financial risk factors) and the intensity of mortality (demographic risk). Currently valuer provides the following engine classes:  
+
+va_bs_engine  
+: With this engine the underlying fund is modeled with a geometric Brownian motion,
+  the interest rate is  constant and the intensity of mortality is modeled 
+  by the Weibull intensity of mortality function.
+    
+va_sde_engine  
+: With this engine the  underlying fund, interest rate and intensity of mortality are 
+  specified by two arbitrary systems of stochastic differential equations. It is 
+  assumed that financial and demographic processes are independent. 
+    
+
+### Pricing with va_bs_engine ###
+
+In order to set up a va_bs_engine class object we need to pass to its new method the constant interest rate, parameters to specify the geometric Brownian motion and parameters for the Weibull intensity of mortality function, these are:  
+
+Financial parameters  
+: the constant volatility, constant dividend rate and initial value of the fund.
+  Volatility and dividend rate must be passed as constant_parameters objects, while
+  the initial value is a scalar and usually  set equal to the single premium.
+  It has to be noted that the volatility and dividend parameters should be obtained by 
+  calibrating the GBM model against real VA market data. 
+    
+Mortality parameters  
+: Two scalar parameters are needed called c1 and c2. 
+  These should be calculated by fitting the survival probabilities obtained by 
+  a life table of the population our insured belongs to.
+
+Of course, besides the above parameters, we need to pass the VA product object initialized previously.
+
+
+```{r}
+
+#Interest rate
+r <- constant_parameters$new(0.03)
+
+#Initial value of the underlying fund
+spot <- premium
+
+#Volatility
+vol <- constant_parameters$new(0.2)
+
+#Dividend rate
+div <- constant_parameters$new(0.0)
+
+#Sets up the pricing engine specifying the va_contract, the interest rate
+#the parameters of the Weibull intensity of mortality, the initial fund
+#value, the volatility and dividends rate
+engine <- va_bs_engine$new(contract, r, c1=90.43, c2=10.36, spot,
+volatility=vol, dividends=div)
+```
+
+Now that we have an engine we can use its public methods *do_static* and *do_mixed* to price the contract.
+While do\_static assumes the policyholder cannot surrender the contract, do\_mixed assumes the possibility of surrendering the contract. We need to pass to these methods the number of Monte Carlo simulations we want to run and a mc\_gatherer object (see ?mc\_gatherer). The mc\_gatherer holds the point estimates of each Monte Carlo run and has methods to print the final estimate and Monte Carlo standard error and a convergence table. Finally it is possible to call plot on the  mc_gatherer object to produce a Monte Carlo convergence graph.  
+
+```{r, echo = FALSE}
+
+set.seed(1)
+
+```
+
+
+```{r, cache = TRUE}
+
+#Number of paths to simulate
+no_of_paths <- 1e3
+
+#Gatherer for the MC point estimates
+the_gatherer <- mc_gatherer$new()
+
+engine$do_static(the_gatherer, no_of_paths)
+the_gatherer$get_results()
+
+```
+
+By means of the method *do_mixed* it is possible to estimate the value of the contract with the assumption the policyholder can surrender the contract. This is similar to estimate the value of an American derivative by means of Least Squares Monte Carlo. In fact, the algorithm of do_mixed is a slightly modified LSMC procedure to take into account the demographic risk as outlined in [BMOP2011](#BMOP2011). Therefore, besides the number of simulations and the gatherer, we need to pass parameters relevant to LSMC:  
+
+* *degree* - the maximun degree of the Laguerre polynomials used by least squares in LSMC.
+  The default value is three,
+    
+* *freq* - the frequency of the surrender decision. The default is "3m" which corresponds to a surrender 
+    decision taken every three months.
+    
+In addition, we can specify by means of the *simulate* boolean parameter if the simulation of the stochastic processes has to start from scratch or not.  The default is TRUE but should be changed to FALSE in case we want to run  do\_mixed on the same paths used by do\_static.
+
+```{r, cache = TRUE, fig.height = 5, fig.width = 7.15}
+engine$do_mixed(the_gatherer, no_of_paths, degree = 3, freq = "3m", simulate = FALSE)
+
+the_gatherer$get_results()
+
+#Plots the mc_gatherer 
+
+plot(the_gatherer)
+```
+
+### Pricing with va_sde_engine ###
+
+The class va\_sde\_engine leverages on [yuima](https://CRAN.R-project.org/package=yuima) to simulate the process of the underlying fund, interest rate and intensity of mortality. The later is assumed to be independent from the previous two processes. By means of yuima it is possible to specify the stochastic differential equations defining these processes by means of an elegant and natural syntax. This is pretty
+general and flexible however there are some drawbacks since a fairly good knowledge of yuima is required and the run time of the simulation is sensibly increased. 
+The initial setup of a va\_sde\_engine object is far more difficult than the setup of a va\_bs\_engine one. In fact, along with the VA product object we also need to pass two fairly convoluted lists of parameters:
+
+financial_parms  
+: a list with three elements to set up the financial stochastic differential equations in yuima.
+  The first is a list of parameters for the yuima's simulate function. 
+  The second is a list with parameters for the yuima's setModel function. The third element is a vector 
+  with indices indicating the interest rate and log price in the solve.variable argument of setModel.
+
+mortality_parms 
+: a list with three elements to set up the  stochastic differential equations of the intensity of mortality    process in yuima.
+  The first is a list of parameters for the yuima's simulate function. 
+  The second is a list with the parameters for the yuima's setModel function. The third is a vector 
+  with indices indicating the intensity of mortality in  the solve.variable argument of setModel.
+
+Unfortunately it is not straightforward to write these parameter lists and the user will have to carefully review yuima documentation to do so. With regards to that, good references  are [IAC2011](#IAC2011) and [BROU2014](#BROU2014). To provide some examples, valuer comes with two set of parameter lists. The first set, *financials_BMOP2011* and *mortality_BMOP2011*,  initializes yuima with the system of SDEs from [BMOP2011](#BMOP2011) while the second, *financials_BBM2010* and *mortality_BBM2010*, implements the SDEs described in [BBM2010](#BBM2010). These example parameters were derived by the authors of the cited articles by calibrating the financial and demographic risk models using market data and specific life tables. In general, an user of valuer may want to do the same using market data relevant to his/her problem. 
+
+```{r}
+financials_BMOP2011
+
+mortality_BMOP2011
+
+
+```
+
+Given these parameter lists it is possible to set up the pricer by typing
+
+```{r}
+
+engine <- va_sde_engine$new(contract, financials_BMOP2011, mortality_BMOP2011)
+
+
+```
+
+The value of the contract is again estimated by means of the engine *do_static* and *do_mixed* methods
+
+```{r, cache=TRUE}
+
+engine$do_static(the_gatherer, no_of_paths)
+the_gatherer$get_results()
+
+engine$do_mixed(the_gatherer, no_of_paths, degree = 3, freq = "3m", simulate = FALSE)
+the_gatherer$get_results()
+
+```
+
+## References ##
+
+<a name="IAC2011"></a>[IAC2011] Iacus S. M. Option pricing and estimation of financial models with R. John Wiley & Sons, 2011.  
+
+<a name="BROU2014"></a>[BROU2014] Brouste A., Fukasawa M., Hino H., Iacus S., Kamatani K., Koike Y.,
+Masuda H., Nomura R., Ogihara T., Shimuzu Y., Uchida M. e Yoshida
+N. "The YUIMA project: computational framework for simulation and
+inference of stochastic differential equations". In: Journal of Statistical
+Software 57.4 (2014), pp. 1-51. url: http://www.jstatsoft.org/v57/i04/.  
+
+<a name="BMOP2011"></a>[BMOP2011] Bacinello A.R., Millossovich P., Olivieri A. e Pitacco E. "Variable annuities: unifying valuation approach." In: Insurance: Mathematics andEconomics 49 (2011), pp. 285-297.
+
+<a name="BBM2010"></a>[BBM2010] Bacinello A.R., Biffs E. e Millossovich P. "Regression-based algorithms
+for life insurance contracts with surrender guarantees". In: Quantitative Finance 10.9 (2010), pp. 1077-1090.

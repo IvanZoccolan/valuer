@@ -126,8 +126,11 @@
 #'  death doesn't occur during the product time-line it returns the
 #'  last index of the product time-line}
 #'  \item{\code{simulate_financial_paths}}{Simulates \code{npaths} paths
-#'  of the underlying fund of the VA contract and the discount factors
-#'  (interest rate)}
+#'   of the underlying fund of the VA contract and the discount factors
+#'   (interest rate) and saves them into private fields for later use.}
+#'  \item{\code{simulate_mortality_paths}}{Simulates \code{npaths} paths
+#'   of the intensity of mortality and saves them into private fields
+#'   for later use.}
 #'  \item{\code{get_fund}}{Gets the \code{i}-th path of the underlying fund
 #'   where \code{i} goes from 1 to \code{npaths}}
 #'  \item{\code{do_static}}{Estimates the VA contract value by means of
@@ -210,11 +213,11 @@ va_engine <- R6Class("va_engine",
     self$simulate_financial_paths(npaths)
     #Simulates mortality paths
     self$simulate_mortality_paths(npaths)
-    #Simulates times of death
-    private$tau <- sapply(ind, function(i){
-     self$death_time(i)
-    })
-   }
+  }
+
+  #Simulates times of death
+  private$tau <- sapply(ind, function(i){
+    self$death_time(i)})
 
    #Initial cash flow matrix
    cash <- matrix(NA, nrow = npaths, ncol = m)
@@ -242,11 +245,13 @@ va_engine <- R6Class("va_engine",
    self$simulate_financial_paths(npaths)
    #Simulates mortality paths
    self$simulate_mortality_paths(npaths)
+   }
+
    #Simulates times of death
    private$tau <- sapply(ind, function(i){
-     self$death_time(i)
-   })
-   }
+     self$death_time(i)})
+
+
    #Initial cash flow matrix
    cash <- matrix(NA, nrow = npaths, ncol = m)
    for (i in ind){
@@ -341,11 +346,14 @@ va_engine <- R6Class("va_engine",
 #' \describe{
 #'  \item{\code{new}}{Constructor method}
 #'  \item{\code{death_time}}{Returns the time of death index. If the
-#'  death doesn't occur during the product time-line it returns the
-#'  last index of the product time-line}
+#'   death doesn't occur during the product time-line it returns the
+#'   last index of the product time-line}
 #'  \item{\code{simulate_financial_paths}}{Simulates \code{npaths} paths
-#'  of the underlying fund of the VA contract and the discount factors
-#'  (interest rate)}
+#'   of the underlying fund of the VA contract and the discount factors
+#'   (interest rate) and saves them into private fields for later use.}
+#'  \item{\code{simulate_mortality_paths}}{Simulates \code{npaths} paths
+#'   of the intensity of mortality and saves them into private fields
+#'   for later use.}
 #'  \item{\code{get_fund}}{Gets the \code{i}-th path of the underlying fund
 #'   where \code{i} goes from 1 to \code{npaths}}
 #'  \item{\code{do_static}}{Estimates the VA contract value by means of

@@ -98,7 +98,7 @@
 #' pp. 559-585.}}
 #' }
 #'@usage
-#'va <- va_product$new(rollup, times, age, fee, barrier, penalty)
+#'va_product$new(payoff, prod_times, age, fee, barrier, penalty)
 
 
 va_product <- R6::R6Class("va_product",  inherit = path_dependent,
@@ -260,7 +260,7 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
   #' pp. 559-585.}}
 #' }
 #'@usage
-#'contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+#'GMAB$new(payoff, prod_times, age, fee, barrier, penalty)
 #'@examples
 #'#Sets up the payoff as a roll-up of premiums with roll-up rate 1%
 #'
@@ -411,7 +411,7 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #' pp. 559-585.}}
 #' }
 #'@usage
-#'contract <- GMAB_GMDB$new(rollup, times, age, fee, barrier, penalty, rollup)
+#'GMAB_GMDB$new(payoff, prod_times, age, fee, barrier, penalty, death_payoff)
 #'@examples
 #'#Sets up the payoff as a roll-up of premiums with roll-up rate 1%
 #'

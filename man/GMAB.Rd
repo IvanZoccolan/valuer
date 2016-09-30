@@ -6,7 +6,7 @@
 \title{Variable Annuity with GMAB guarantee}
 \format{\code{\link{R6Class}} object.}
 \usage{
-contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+GMAB$new(payoff, prod_times, age, fee, barrier, penalty)
 }
 \value{
 Object of \code{\link{R6Class}}

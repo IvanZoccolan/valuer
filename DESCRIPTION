@@ -1,15 +1,14 @@
 Package: valuer
 Type: Package
-Title: Pricing of  Variable Annuities
+Title: Pricing of  variable annuities
 Version: 1.0.0.9000
-Authors@R:
-person("Ivan", "Zoccolan", email = "ivan.zoccolan@gmail.com", role = c("aut", "cre"))
-Description:Provides R6 pricing engines for Variable Annuities life insurance
-contracts. These engines implement different models to simulate the financial and
-demographic sources of risk. A simple Monte Carlo method is used to price the contract
-in case the policyholder cannot surrender while Least Squares Monte Carlo is used if
-the insured can surrender. A state-dependent fee structure with single barrier
-is also implemented.
+Authors@R: person("Ivan", "Zoccolan", email = "ivan.zoccolan@gmail.com", role = c("aut", "cre"))
+Description: Provides R6 pricing engines for variable annuities life insurance
+    contracts. These engines implement different models to simulate the
+    financial and demographic sources of risk. A simple Monte Carlo method
+    is used to price the contract in case the policyholder cannot surrender
+    while Least Squares Monte Carlo is used if the insured can surrender.
+    A state-dependent fee structure with single barrier is also implemented.
 License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1
@@ -20,5 +19,8 @@ Imports: R6 (>= 2.1.2),
     timeDate (>= 3012.100),
     ggplot2 (>= 2.1.0)
 Suggests: testthat,
-    yuima (>= 1.1.6)
+    yuima (>= 1.1.6),
+    knitr,
+    rmarkdown
 LinkingTo: Rcpp
+VignetteBuilder: knitr

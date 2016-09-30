@@ -6,7 +6,7 @@
 \title{Generic Variable Annuity  product class}
 \format{\code{\link{R6Class}} object.}
 \usage{
-va <- va_product$new(rollup, times, age, fee, barrier, penalty)
+va_product$new(payoff, prod_times, age, fee, barrier, penalty)
 }
 \value{
 Object of \code{\link{R6Class}}

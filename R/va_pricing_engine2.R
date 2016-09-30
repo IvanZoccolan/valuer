@@ -45,9 +45,10 @@
 #'  last index of the product time-line.}
 #'  \item{\code{simulate_financial_paths}}{Simulates \code{npaths} paths
 #'  of the underlying fund of the VA contract and the discount factors
-#'  (interest rate).}
+#'  (interest rate) and saves them into private fields for later use.}
 #'  \item{\code{simulate_mortality_paths}}{Simulates \code{npaths} paths
-#'  of the intensity of mortality}
+#'  of the intensity of mortality and saves them into private fields
+#'  for later use.}
 #'  \item{\code{get_fund}}{Gets the \code{i}-th path of the underlying fund
 #'  where \code{i} goes from 1 to \code{npaths}.}
 #'  \item{\code{do_static}}{Estimates the VA contract value by means of
