@@ -8,3 +8,4 @@ valuer.Rproj
 packrat
 .Rbuildignore
 inst/doc
+vignettes/Introduction_cache

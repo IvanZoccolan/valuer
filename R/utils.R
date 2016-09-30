@@ -55,8 +55,12 @@ error_msg_7 <- function(arg) paste("Argument", arg, "must be a non negative scal
 error_msg_8 <- function(arg) paste("Argument", arg, "must be between 0 and 1")
 error_msg_9 <- function(arg) paste("Argument", arg, "must be a numeric vector")
 
-
-
+error_msg_10 <- function() {
+                  msg1 <- "Allowed units are"
+                  msg2 <- "\"m\" for 4 weeks, \"w\" for weeks,"
+                  msg3 <- "\"d\" for days"
+                  paste(msg1, msg2, msg3)
+}
 
 #' Normalizes a timeDate sequence into year fractions
 #'@param times A \code{\link{timeDate}} sequence

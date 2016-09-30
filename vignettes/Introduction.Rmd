@@ -25,6 +25,7 @@ It is possible to combine these guarantees and for example have both a GMAB and 
 Valuer has classes to represent a variable annuity contract whose names reflect the contractual riders, so for example the class GMAB (see ?GMAB)  represents a contract with the GMAB rider and the class GMAB\_GMDB (see ?GMAB\_GMDB) represents a VA contract with both the GMAB and the GMDB riders. The list of the VA product classes currently developed is the following: 
 
 * GMAB
+* GMDB
 * GMAB_GMDB. 
 
 
@@ -32,7 +33,11 @@ Valuer has classes to represent a variable annuity contract whose names reflect 
 
 The above classes need  to be passed during initialization a guarantee\_payoff class object. For example a payoff\_rollup class is a type of guarantee_payoff (a sub class actually) which represents a payoff which is the maximum between the account value at the time of the payment and the rollup of the premium at a given rate from issue time till the time of the payment. Currently the payoff classes implemented are: 
 
-* payoff_rollup
+* payoff_rollup  
+    The payoff will be the highest between the account value and 
+    the roll-up of the premium at a given rate,
+* payoff_ratchet  
+    The payoff will be the highest account value recorded at some specified times. 
 
 So let's begin by initializing a  payoff_rollup object  after choosing a 2% yearly roll-up rate  and a single premium of $100 to finance the underlying fund of the policy:
 
