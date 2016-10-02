@@ -6,7 +6,7 @@
 \title{Call option payoff}
 \format{\code{\link{R6Class}} object.}
 \usage{
-callpayoff <- payoff_call$new(100)
+payoff_call
 }
 \value{
 Object of \code{\link{R6Class}}

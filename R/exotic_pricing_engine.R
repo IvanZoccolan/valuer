@@ -10,22 +10,19 @@
 #' be inherited by subclasses implementing its methods and not be
 #' instantiated directly.
 #' @docType class
-#' @importFrom R6 R6Class
-#' @importClassesFrom timeDate timeDate
-#' @importFrom timeDate timeDate timeSequence
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:
 #' \describe{
 #'  \item{\code{new}}{Constructor method which takes as argument a
 #'   \code{\link{path_dependent}} object with the product and a
-#'   \code{\link{parameters}} object with the interest rate}
+#'   \code{parameters} object with the interest rate}
 #'  \item{\code{get_one_path}}{Returns a \code{numeric}
 #'   vector with a simulated path of the product underlying asset. This
 #'   method needs to be implemented by subclasses.}
 #'  \item{\code{run_simulation}}{Runs the Monte Carlo
-#'   simulation and stores the results in a \code{\link{gatherer}} object.
-#'   Takes as arguments a \code{\link{gatherer}} object to store
+#'   simulation and stores the results in a \code{gatherer} object.
+#'   Takes as arguments a \code{gatherer} object to store
 #'   the results and an \code{integer} scalar with the number of paths
 #'   to simulate.}
 #'  \item{\code{discount_one_path}}{Discounts a simulated path of the
@@ -40,7 +37,7 @@
 
 
 
-exotic_engine <- R6Class("exotic_engine",
+exotic_engine <- R6::R6Class("exotic_engine",
  public = list(
   initialize = function(product, interest){
    if(!missing(product))

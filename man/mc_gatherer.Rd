@@ -6,7 +6,7 @@
 \title{Monte Carlo gatherer}
 \format{\code{\link{R6Class}} object.}
 \usage{
-the_gatherer <- mc_gatherer$new()
+mc_gatherer
 }
 \value{
 Object of \code{\link{R6Class}}
@@ -20,11 +20,12 @@ Standard Error of the estimate as well as a convergence table.
 
 \describe{
   \item{\code{new}}{Constructor method}
-  \item{\code{dump_results}}{Saves the argument \code{result} which is
-  a numeric vector of simulated values}
+  \item{\code{dump_result}}{Saves the argument \code{result} which is
+  a numeric scalar}
   \item{\code{get_results}}{Returns the  Monte Carlo estimate and the
   (estimated) Monte Carlo Standard Error of the estimate}
   \item{\code{convergence_table}}{Returns the convergence table}
+  \item{\code{plot}}{Plots a Monte Carlo convergence graph at 95\% level}
 }
 }
 \keyword{datasets}

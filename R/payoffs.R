@@ -16,7 +16,6 @@ payoff <- R6::R6Class("payoff",
 #' @description
 #' Class providing a call option payoff.
 #' @docType class
-#' @importFrom R6 R6Class
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
@@ -29,8 +28,6 @@ payoff <- R6::R6Class("payoff",
 #'   \code{spot} which is a \code{numeric} vector or scalar with
 #'   the spot prices}
 #' }
-#'@usage
-#'callpayoff <- payoff_call$new(100)
 #'@examples
 #'callpayoff <- payoff_call$new(100)
 #'
@@ -67,6 +64,7 @@ payoff_call <- R6::R6Class("payoff_call", inherit = payoff,
  )
 )
 
+
 #Overrides the [ ] operator
 #'@export
 "[.payoff_call" <- function(x, i, j=missing){
@@ -87,7 +85,6 @@ payoff_call <- R6::R6Class("payoff_call", inherit = payoff,
 #' for more specialized implementations such as a roll-up or
 #' ratchet payoff classes.
 #' @docType class
-#' @importFrom R6 R6Class
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:
@@ -138,8 +135,6 @@ payoff_guarantee <- R6::R6Class("payoff_guarantee",
 #'\deqn{\max(A, G_t^P)}{max(A, G_t)}  where \eqn{G_t}{G_t}
 #' is given by \deqn{Pe^{\delta(t_2 - t_1)}}{G_t = Pexp(\delta(t_2 - t_1))}
 #' @docType class
-#' @usage
-#' rollup <- payoff_rollup$new(premium, rate)
 #' @examples
 #' rate <- constant_parameters$new(0.01)
 #' premium <- 100
@@ -147,7 +142,6 @@ payoff_guarantee <- R6::R6Class("payoff_guarantee",
 #' t1 <- timeDate::timeDate("2016-01-01")
 #' t2 <- timeDate::timeDate("2016-12-31")
 #' rollup$get_payoff(c(120,100), c(t1,t2))
-#' @importFrom R6 R6Class
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
@@ -213,8 +207,6 @@ payoff_rollup <- R6::R6Class("payoff_rollup", inherit = payoff_guarantee,
 #'\deqn{\max(A, G_t^P)}{max(A, G_t)}  where \eqn{G_t}{G_t}
 #' is given by \deqn{\max_{t_i < t}A_t_i}{max(A_t_i: t_i < t)}.
 #' @docType class
-#' @usage
-#' payoff_ratchet$new(premium, freq)
 #' @examples
 #' freq <- "1m"
 #' premium <- 100
@@ -223,7 +215,6 @@ payoff_rollup <- R6::R6Class("payoff_rollup", inherit = payoff_guarantee,
 #' t2 <- timeDate::timeDate("2016-12-31")
 #' account <- 120 * rnorm(365)
 #' ratchet$get_payoff(c(120,100), c(t1,t2), account)
-#' @importFrom R6 R6Class
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
@@ -267,7 +258,7 @@ payoff_ratchet <- R6::R6Class("payoff_ratchet", inherit = payoff_guarantee,
   },
   get_freq = function(ratchet_freq) private$freq,
   get_payoff = function(amount, t, amounts){
-    t <- timeSequence(from = t[1], to = t[2])
+    t <- timeDate::timeSequence(from = t[1], to = t[2])
     freq <- private$freq
     ratchet_dates <- timeDate::periods(t, freq, freq)$to
     ratchet_idx <- sapply(ratchet_dates, function(x) which(x == t))

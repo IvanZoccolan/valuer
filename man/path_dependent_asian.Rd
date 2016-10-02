@@ -20,7 +20,7 @@ Class which defines an arithmetic asian option.
  \item{\code{new}}{Constructor method which takes as argument a
   \code{\link{timeDate}} object with the product time-line,
   a \code{\link{timeDate}} object with the date of delivery and
-  a \code{\link{payoff}} object with the payoff. If the time line
+  a \code{payoff} object with the payoff. If the time line
   isn't specified it gets initialized with a year long daily sequence.
   If the delivery date is not specified it is set as the last date of the
   time line. If the payoff is not specified it will be set with  a call

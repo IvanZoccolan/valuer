@@ -42,7 +42,7 @@ and static approaches and the algorithm implemented by this class,
  the static approach (Monte Carlo), see \bold{References}. It takes as
  arguments:
   \describe{
-    \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+    \item{\code{the_gatherer}}{\code{gatherer} object to hold
     the point estimates}
     \item{\code{npaths}}{positive integer with the number of paths to
     simulate}
@@ -54,7 +54,7 @@ and static approaches and the algorithm implemented by this class,
  the mixed approach (Least Squares Monte Carlo), see \bold{References}.
  It takes as arguments:
  \describe{
-  \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+  \item{\code{the_gatherer}}{\code{gatherer} object to hold
    the point estimates}
   \item{\code{npaths}}{positive integer with the number of paths to
    simulate}

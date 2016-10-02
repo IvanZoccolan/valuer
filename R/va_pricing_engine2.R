@@ -16,13 +16,9 @@
 #' \code{[LS2001]} for Least Squares Monte Carlo and \code{[YUIMA2014]}
 #' for \code{yuima}.
 #' @docType class
-#' @importFrom R6 R6Class
-#' @importClassesFrom timeDate timeDate
-#' @importFrom timeDate timeDate timeSequence
 #' @importFrom orthopolynom laguerre.polynomials
-#' @importFrom polynom polynomial
 #' @importFrom RcppEigen fastLmPure
-#' @importFrom yuima setModel simulate setSampling get.zoo.data
+#' @importFrom yuima simulate get.zoo.data
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
@@ -55,7 +51,7 @@
 #'  the static approach (Monte Carlo), see \bold{References}. It takes as
 #'  arguments:
 #'   \describe{
-#'     \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+#'     \item{\code{the_gatherer}}{\code{gatherer} object to hold
 #'     the point estimates}
 #'     \item{\code{npaths}}{positive integer with the number of paths to
 #'     simulate}
@@ -67,7 +63,7 @@
 #'  the mixed approach (Least Squares Monte Carlo), see \bold{References}.
 #'  It takes as arguments:
 #'   \describe{
-#'    \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+#'    \item{\code{the_gatherer}}{\code{gatherer} object to hold
 #'     the point estimates}
 #'     \item{\code{npaths}}{positive integer with the number of paths to
 #'     simulate}
@@ -100,8 +96,6 @@
 #'   Equations. Journal of Statistical Software, 57(4), 1-51.
 #'   URL http://www.jstatsoft.org/v57/i04/.}}
 #'  }
-#'@usage
-#'engine <- va_sde_engine$new(contract, financial_parms, mortality_parms)
 #'@examples
 #'#Sets up the payoff as a roll-up of premiums with roll-up rate 2%
 #'
@@ -155,12 +149,7 @@
 va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine,
  public = list(
   initialize = function(product, financial_parms, mortality_parms){
-
-    if (!requireNamespace("yuima", quietly = TRUE))
-      stop("This class needs the yuima pkg. Please install it.",
-           call. = FALSE)
     super$initialize(product)
-
     private$financial_parms <- financial_parms
     private$financial_model <- do.call(yuima::setModel,
      financial_parms[[2]])
@@ -192,8 +181,11 @@ va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine,
    #Simulates the underlying fund spot prices, the interest rate paths
    #and calculates the discount factors paths
    for (i in seq(npaths)){
-     zoo_paths <- do.call(yuima::simulate, parms)
-     data_paths <- yuima::get.zoo.data(zoo_paths)
+     #yuima::simulate
+     #yuima::get.zoo.data
+     #Imported in NAMESPACE for performance
+     zoo_paths <- do.call(simulate, parms)
+     data_paths <- get.zoo.data(zoo_paths)
      private$fund[i, ] <- exp(as.numeric(data_paths[[ind[2]]]))
      private$r[i, ] <- as.numeric(data_paths[[ind[1]]])
      private$discounts[i, ] <- exp(-cumsum(c(0, head(private$r[i, ], -1)) *                                           private$samp@delta))
@@ -220,8 +212,11 @@ va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine,
    #Sets up the intensity of mortality and
    #calculates the integrals of the intensity of mortality
    for(i in seq(npaths)){
-    zoo_paths <- do.call(yuima::simulate, parms)
-    private$mu[i, ] <- yuima::get.zoo.data(zoo_paths)[[ind]]
+    #yuima::simulate
+    #yuima::get.zoo.data
+    #Imported in NAMESPACE for performance
+    zoo_paths <- do.call(simulate, parms)
+    private$mu[i, ] <- get.zoo.data(zoo_paths)[[ind]]
     dt <- private$samp@delta
     mu_ <- head(private$mu[i, ], -1)
     private$mu_integrals[i, ] <- cumsum(c(0, mu_ * dt))
@@ -271,7 +266,9 @@ va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine,
   #time - numeric scalar with the time index
   #degree - positive scalar with the max degree of the Laguerre polynomials
   bases = function(paths, time, degree){
-   res <- orthopolynom::laguerre.polynomials(degree, normalized = TRUE)
+   #orthopolynom::laguerre.polynomials it's imported in NAMESPACE
+   #for performance reasons.
+   res <- laguerre.polynomials(degree, normalized = TRUE)
    x <- private$fund[paths, time]
    r <- private$r[paths, time]
    mu <- private$mu[paths, time]

@@ -32,9 +32,9 @@ the integral of the parameter and  the squared parameter over a time span.
 \examples{
 r <- constant_parameters$new(0.01)
 #Over the full year (365 days) the integral should evaluate to 0.01
-r$integral(timeDate("2016-07-09"), timeDate("2017-07-09"))
+r$integral(timeDate::timeDate("2016-07-09"), timeDate::timeDate("2017-07-09"))
 #Over the full year the integral square should evaluate to 0.001
-r$integral_square(timeDate("2016-07-09"), timeDate("2017-07-09"))
+r$integral_square(timeDate::timeDate("2016-07-09"), timeDate::timeDate("2017-07-09"))
 }
 \keyword{datasets}
 

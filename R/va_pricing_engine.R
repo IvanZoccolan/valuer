@@ -112,10 +112,7 @@
 #' \code{[LS2001]} for Least Squares Monte Carlo.
 #' @docType class
 #' @importFrom R6 R6Class
-#' @importClassesFrom timeDate timeDate
-#' @importFrom timeDate timeDate timeSequence
 #' @importFrom orthopolynom laguerre.polynomials
-#' @importFrom polynom polynomial
 #' @importFrom RcppEigen fastLmPure
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
@@ -137,7 +134,7 @@
 #'  the static approach (Monte Carlo), see \bold{References}. It takes as
 #'  arguments:
 #'   \describe{
-#'     \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+#'     \item{\code{the_gatherer}}{\code{gatherer} object to hold
 #'     the point estimates}
 #'     \item{\code{npaths}}{positive integer with the number of paths to
 #'     simulate}
@@ -149,7 +146,7 @@
 #'  the mixed approach (Least Squares Monte Carlo), see \bold{References}.
 #'  It takes as arguments:
 #'  \describe{
-#'   \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+#'   \item{\code{the_gatherer}}{\code{gatherer} object to hold
 #'    the point estimates}
 #'   \item{\code{npaths}}{positive integer with the number of paths to
 #'    simulate}
@@ -178,7 +175,7 @@
 #' }
 
 
-va_engine <- R6Class("va_engine",
+va_engine <- R6::R6Class("va_engine",
  public = list(
   initialize = function(product, ...){
 
@@ -280,7 +277,9 @@ va_engine <- R6Class("va_engine",
      #Regressors
      x_t <- private$bases(h_t, t, degree)
      #Estimated continuation values
-     chat_t <- RcppEigen::fastLmPure(x_t, c_t)$fitted.values
+     #RcppEigen::fastLmPure it's imported in NAMESPACE
+     #performance reasons
+     chat_t <- fastLmPure(x_t, c_t)$fitted.values
      #### Comparison between surrender values and estimated
      #### continuation values ####
      for (i in seq_along(h_t)){
@@ -333,18 +332,29 @@ va_engine <- R6Class("va_engine",
 #' and static approaches and the algorithm implemented by this class,
 #' \code{[LS2001]} for Least Squares Monte Carlo.
 #' @docType class
-#' @importFrom R6 R6Class
-#' @importClassesFrom timeDate timeDate
-#' @importFrom timeDate timeDate timeSequence
 #' @importFrom orthopolynom laguerre.polynomials
-#' @importFrom polynom polynomial
 #' @importFrom RcppEigen fastLmPure
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:
 #' \describe{
-#'  \item{\code{new}}{Constructor method}
+#'  \item{\code{new}}{Constructor method with arguments:
+#'   \describe{
+#'    \item{\code{product}}{\code{\link{va_product}} object}
+#'    \item{\code{interest}}{\code{\link{constant_parameters}} object
+#'    with the interest rate}
+#'    \item{\code{c1}}{\code{numeric} scalar argument of the intensity
+#'    of mortality function \code{\link{mu}}}
+#'    \item{\code{c2}}{\code{numeric} scalar argument of the intensity
+#'    of mortality function \code{\link{mu}}}
+#'    \item{\code{spot}}{\code{numeric} scalar with the initial fund price}
+#'    \item{\code{volatility}}{\code{\link{constant_parameters}} object with
+#'    the volatility}
+#'    \item{\code{dividends}}{\code{\link{constant_parameters}} object with
+#'    the dividend rate}
+#'   }
+#'  }
 #'  \item{\code{death_time}}{Returns the time of death index. If the
 #'   death doesn't occur during the product time-line it returns the
 #'   last index of the product time-line}
@@ -360,7 +370,7 @@ va_engine <- R6Class("va_engine",
 #'   the static approach (Monte Carlo), see \bold{References}. It takes as
 #'   arguments:
 #'  \describe{
-#'   \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+#'   \item{\code{the_gatherer}}{\code{gatherer} object to hold
 #'    the point estimates}
 #'   \item{\code{npaths}}{positive integer with the number of paths to
 #'    simulate}
@@ -372,7 +382,7 @@ va_engine <- R6Class("va_engine",
 #'  the mixed approach (Least Squares Monte Carlo), see \bold{References}.
 #'  It takes as arguments:
 #'  \describe{
-#'   \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+#'   \item{\code{the_gatherer}}{\code{gatherer} object to hold
 #'    the point estimates}
 #'   \item{\code{npaths}}{positive integer with the number of paths to
 #'    simulate}
@@ -399,9 +409,6 @@ va_engine <- R6Class("va_engine",
 #'  american options by simulation: a simple least-squares approach.
 #'  In: Review of Financial studies 14 (2001), pp. 113-147}}
 #' }
-#' @usage
-#'engine <- va_bs_engine$new(contract, r, c1=90.43, c2=10.36, spot,
-#'volatility=vol, dividends=div)
 #'@examples
 #'#Sets up the payoff as a roll-up of premiums with roll-up rate 1%
 #'
@@ -579,7 +586,7 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
     current_log_spot <- private$drifts +
       private$standard_deviations * private$variates
     current_log_spot <- cumsum(current_log_spot)
-    c(spot, spot*exp(current_log_spot))
+    c(private$spot, private$spot*exp(current_log_spot))
   },
   #Method to get Laguerre polynomials of state variables.
   #Arguments are:
@@ -587,7 +594,9 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
   #time - numeric scalar with the time index
   #degree - positive scalar with the max degree of the Laguerre polynomials
   bases = function(paths, time, degree){
-    res <- orthopolynom::laguerre.polynomials(degree, normalized = TRUE)
+    #orthopolynom::laguerre.polynomials it's imported in NAMESPACE
+    #for performance reasons.
+    res <- laguerre.polynomials(degree, normalized = TRUE)
     x <- private$fund[paths, time]
     #Normalizes to avoid underflows in calculating
     #the exponential below.

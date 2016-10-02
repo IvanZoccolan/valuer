@@ -78,11 +78,24 @@ yr_fractions <- function(times){
 
 #Takes square root if positive otherwise returns zero.
 #To be used with mean reverting squared root processes (CIR SDE)
+
+#'Square root utility function
+#'@description
+#'Takes square root if positive otherwise returns zero.
+#'To be used with mean reverting squared root processes (CIR SDE)
 #'@export
-sq <- function(x){y = 0;if(x>0){y = sqrt(x);};return(y);}
+#'@param x numeric scalar
+
+sq <- function(x) ifelse( x > 0, sqrt(x), 0)
 
 #Deterministic intensity of mortality ( Weibull )
-#'@export
+
+#' Weibull intensity of mortality
+#' @param t time as numeric scalar
+#' @param x age as numeric scalar
+#' @param c1 numeric scalar
+#' @param c2 numeric scalar
+#' @export
 mu <-  function(t, x, c1, c2) {(c1^(-c2))*c2*((x + t)^(c2 -1))}
 
 

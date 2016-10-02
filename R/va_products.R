@@ -40,9 +40,6 @@
 #' See \bold{References} for a description of variable annuities life
 #' insurance products, their guarantees and fee structures.
 #' @docType class
-#' @importFrom R6 R6Class
-#' @importClassesFrom timeDate timeDate
-#' @importFrom timeDate timeDate timeSequence
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
@@ -97,9 +94,6 @@
 #' fees for variable annuity guarantees." In: Astin Bulletin 44 (2014),
 #' pp. 559-585.}}
 #' }
-#'@usage
-#'va_product$new(payoff, prod_times, age, fee, barrier, penalty)
-
 
 va_product <- R6::R6Class("va_product",  inherit = path_dependent,
  public = list(
@@ -200,17 +194,27 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
 #' See \bold{References} for a description of variable annuities life
 #' insurance products, their guarantees and fee structures.
 #' @docType class
-#' @importFrom R6 R6Class
-#' @importFrom Rcpp evalCpp sourceCpp
-#' @importFrom timeDate timeDate timeSequence
-#' @importClassesFrom timeDate timeDate
 #' @useDynLib valuer
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:
 #'  \describe{
-#'   \item{\code{new}}{Constructor method}
+#'   \item{\code{new}}{Constructor method with arguments:
+#'    \describe{
+#'     \item{\code{payoff}}{\code{payoff} object of the GMAB guarantee}
+#'     \item{\code{prod_times}}{\code{\link{timeSequence}} object with
+#'     the product time-line}
+#'     \item{\code{age}}{\code{numeric} positive scalar with the age
+#'     of the policyholder}
+#'     \item{\code{fee}}{\code{\link{constant_parameters}} object with
+#'     the fee}
+#'     \item{\code{barrier}}{\code{numeric} positive scalar with the
+#'     state-dependent fee barrier}
+#'     \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
+#'     with the withdrawal penalty}
+#'    }
+#'   }
 #'   \item{\code{get_times}}{get method for the product time-line.
 #'    Returns a \code{\link{timeDate}} object}
 #'   \item{\code{get_age}}{get method for the age of the insured}
@@ -259,8 +263,6 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
   #' fees for variable annuity guarantees." In: Astin Bulletin 44 (2014),
   #' pp. 559-585.}}
 #' }
-#'@usage
-#'GMAB$new(payoff, prod_times, age, fee, barrier, penalty)
 #'@examples
 #'#Sets up the payoff as a roll-up of premiums with roll-up rate 1%
 #'
@@ -303,7 +305,7 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
   survival_benefit_times = function() length(private$times),
   surrender_times = function(freq){
     surr_dates <- timeDate::periods(private$times, freq, freq)$to
-    surr_idx <- sapply(surr_dates, function(x) which(x == times))
+    surr_idx <- sapply(surr_dates, function(x) which(x == private$times))
     c(1, head(surr_idx, -1))
   },
   cash_flows = function(spot_values, death_time){
@@ -351,17 +353,29 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #' See \bold{References} for a description of variable annuities life
 #' insurance products, their guarantees and fee structures.
 #' @docType class
-#' @importFrom R6 R6Class
-#' @importFrom Rcpp evalCpp sourceCpp
-#' @importFrom timeDate timeDate timeSequence
-#' @importClassesFrom timeDate timeDate
 #' @useDynLib valuer
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:
 #'  \describe{
-#'   \item{\code{new}}{Constructor method}
+#'   \item{\code{new}}{Constructor method with arguments:
+#'    \describe{
+#'     \item{\code{payoff}}{\code{payoff} object of the GMAB guarantee}
+#'     \item{\code{prod_times}}{\code{\link{timeSequence}} object with
+#'     the product time-line}
+#'     \item{\code{age}}{\code{numeric} positive scalar with the age
+#'     of the policyholder}
+#'     \item{\code{fee}}{\code{\link{constant_parameters}} object with
+#'     the fee}
+#'     \item{\code{barrier}}{\code{numeric} positive scalar with the
+#'     state-dependent fee barrier}
+#'     \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
+#'     with the withdrawal penalty}
+#'     \item{\code{death_payoff}}{\code{payoff} object with the payoff
+#'     of the GMDB guarantee}
+#'    }
+#'   }
 #'   \item{\code{get_times}}{get method for the product time-line.
 #'    Returns a \code{\link{timeDate}} object}
 #'   \item{\code{get_age}}{get method for the age of the insured}
@@ -410,8 +424,6 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #' fees for variable annuity guarantees." In: Astin Bulletin 44 (2014),
 #' pp. 559-585.}}
 #' }
-#'@usage
-#'GMAB_GMDB$new(payoff, prod_times, age, fee, barrier, penalty, death_payoff)
 #'@examples
 #'#Sets up the payoff as a roll-up of premiums with roll-up rate 1%
 #'
@@ -487,17 +499,27 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 #' See \bold{References} for a description of variable annuities life
 #' insurance products, their guarantees and fee structures.
 #' @docType class
-#' @importFrom R6 R6Class
-#' @importFrom Rcpp evalCpp sourceCpp
-#' @importFrom timeDate timeDate timeSequence
-#' @importClassesFrom timeDate timeDate
 #' @useDynLib valuer
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:
 #'  \describe{
-#'   \item{\code{new}}{Constructor method}
+#'   \item{\code{new}}{Constructor method with arguments:
+#'   \describe{
+#'     \item{\code{payoff}}{\code{payoff} object of the GMDB guarantee}
+#'     \item{\code{prod_times}}{\code{\link{timeSequence}} object with
+#'     the product time-line}
+#'     \item{\code{age}}{\code{numeric} positive scalar with the age
+#'     of the policyholder}
+#'     \item{\code{fee}}{\code{\link{constant_parameters}} object with
+#'     the fee}
+#'     \item{\code{barrier}}{\code{numeric} positive scalar with the
+#'     state-dependent fee barrier}
+#'     \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
+#'     with the withdrawal penalty}
+#'    }
+#'   }
 #'   \item{\code{get_times}}{get method for the product time-line.
 #'    Returns a \code{\link{timeDate}} object}
 #'   \item{\code{get_age}}{get method for the age of the insured}
@@ -546,8 +568,6 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
   #' fees for variable annuity guarantees." In: Astin Bulletin 44 (2014),
   #' pp. 559-585.}}
 #' }
-#'@usage
-#'GMDB$new(payoff, prod_times, age, fee, barrier, penalty)
 #'@examples
 #'#Sets up the payoff as a roll-up of premiums with roll-up rate 1%
 #'

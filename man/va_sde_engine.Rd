@@ -6,7 +6,7 @@
 \title{General Variable Annuity pricing engine}
 \format{\code{\link{R6Class}} object.}
 \usage{
-engine <- va_sde_engine$new(contract, financial_parms, mortality_parms)
+va_sde_engine
 }
 \value{
 Object of \code{\link{R6Class}}
@@ -56,7 +56,7 @@ for \code{yuima}.
  the static approach (Monte Carlo), see \bold{References}. It takes as
  arguments:
   \describe{
-    \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+    \item{\code{the_gatherer}}{\code{gatherer} object to hold
     the point estimates}
     \item{\code{npaths}}{positive integer with the number of paths to
     simulate}
@@ -68,7 +68,7 @@ for \code{yuima}.
  the mixed approach (Least Squares Monte Carlo), see \bold{References}.
  It takes as arguments:
   \describe{
-   \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+   \item{\code{the_gatherer}}{\code{gatherer} object to hold
     the point estimates}
     \item{\code{npaths}}{positive integer with the number of paths to
     simulate}

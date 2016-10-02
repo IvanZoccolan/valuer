@@ -20,7 +20,7 @@ product with an underlying asset modeled as a geometric Brownian motion.
 \describe{
   \item{\code{new}}{Constructor method. It takes as
    arguments: \code{product} a \code{\link{path_dependent}} object,
-   \code{interest} a \code{\link{parameters}} object carrying the
+   \code{interest} a \code{parameters} object carrying the
    interest rate, \code{spot} a \code{numeric} positive scalar which
    is the initial value of the underlying asset, \code{volatility} a
    \code{parameters} object carrying the volatility of the underlying
@@ -30,8 +30,8 @@ product with an underlying asset modeled as a geometric Brownian motion.
    vector with a simulated path of the product underlying asset modeled
     as a risk neutral geometric Brownian motion process.}
   \item{\code{run_simulation}}{Runs the Monte Carlo simulation and stores
-   the results in a \code{\link{gatherer}} object. Takes as arguments a
-   \code{\link{gatherer}} object to store the results and an
+   the results in a \code{gatherer} object. Takes as arguments a
+   \code{gatherer} object to store the results and an
    \code{integer} scalar with the number of paths to simulate.}
   \item{\code{discount_one_path}}{Discounts a simulated path of the
   underlying asset. It takes as argument \code{spot_values} a

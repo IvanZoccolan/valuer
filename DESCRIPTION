@@ -12,14 +12,14 @@ Description: Provides R6 pricing engines for variable annuities life insurance
 License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1
-Depends: R (>= 3.2.5)
+Depends: R (>= 3.2.5),
+    orthopolynom (>= 1.0-5)
 Imports: R6 (>= 2.1.2),
-    orthopolynom (>= 1.0-5),
     RcppEigen (>= 0.3.2.8.1),
     timeDate (>= 3012.100),
-    ggplot2 (>= 2.1.0)
+    ggplot2 (>= 2.1.0),
+    yuima (>= 1.1.6)
 Suggests: testthat,
-    yuima (>= 1.1.6),
     knitr,
     rmarkdown
 LinkingTo: Rcpp

@@ -6,7 +6,7 @@
 \title{Variable Annuity with GMDB guarantee}
 \format{\code{\link{R6Class}} object.}
 \usage{
-GMDB$new(payoff, prod_times, age, fee, barrier, penalty)
+GMDB
 }
 \value{
 Object of \code{\link{R6Class}}
@@ -20,7 +20,21 @@ insurance products, their guarantees and fee structures.
 \section{Methods}{
 
  \describe{
-  \item{\code{new}}{Constructor method}
+  \item{\code{new}}{Constructor method with arguments:
+  \describe{
+    \item{\code{payoff}}{\code{payoff} object of the GMDB guarantee}
+    \item{\code{prod_times}}{\code{\link{timeSequence}} object with
+    the product time-line}
+    \item{\code{age}}{\code{numeric} positive scalar with the age
+    of the policyholder}
+    \item{\code{fee}}{\code{\link{constant_parameters}} object with
+    the fee}
+    \item{\code{barrier}}{\code{numeric} positive scalar with the
+    state-dependent fee barrier}
+    \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
+    with the withdrawal penalty}
+   }
+  }
   \item{\code{get_times}}{get method for the product time-line.
    Returns a \code{\link{timeDate}} object}
   \item{\code{get_age}}{get method for the age of the insured}

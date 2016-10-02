@@ -189,7 +189,7 @@ volatility=vol, dividends=div)
 ```
 
 Now that we have an engine we can use its public methods *do_static* and *do_mixed* to price the contract.
-While do\_static assumes the policyholder cannot surrender the contract, do\_mixed assumes the possibility of surrendering the contract. We need to pass to these methods the number of Monte Carlo simulations we want to run and a mc\_gatherer object (see ?mc\_gatherer). The mc\_gatherer holds the point estimates of each Monte Carlo run and has methods to print the final estimate and Monte Carlo standard error and a convergence table. Finally it is possible to call plot on the  mc_gatherer object to produce a Monte Carlo convergence graph.  
+While do\_static assumes the policyholder cannot surrender the contract, do\_mixed assumes the possibility of surrendering the contract. We need to pass to these methods the number of Monte Carlo simulations we want to run and a mc\_gatherer object (see ?mc\_gatherer). The mc\_gatherer holds the point estimates of each Monte Carlo run and has methods to print the final estimate and Monte Carlo standard error and a convergence table. Finally it is possible to call the method plot to produce a Monte Carlo convergence graph.  
 
 ```{r, echo = FALSE}
 
@@ -198,7 +198,7 @@ set.seed(1)
 ```
 
 
-```{r, cache = TRUE}
+```{r}
 
 #Number of paths to simulate
 no_of_paths <- 1e3
@@ -221,15 +221,14 @@ By means of the method *do_mixed* it is possible to estimate the value of the co
     
 In addition, we can specify by means of the *simulate* boolean parameter if the simulation of the stochastic processes has to start from scratch or not.  The default is TRUE but should be changed to FALSE in case we want to run  do\_mixed on the same paths used by do\_static.
 
-```{r, cache = TRUE, fig.height = 5, fig.width = 7.15}
+```{r, fig.height = 5, fig.width = 7.15}
 engine$do_mixed(the_gatherer, no_of_paths, degree = 3, freq = "3m", simulate = FALSE)
 
 the_gatherer$get_results()
 
-#Plots the mc_gatherer 
-
-plot(the_gatherer)
+the_gatherer$plot()
 ```
+
 
 ### Pricing with va_sde_engine ###
 
@@ -270,7 +269,7 @@ engine <- va_sde_engine$new(contract, financials_BMOP2011, mortality_BMOP2011)
 
 The value of the contract is again estimated by means of the engine *do_static* and *do_mixed* methods
 
-```{r, cache=TRUE}
+```{r, eval=FALSE}
 
 engine$do_static(the_gatherer, no_of_paths)
 the_gatherer$get_results()

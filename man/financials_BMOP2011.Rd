@@ -12,7 +12,7 @@
 in solve.variable \code{\link{setModel}}}
 }}
 \usage{
-engine <- va_sde_engine$new(contract, financials_BMOP2011, mortality_BMOP2011)
+financials_BMOP2011
 }
 \description{
 List of parameters to initialize a va_sde_engine object to

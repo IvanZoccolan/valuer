@@ -4,9 +4,6 @@
 #'simulate the interest rate, volatility and log price processes
 #'according to the stochastic differential equations specified
 #'in BBM2010 -  See \bold{References}.
-#'@usage
-#'engine <- va_sde_engine$new(contract, financials_BBM2010, mortality_BBM2010)
-#'
 #'@format A list with elements:
 #'\describe{
 #' \item{[[1]]}{List of parameters for \code{\link[yuima]{simulate}}}
@@ -33,9 +30,6 @@
 #'simulate the intensity of mortality process
 #'according to the stochastic differential equation specified
 #'in BBM2010 -  See \bold{References}.
-#'@usage
-#'engine <- va_sde_engine$new(contract, financials_BBM2010, mortality_BBM2010)
-#'
 #'@format A list with elements:
 #'\describe{
 #' \item{[[1]]}{List of parameters for \code{\link[yuima]{simulate}}}
@@ -61,9 +55,6 @@
 #'simulate the interest rate, volatility and log price processes
 #'according to the stochastic differential equations specified
 #'in BMOP2011 -  See \bold{References}.
-#'@usage
-#'engine <- va_sde_engine$new(contract, financials_BMOP2011, mortality_BMOP2011)
-#'
 #'@format A list with elements:
 #'\describe{
 #' \item{[[1]]}{List of parameters for \code{\link[yuima]{simulate}}}
@@ -89,9 +80,6 @@
 #'simulate the intensity of mortality process
 #'according to the stochastic differential equation specified
 #'in BMOP2011 - See \bold{References}.
-#'@usage
-#'engine <- va_sde_engine$new(contract, financials_BMOP2011, mortality_BMOP2011)
-#'
 #'@format A list with elements:
 #'\describe{
 #' \item{[[1]]}{List of parameters for \code{\link[yuima]{simulate}}}

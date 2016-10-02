@@ -5,7 +5,6 @@
 #' @description
 #' Class for a vanilla option supporting different types of payoffs
 #' @docType class
-#' @importFrom R6 R6Class
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
@@ -19,7 +18,7 @@
 #' @section Methods:
 #' \describe{
 #'  \item{\code{new}}{Constructor method which takes as argument a
-#'   \code{the_payoff} a \code{\link{payoff}} object with the payoff and
+#'   \code{the_payoff} a \code{payoff} object with the payoff and
 #'   \code{expiry} a positive scalar with the expiry time.}
 #'  \item{\code{get_expiry}}{get method for the expiry time.}
 #'  \item{\code{option_payoff}}{returns a \code{numeric} vector with the
@@ -65,9 +64,6 @@ vanilla_option <- R6::R6Class("vanilla_option",
 #' product. This class should be inherited by subclasses implementing its
 #' methods. Objects of this class should not be instantiated.
 #' @docType class
-#' @importFrom R6 R6Class
-#' @importClassesFrom timeDate timeDate
-#' @importFrom timeDate timeDate timeSequence
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:
@@ -113,9 +109,6 @@ path_dependent <- R6::R6Class("path_dependent",
 #' @description
 #'Class which defines an arithmetic asian option.
 #' @docType class
-#' @importFrom R6 R6Class
-#' @importClassesFrom timeDate timeDate
-#' @importFrom timeDate timeDate timeSequence
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
@@ -124,7 +117,7 @@ path_dependent <- R6::R6Class("path_dependent",
 #'  \item{\code{new}}{Constructor method which takes as argument a
 #'   \code{\link{timeDate}} object with the product time-line,
 #'   a \code{\link{timeDate}} object with the date of delivery and
-#'   a \code{\link{payoff}} object with the payoff. If the time line
+#'   a \code{payoff} object with the payoff. If the time line
 #'   isn't specified it gets initialized with a year long daily sequence.
 #'   If the delivery date is not specified it is set as the last date of the
 #'   time line. If the payoff is not specified it will be set with  a call

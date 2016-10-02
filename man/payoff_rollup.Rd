@@ -6,7 +6,7 @@
 \title{Roll-up of premiums payoff class}
 \format{\code{\link{R6Class}} object.}
 \usage{
-rollup <- payoff_rollup$new(premium, rate)
+payoff_rollup
 }
 \value{
 Object of \code{\link{R6Class}}

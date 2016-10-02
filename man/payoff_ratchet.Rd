@@ -6,7 +6,7 @@
 \title{Ratchet payoff class}
 \format{\code{\link{R6Class}} object.}
 \usage{
-payoff_ratchet$new(premium, freq)
+payoff_ratchet
 }
 \value{
 Object of \code{\link{R6Class}}

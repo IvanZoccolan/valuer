@@ -8,9 +8,6 @@
 #' Class for a  pricing engine of a path dependent derivative
 #' product with an underlying asset modeled as a geometric Brownian motion.
 #' @docType class
-#' @importFrom R6 R6Class
-#' @importClassesFrom timeDate timeDate
-#' @importFrom timeDate timeDate timeSequence
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
@@ -18,7 +15,7 @@
 #' \describe{
 #'   \item{\code{new}}{Constructor method. It takes as
 #'    arguments: \code{product} a \code{\link{path_dependent}} object,
-#'    \code{interest} a \code{\link{parameters}} object carrying the
+#'    \code{interest} a \code{parameters} object carrying the
 #'    interest rate, \code{spot} a \code{numeric} positive scalar which
 #'    is the initial value of the underlying asset, \code{volatility} a
 #'    \code{parameters} object carrying the volatility of the underlying
@@ -28,8 +25,8 @@
 #'    vector with a simulated path of the product underlying asset modeled
 #'     as a risk neutral geometric Brownian motion process.}
 #'   \item{\code{run_simulation}}{Runs the Monte Carlo simulation and stores
-#'    the results in a \code{\link{gatherer}} object. Takes as arguments a
-#'    \code{\link{gatherer}} object to store the results and an
+#'    the results in a \code{gatherer} object. Takes as arguments a
+#'    \code{gatherer} object to store the results and an
 #'    \code{integer} scalar with the number of paths to simulate.}
 #'   \item{\code{discount_one_path}}{Discounts a simulated path of the
 #'   underlying asset. It takes as argument \code{spot_values} a
@@ -100,7 +97,7 @@ exotic_bs_engine <- R6::R6Class("exotic_bs_engine", inherit= exotic_engine,
    current_log_spot <- private$drifts +
                         private$standard_deviations * private$variates
    current_log_spot <- cumsum(current_log_spot)
-   c(spot, spot*exp(current_log_spot))
+   c(private$spot, private$spot*exp(current_log_spot))
   },
   discount_one_path = function(spot_values){
    these_cash_flows <- private$the_product$cash_flows(spot_values)

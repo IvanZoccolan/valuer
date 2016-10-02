@@ -18,7 +18,7 @@ Class for a vanilla option supporting different types of payoffs
 
 \describe{
  \item{\code{new}}{Constructor method which takes as argument a
-  \code{the_payoff} a \code{\link{payoff}} object with the payoff and
+  \code{the_payoff} a \code{payoff} object with the payoff and
   \code{expiry} a positive scalar with the expiry time.}
  \item{\code{get_expiry}}{get method for the expiry time.}
  \item{\code{option_payoff}}{returns a \code{numeric} vector with the

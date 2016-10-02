@@ -6,8 +6,7 @@
 \title{Variable Annuity  pricing engine with GBM}
 \format{\code{\link{R6Class}} object.}
 \usage{
-engine <- va_bs_engine$new(contract, r, c1=90.43, c2=10.36, spot,
-volatility=vol, dividends=div)
+va_bs_engine
 }
 \value{
 Object of \code{\link{R6Class}}
@@ -27,7 +26,22 @@ and static approaches and the algorithm implemented by this class,
 \section{Methods}{
 
 \describe{
- \item{\code{new}}{Constructor method}
+ \item{\code{new}}{Constructor method with arguments:
+  \describe{
+   \item{\code{product}}{\code{\link{va_product}} object}
+   \item{\code{interest}}{\code{\link{constant_parameters}} object
+   with the interest rate}
+   \item{\code{c1}}{\code{numeric} scalar argument of the intensity
+   of mortality function \code{\link{mu}}}
+   \item{\code{c2}}{\code{numeric} scalar argument of the intensity
+   of mortality function \code{\link{mu}}}
+   \item{\code{spot}}{\code{numeric} scalar with the initial fund price}
+   \item{\code{volatility}}{\code{\link{constant_parameters}} object with
+   the volatility}
+   \item{\code{dividends}}{\code{\link{constant_parameters}} object with
+   the dividend rate}
+  }
+ }
  \item{\code{death_time}}{Returns the time of death index. If the
   death doesn't occur during the product time-line it returns the
   last index of the product time-line}
@@ -43,7 +57,7 @@ and static approaches and the algorithm implemented by this class,
   the static approach (Monte Carlo), see \bold{References}. It takes as
   arguments:
  \describe{
-  \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+  \item{\code{the_gatherer}}{\code{gatherer} object to hold
    the point estimates}
   \item{\code{npaths}}{positive integer with the number of paths to
    simulate}
@@ -55,7 +69,7 @@ and static approaches and the algorithm implemented by this class,
  the mixed approach (Least Squares Monte Carlo), see \bold{References}.
  It takes as arguments:
  \describe{
-  \item{\code{the_gatherer}}{\code{\link{gatherer}} object to hold
+  \item{\code{the_gatherer}}{\code{gatherer} object to hold
    the point estimates}
   \item{\code{npaths}}{positive integer with the number of paths to
    simulate}
