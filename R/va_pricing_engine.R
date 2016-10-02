@@ -531,7 +531,7 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
     t0 <- cf_times[1]
     log_discounts <- vector(mode="numeric", length = length(cf_times))
     for (i in seq_along(cf_times))
-    log_discounts[i] <- -private$r$integral(t0, cf_times[i])
+      log_discounts[i] <- -private$r$integral(t0, cf_times[i])
     private$discounts <- exp(log_discounts)
   },
   get_fund = function(i) private$fund[i, ],
