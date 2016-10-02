@@ -24,3 +24,5 @@ Suggests: testthat,
     rmarkdown
 LinkingTo: Rcpp
 VignetteBuilder: knitr
+URL: http://github.com/IvanZoccolan/valuer
+BugReports: http://github.com/IvanZoccolan/valuer/issues
