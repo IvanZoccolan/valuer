@@ -107,6 +107,6 @@ cumsd <- function(x) {
   ind_na <- !is.na(x)
   nn <- cumsum(ind_na)
   x[!ind_na] <- 0
-  sqrt(cumsum(x^2) / (nn-1) - (cumsum(x))^2/(nn-1)/nn)
+  sq(cumsum(x^2) / (nn-1) - (cumsum(x))^2/(nn-1)/nn)
 }
 
