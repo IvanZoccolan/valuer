@@ -304,8 +304,15 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
   },
   survival_benefit_times = function() length(private$times),
   surrender_times = function(freq){
+    #Check on freq units
+    units <- c("m", "w", "d")
+    freq_unit = gsub("[ 0-9]", "", freq, perl = TRUE)
+    if (!(freq_unit %in% units)) stop(error_msg_10())
+    #
     surr_dates <- timeDate::periods(private$times, freq, freq)$to
-    surr_idx <- sapply(surr_dates, function(x) which(x == private$times))
+    surr_idx <- vector(mode = "numeric", length = length(surr_dates))
+    for (i in seq_along(surr_dates))
+      surr_idx[i] <- which(surr_dates[i] == times)
     c(1, head(surr_idx, -1))
   },
   cash_flows = function(spot_values, death_time){
