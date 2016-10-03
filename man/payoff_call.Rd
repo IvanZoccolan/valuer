@@ -26,6 +26,7 @@ Class providing a call option payoff.
 }
 }
 \examples{
+\dontrun{
 callpayoff <- payoff_call$new(100)
 
 callpayoff$payoff(c(130, 120))
@@ -34,6 +35,7 @@ callpayoff$payoff(c(130, 120))
 #with a function style:
 
 callpayoff[c(130, 120)]
+}
 }
 \keyword{datasets}
 

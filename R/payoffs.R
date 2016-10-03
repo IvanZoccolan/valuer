@@ -16,7 +16,6 @@ payoff <- R6::R6Class("payoff",
 #' @description
 #' Class providing a call option payoff.
 #' @docType class
-#' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:
@@ -29,6 +28,7 @@ payoff <- R6::R6Class("payoff",
 #'   the spot prices}
 #' }
 #'@examples
+#'\dontrun{
 #'callpayoff <- payoff_call$new(100)
 #'
 #'callpayoff$payoff(c(130, 120))
@@ -37,6 +37,7 @@ payoff <- R6::R6Class("payoff",
 #'#with a function style:
 #'
 #'callpayoff[c(130, 120)]
+#'}
 
 
 payoff_call <- R6::R6Class("payoff_call", inherit = payoff,
@@ -66,7 +67,6 @@ payoff_call <- R6::R6Class("payoff_call", inherit = payoff,
 
 
 #Overrides the [ ] operator
-#'@export
 "[.payoff_call" <- function(x, i, j=missing){
   sapply(i, function(spot) max(spot - x$get(), 0.0))
 }

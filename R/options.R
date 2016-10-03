@@ -5,16 +5,8 @@
 #' @description
 #' Class for a vanilla option supporting different types of payoffs
 #' @docType class
-#' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
-#' @examples
-#' #Defines the payoff of a call option
-#' call_payoff <- payoff_call$new(100)
-#' #Defines the call option
-#' call_option <- vanilla_option$new(the_payoff = call_payoff, expiry = 1)
-#' #Calculates the payoff of the call corresponding to two spot prices
-#' call_option$option_payoff(c(120, 130))
 #' @section Methods:
 #' \describe{
 #'  \item{\code{new}}{Constructor method which takes as argument a
@@ -25,6 +17,15 @@
 #'   payoff. It takes as argument \code{spot}
 #'   a \code{numeric} vector with the values of the underlying asset
 #'   this method will calculate the payoff from.}
+#' }
+#'@examples
+#' \dontrun{
+#' #Defines the payoff of a call option
+#' call_payoff <- payoff_call$new(100)
+#' #Defines the call option
+#' call_option <- vanilla_option$new(the_payoff = call_payoff, expiry = 1)
+#' #Calculates the payoff of the call corresponding to two spot prices
+#' call_option$option_payoff(c(120, 130))
 #' }
 
 
@@ -109,7 +110,6 @@ path_dependent <- R6::R6Class("path_dependent",
 #' @description
 #'Class which defines an arithmetic asian option.
 #' @docType class
-#' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:

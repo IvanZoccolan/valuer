@@ -34,6 +34,8 @@ This function is a simple
 to estimate the value of an european derivative.
 }
 \examples{
+\dontrun{
+
 the_gatherer <- mc_gatherer$new()
 
 vol_param <- constant_parameters$new(0.2)
@@ -48,6 +50,7 @@ monte_carlo(call_option, spot = 100, vol_param, r_param, path_num = 1e4,
 the_gatherer)
 
 the_gatherer$get_results()
+}
 }
 \references{
 It's a porting from C++ code in \cr

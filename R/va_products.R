@@ -40,7 +40,6 @@
 #' See \bold{References} for a description of variable annuities life
 #' insurance products, their guarantees and fee structures.
 #' @docType class
-#' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:
@@ -312,7 +311,7 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
     surr_dates <- timeDate::periods(private$times, freq, freq)$to
     surr_idx <- vector(mode = "numeric", length = length(surr_dates))
     for (i in seq_along(surr_dates))
-      surr_idx[i] <- which(surr_dates[i] == times)
+      surr_idx[i] <- which(surr_dates[i] == private$times)
     c(1, head(surr_idx, -1))
   },
   cash_flows = function(spot_values, death_time){

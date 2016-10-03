@@ -28,12 +28,14 @@ Class for a vanilla option supporting different types of payoffs
 }
 }
 \examples{
+\dontrun{
 #Defines the payoff of a call option
 call_payoff <- payoff_call$new(100)
 #Defines the call option
 call_option <- vanilla_option$new(the_payoff = call_payoff, expiry = 1)
 #Calculates the payoff of the call corresponding to two spot prices
 call_option$option_payoff(c(120, 130))
+}
 }
 \keyword{datasets}
 

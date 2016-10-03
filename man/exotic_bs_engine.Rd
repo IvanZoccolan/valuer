@@ -45,7 +45,7 @@ product with an underlying asset modeled as a geometric Brownian motion.
   }
 }
 \examples{
-prod_time <- timeDate::timeSequence(from="2016-07-09", to="2017-07-09")
+\dontrun{prod_time <- timeDate::timeSequence(from="2016-07-09", to="2017-07-09")
 prod <- path_dependent_asian$new(prod_time)
 r <- constant_parameters$new(0.01)
 spot <- 100
@@ -56,6 +56,7 @@ the_gatherer <- mc_gatherer$new()
 no_of_paths <- 1e3
 engine$run_simulation(the_gatherer, no_of_paths)
 the_gatherer$get_results()
+}
 }
 \keyword{datasets}
 

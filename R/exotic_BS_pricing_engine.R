@@ -8,7 +8,6 @@
 #' Class for a  pricing engine of a path dependent derivative
 #' product with an underlying asset modeled as a geometric Brownian motion.
 #' @docType class
-#' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:
@@ -39,7 +38,7 @@
 #'   method given the interest rate is constant with this implementation.}
 #'   }
 #' @examples
-#' prod_time <- timeDate::timeSequence(from="2016-07-09", to="2017-07-09")
+#' \dontrun{prod_time <- timeDate::timeSequence(from="2016-07-09", to="2017-07-09")
 #' prod <- path_dependent_asian$new(prod_time)
 #' r <- constant_parameters$new(0.01)
 #' spot <- 100
@@ -50,6 +49,7 @@
 #' no_of_paths <- 1e3
 #' engine$run_simulation(the_gatherer, no_of_paths)
 #' the_gatherer$get_results()
+#' }
 
 exotic_bs_engine <- R6::R6Class("exotic_bs_engine", inherit= exotic_engine,
  public = list(
