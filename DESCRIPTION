@@ -1,6 +1,6 @@
 Package: valuer
 Type: Package
-Title: Pricing of  variable annuities
+Title: Pricing of  Variable Annuities
 Version: 1.0.0.9000
 Authors@R: person("Ivan", "Zoccolan", email = "ivan.zoccolan@gmail.com", role = c("aut", "cre"))
 Author: Ivan Zoccolan [aut, cre]

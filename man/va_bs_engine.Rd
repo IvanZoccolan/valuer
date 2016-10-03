@@ -122,7 +122,7 @@ div <- constant_parameters$new(0.0)
 #Gatherer for the MC point estimates
 the_gatherer <- mc_gatherer$new()
 #Number of paths to simulate
-no_of_paths <- 1e3
+no_of_paths <- 1e2
 
 #Sets up the pricing engine specifying the va_contract, the interest rate
 #the parameters of the Weibull intensity of mortality, the initial fund

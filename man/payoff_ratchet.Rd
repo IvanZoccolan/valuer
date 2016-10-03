@@ -14,12 +14,7 @@ Object of \code{\link{R6Class}}
 \description{
 Class providing a ratchet payoff object.
 The payoff will be the highest account value recorded at
-some specified times. \cr
-Provides methods to get/set the base premium \eqn{P}{P}
-and set the ratchet frequency.
-There is a method to calculate the payoff following the formula
-\deqn{\max(A, G_t^P)}{max(A, G_t)}  where \eqn{G_t}{G_t}
-is given by \deqn{\max_{t_i < t}A_t_i}{max(A_t_i: t_i < t)}.
+some specified times.
 }
 \section{Methods}{
 

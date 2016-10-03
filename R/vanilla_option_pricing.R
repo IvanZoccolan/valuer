@@ -58,7 +58,7 @@ monte_carlo <- function(the_option, spot, vol, int_rate, path_num,
 
   moved_spot <- spot * exp(int_rate$integral(0, expiry) + ito_correction)
 
-  this_gaussian <- rnorm(n = path_num)
+  this_gaussian <- stats::rnorm(n = path_num)
 
   this_spot <- moved_spot * exp(root_variance * this_gaussian)
 

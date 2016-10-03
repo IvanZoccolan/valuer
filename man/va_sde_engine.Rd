@@ -112,7 +112,7 @@ contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
 
 #Sets up a gatherer of the MC point estimates
 the_gatherer  <- mc_gatherer$new()
-no_of_paths <- 100
+no_of_paths <- 10
 
 #Sets up the pricing engine
 engine <- va_sde_engine$new(contract, financials_BMOP2011,

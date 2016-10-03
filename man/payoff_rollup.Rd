@@ -12,13 +12,9 @@ payoff_rollup
 Object of \code{\link{R6Class}}
 }
 \description{
-Class providing a roll-up of premiums payoff object.
-Provides methods to get/set the base premium \eqn{P}{P}
-and set the roll-up rate  \eqn{\delta} passed as a
-\code{\link{constant_parameters}} object. There is a method
-to calculate the payoff following the formula
-\deqn{\max(A, G_t^P)}{max(A, G_t)}  where \eqn{G_t}{G_t}
-is given by \deqn{Pe^{\delta(t_2 - t_1)}}{G_t = Pexp(\delta(t_2 - t_1))}
+Class providing a roll-up of premium payoff object. The payoff is the
+maximum between the account value and the roll-up of the premium
+at a given rate.
 }
 \section{Methods}{
 

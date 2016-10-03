@@ -127,13 +127,9 @@ payoff_guarantee <- R6::R6Class("payoff_guarantee",
 
 #' Roll-up of premiums payoff class
 #' @description
-#' Class providing a roll-up of premiums payoff object.
-#' Provides methods to get/set the base premium \eqn{P}{P}
-#'and set the roll-up rate  \eqn{\delta} passed as a
-#'\code{\link{constant_parameters}} object. There is a method
-#'to calculate the payoff following the formula
-#'\deqn{\max(A, G_t^P)}{max(A, G_t)}  where \eqn{G_t}{G_t}
-#' is given by \deqn{Pe^{\delta(t_2 - t_1)}}{G_t = Pexp(\delta(t_2 - t_1))}
+#' Class providing a roll-up of premium payoff object. The payoff is the
+#' maximum between the account value and the roll-up of the premium
+#' at a given rate.
 #' @docType class
 #' @examples
 #' rate <- constant_parameters$new(0.01)
@@ -200,12 +196,7 @@ payoff_rollup <- R6::R6Class("payoff_rollup", inherit = payoff_guarantee,
 #' @description
 #' Class providing a ratchet payoff object.
 #' The payoff will be the highest account value recorded at
-#' some specified times. \cr
-#' Provides methods to get/set the base premium \eqn{P}{P}
-#' and set the ratchet frequency.
-#'There is a method to calculate the payoff following the formula
-#'\deqn{\max(A, G_t^P)}{max(A, G_t)}  where \eqn{G_t}{G_t}
-#' is given by \deqn{\max_{t_i < t}A_t_i}{max(A_t_i: t_i < t)}.
+#' some specified times.
 #' @docType class
 #' @examples
 #' freq <- "1m"
