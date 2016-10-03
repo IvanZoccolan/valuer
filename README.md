@@ -3,7 +3,7 @@
 Valuer
 ======
 
-Valuer is a package which aims at pricing a type of life insurance contracts called variable annuities. The package implements the valuation framework and algorithms described in [BMOP2011](#BMOP2011) where Monte Carlo methods are adapted to the life insurance case. It's written using [R6](https://cran.r-project.org/web/packages/R6/vignettes/Introduction.html) and comes with classes which describe the variable annuity contracts and other classes, called pricing engines, which are used to price those contracts.
+Valuer aims at pricing a type of life insurance contracts called variable annuities. The package implements the valuation framework and algorithms described in [BMOP2011](#BMOP2011) where Monte Carlo methods are adapted to the life insurance case. It's written using [R6](https://cran.r-project.org/web/packages/R6/vignettes/Introduction.html) and comes with classes which describe the variable annuity contracts and other classes, called pricing engines, which are used to price those contracts.
 
 ### Example
 
@@ -57,8 +57,8 @@ volatility=vol, dividends=div)
 
 engine$do_static(the_gatherer, no_of_paths)
 the_gatherer$get_results()
-#>       mean       se
-#> 1 100.8962 1.458025
+#>      mean       se
+#> 1 102.419 1.502293
 ```
 
 ### Installation
@@ -71,7 +71,7 @@ Get the development release from GitHub:
 devtools::install_github("IvanZoccolan/valuer")
 ```
 
-### Build status
+### Build Status
 
 [![Travis-CI Build Status](https://travis-ci.org/IvanZoccolan/valuer.svg?branch=master)](https://travis-ci.org/IvanZoccolan/valuer)
 
