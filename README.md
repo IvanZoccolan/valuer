@@ -58,8 +58,12 @@ volatility=vol, dividends=div)
 engine$do_static(the_gatherer, no_of_paths)
 the_gatherer$get_results()
 #>      mean       se
-#> 1 102.419 1.502293
+#> 1 100.254 1.320046
 ```
+
+### Release status
+
+Valuer is currently on development release 1.0.0.9000. Work to include further contract riders (e.g: GMIB, GMWB) is on-going. A beta release 1.1.0 which will include these is targeted end of October 2016.
 
 ### Installation
 
