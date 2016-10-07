@@ -22,7 +22,25 @@ insurance products, their guarantees and fee structures.
 \section{Methods}{
 
  \describe{
-  \item{\code{new}}{Constructor method}
+  \item{\code{new}}{Constructor method with arguments:
+   \describe{
+    \item{\code{payoff}}{\code{payoff} object of the GMAB guarantee}
+    \item{\code{t0}}{\code{\link{timeDate}} object with
+    the issue date of the contract}
+    \item{\code{t}}{\code{timeDate} object with the end date of the
+    accumulation period}
+    \item{\code{t1}}{\code{timeDate} object with the end date of the
+    guaranteed benefit payment}
+    \item{\code{age}}{\code{numeric} positive scalar with the age
+     of the policyholder}
+    \item{\code{fee}}{\code{\link{constant_parameters}} object with
+     the fee}
+    \item{\code{barrier}}{\code{numeric} positive scalar with the
+     state-dependent fee barrier}
+    \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
+     with the withdrawal penalty}
+   }
+  }
   \item{\code{get_times}}{get method for the product time-line.
    Returns a \code{\link{timeDate}} object}
   \item{\code{get_age}}{get method for the age of the insured}
@@ -45,8 +63,6 @@ insurance products, their guarantees and fee structures.
    corresponds to a surrender decision taken every 3 months.}
  \item{\code{times_in_yrs}}{returns the product time-line in
    fraction of year}
-  \item{\code{max_number_cfs}}{returns an \code{integer} with the maximun
-   number of cash flows the product can generate}
   \item{\code{cash_flow_times}}{returns a \code{\link{timeDate}} object
    with the possible cash flow times.}
   \item{\code{cash_flows}}{returns a \code{numeric} vector with the

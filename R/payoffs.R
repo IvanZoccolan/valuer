@@ -1,76 +1,17 @@
+#Copyright 2016 Ivan Zoccolan
 
-#Financial derivatives payoffs
-
-#Defines a base payoff class
-
-payoff <- R6::R6Class("payoff",
- public = list(
-  initialize = function(){},
-  get = function() {},
-  set = function() {}),
- private = list()
-)
-
-
-#' Call option payoff
-#' @description
-#' Class providing a call option payoff.
-#' @docType class
-#' @return Object of \code{\link{R6Class}}
-#' @format \code{\link{R6Class}} object.
-#' @section Methods:
-#' \describe{
-#'  \item{\code{new}}{Constructor method}
-#'  \item{\code{get}}{Get the strike price}
-#'  \item{\code{set}}{Set the stike price}
-#'  \item{\code{payoff}}{Calculates the payoff given the argument
-#'   \code{spot} which is a \code{numeric} vector or scalar with
-#'   the spot prices}
-#' }
-#'@examples
-#'\dontrun{
-#'callpayoff <- payoff_call$new(100)
-#'
-#'callpayoff$payoff(c(130, 120))
-#'
-#'#The [] operator was overridden to calculate the payoff
-#'#with a function style:
-#'
-#'callpayoff[c(130, 120)]
-#'}
-
-
-payoff_call <- R6::R6Class("payoff_call", inherit = payoff,
- public = list(
-  initialize = function(x){
-   if (!missing(x)) {
-    if (is_numeric_scalar(x)){
-      private$strike <- x
-    } else stop(error_msg_5("x"))
-   } else private$strike <- 0.0
-  },
-  get = function() private$strike,
-  set = function(x) {
-   if (is_numeric_scalar(x)){
-    private$strike <- x
-   } else stop(error_msg_5("strike"))
-  },
-  payoff = function(spot){
-    sapply(spot, function(s) max(s - private$strike, 0.0))
-  }
- ),
- private = list(
-  #numeric scalar to save the strike price
-  strike = "numeric"
- )
-)
-
-
-#Overrides the [ ] operator
-"[.payoff_call" <- function(x, i, j=missing){
-  sapply(i, function(spot) max(spot - x$get(), 0.0))
-}
-
+#This program is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #Life insurance payoffs

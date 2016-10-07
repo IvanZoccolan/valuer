@@ -95,7 +95,8 @@ premium <- 100
 rollup <- payoff_rollup$new(premium, rate)
 
 #Five years time-line
-times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+begin <- timeDate::timeDate("2016-01-01")
+end <- timeDate::timeDate("2020-12-31")
 
 #Age of the policyholder.
 age <- 60
@@ -108,7 +109,8 @@ barrier <- 200
 #Withdrawal penalty applied in case the insured surrenders the contract
 penalty <- 0.02
 #Sets up the contract with GMAB guarantee
-contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+contract <- GMAB$new(rollup, t0 = begin, t = end, age = age, fee = fee,
+barrier = barrier, penalty = penalty)
 
 #Sets up a gatherer of the MC point estimates
 the_gatherer  <- mc_gatherer$new()

@@ -1,3 +1,17 @@
+#Copyright 2016 Ivan Zoccolan
+
+#This program is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #Utility functions
 
@@ -61,6 +75,8 @@ error_msg_10 <- function() {
                   msg3 <- "\"d\" for days"
                   paste(msg1, msg2, msg3)
 }
+
+error_msg_11 <- function(arg1, arg2) paste(arg1, "must be after", arg2)
 
 #' Normalizes a timeDate sequence into year fractions
 #'@param times A \code{\link{timeDate}} sequence

@@ -1,3 +1,18 @@
+#Copyright 2016 Ivan Zoccolan
+
+#This program is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 
 ##########################DESIGN  COMMENTS ####################################
 #Design notes of the variable annuities pricing engine.
@@ -7,10 +22,6 @@
 #Cambridge University Press, New York, NY, USA.
 #My thanks to the Author for his coincise and elegant description of a
 #design for a pricing engine of a path dependent derivative.
-#
-#A modest attempt by me to port Mr. Joshi's code to R is in
-#exotic_pricing_engine.R and exotic_BS_pricing.R.
-#Of course all errors with these R files are attributable to me only.
 #
 #The pricing engine for a variable annuity needs to extend the cited design in
 #two directions. First of all, it has to take into account not only the
@@ -30,7 +41,7 @@
 #The method do_static implements a standard Monte Carlo (MC) routine.
 #My thanks to Bacinello et All for their brilliant framework to price
 #VA contracts.
-#Again all mistakes with this implementation of their ideas is attributable
+#All mistakes with this implementation of their ideas is attributable
 #to me only.
 #To compare the values of the contracts obtained from both approaches
 #do_mixed and do_static can be applied on the same simulated paths.
@@ -418,7 +429,8 @@ va_engine <- R6::R6Class("va_engine",
 #'rollup <- payoff_rollup$new(premium, rate)
 #'
 #'#Ten years time-line
-#'times <- timeDate::timeSequence(from="2016-01-01", to="2025-12-31")
+#'begin <- timeDate::timeDate("2016-01-01")
+#'end <- timeDate::timeDate("2025-12-31")
 #'
 #'#Age of the policyholder.
 #'age <- 60
@@ -431,7 +443,9 @@ va_engine <- R6::R6Class("va_engine",
 #'#Withdrawal penalty applied in case the insured surrenders the contract
 #'penalty <- 0.01
 #'#Sets up the contract with GMAB guarantee
-#'contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+#'contract <- GMAB$new(rollup, t0 = begin, t = end, age = age, fee = fee,
+#'barrier = barrier, penalty = penalty)
+#'
 #'#Interest rate
 #'r <- constant_parameters$new(0.03)
 #'#Initial value of the underlying fund

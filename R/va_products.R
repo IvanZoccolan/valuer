@@ -1,14 +1,30 @@
+#Copyright 2016 Ivan Zoccolan
+
+#This program is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
 
 ######################### DESIGN COMMENTS ######################################
 #Implementation of VA products
-#
-#The path_dependent class is the base class of a VA product
-#A new path_dependent subclass is needed for each VA contract rider
-#For example we have a specialized GMAB path_dependent class for VA with
-#GMAB rider, etc.
 #A base class for riders is needed to make a standard interface as each product
 #has to store the same info such as fee, barrier (for state-dependent fees),
 #penalties for withdrawals, type of guarantee payoff (rollup / ratchet).
+#So a base class for VA products called va_product is defined. This class
+#provides the interface only and should not be instantiated.
+#A new va_product subclass is needed for each VA contract rider
+#For example we have a specialized GMAB va_product class for VA with
+#GMAB rider, etc.
 #A roll-up payoff or ratchet payoff object will be passed into the initialize
 #of the product.
 #The cash_flows method returns all possible  cash_flows, so withdrawal in case
@@ -44,7 +60,25 @@
 #' @format \code{\link{R6Class}} object.
 #' @section Methods:
 #'  \describe{
-#'   \item{\code{new}}{Constructor method}
+#'   \item{\code{new}}{Constructor method with arguments:
+#'    \describe{
+#'     \item{\code{payoff}}{\code{payoff} object of the GMAB guarantee}
+#'     \item{\code{t0}}{\code{\link{timeDate}} object with
+#'     the issue date of the contract}
+#'     \item{\code{t}}{\code{timeDate} object with the end date of the
+#'     accumulation period}
+#'     \item{\code{t1}}{\code{timeDate} object with the end date of the
+#'     guaranteed benefit payment}
+#'     \item{\code{age}}{\code{numeric} positive scalar with the age
+#'      of the policyholder}
+#'     \item{\code{fee}}{\code{\link{constant_parameters}} object with
+#'      the fee}
+#'     \item{\code{barrier}}{\code{numeric} positive scalar with the
+#'      state-dependent fee barrier}
+#'     \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
+#'      with the withdrawal penalty}
+#'    }
+#'   }
 #'   \item{\code{get_times}}{get method for the product time-line.
 #'    Returns a \code{\link{timeDate}} object}
 #'   \item{\code{get_age}}{get method for the age of the insured}
@@ -67,8 +101,6 @@
 #'    corresponds to a surrender decision taken every 3 months.}
 ##'  \item{\code{times_in_yrs}}{returns the product time-line in
 #'    fraction of year}
-#'   \item{\code{max_number_cfs}}{returns an \code{integer} with the maximun
-#'    number of cash flows the product can generate}
 #'   \item{\code{cash_flow_times}}{returns a \code{\link{timeDate}} object
 #'    with the possible cash flow times.}
 #'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
@@ -94,26 +126,64 @@
 #' pp. 559-585.}}
 #' }
 
-va_product <- R6::R6Class("va_product",  inherit = path_dependent,
+va_product <- R6::R6Class("va_product",
  public = list(
-  initialize = function(payoff, prod_times, age, fee, barrier, penalty, ...){
+  initialize = function(payoff, t0, t, t1, age, fee, barrier, penalty, ...){
    if (!missing(payoff))
     if (inherits(payoff, "payoff_guarantee")) private$the_payoff <- payoff
     else stop(error_msg_1("payoff_guarantee"))
    else stop("Please provide a guarantee payoff object\n")
 
-   if (!missing(prod_times))
-    if (are_dates(prod_times)){
-     private$times <- prod_times
-     # Normalizes the product time line into year fractions
-     private$times_yrs <- yr_fractions(prod_times)
-     } else stop(error_msg_1_("prod_times", "timeSequence"))
-   #The default is a five year time sequence.
-   else {
-    t <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
-    private$times <- t
-    private$times_yrs <- yr_fractions(t)
+   #Initializes the issue (start) date t0
+   if (!missing(t0))
+    if (is_date(t0))
+      private$t0 <- t0
+    else stop(error_msg_1_("t0", "timeDate"))
+   else stop(error_msg_1_("t0", "timeDate"))
+
+   #Initializes the end of accumulation date t
+   #Guarantees it's a date greater than t0 if not missing
+   if (!missing(t))
+    if (is_date(t))
+     if (isTRUE(t0 < t)){}
+     else stop(error_msg_11("t", "t0"))
+    else  stop(error_msg_1_("t", "timeDate"))
+
+
+   #Initializes the end of guaranteed benefit date t1
+   #Guarantees it's a date greater than t0 if not missing
+   if (!missing(t1))
+    if(is_date(t1))
+      if (isTRUE(t0 < t1)){}
+      else stop(error_msg_11("t1", "t0"))
+    else  stop(error_msg_1_("t1", "timeDate"))
+
+   if(missing(t) & missing(t1))
+    stop(error_msg_1_("t", "timeDate"))
+
+   if (!missing(t) & !missing(t1))
+    if(isTRUE(t <= t1)){
+      private$t <- t
+      private$t1 <- t1
+    } else stop(error_msg_11("t1", "t"))
+
+   if (missing(t) & !missing(t1)) {
+    private$t1 <- t1
+    private$t <- t1
    }
+
+   if (!missing(t) & missing(t1)){
+    private$t <- t
+    private$t1 <- t
+   }
+
+
+
+   private$times <- timeDate::timeSequence(private$t0, private$t1)
+   # Normalizes the product time line into year fractions
+   private$times_yrs <- yr_fractions(private$times)
+
+
    if(!missing(age))
     if (is_positive_integer(age))
      private$the_age <- age
@@ -162,12 +232,23 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
       else stop(error_msg_1_("fee", "constant_parameters"))
       else private$the_fee <- constant_parameters$new(0.02, 365)
   },
-  times_in_yrs = function() private$times_yrs,
   get_premium = function() private$the_payoff$get_premium(),
+  get_times = function() private$times,
+  times_in_yrs = function() private$times_yrs,
+  cash_flow_times = function() private$times,
   survival_benefit_times = function(){},
-  surrender_times = function(){}
+  surrender_times = function(){},
+  cash_flows = function(spot_values) spot_values
  ),
  private = list(
+  #Issue date of the contract
+  t0 = "timeDate",
+  #End of the accumulation period date
+  t = "timeDate",
+  #End of guaranteed benefit date
+  t1 = "timeDate",
+  #timeDate object to store the product time-line
+  times = "timeDate",
   #payoff_guarantee object which stores the type of payoff
   the_payoff = "payoff_guarantee",
   #A posite scalar with the age of the insured
@@ -202,16 +283,20 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
 #'   \item{\code{new}}{Constructor method with arguments:
 #'    \describe{
 #'     \item{\code{payoff}}{\code{payoff} object of the GMAB guarantee}
-#'     \item{\code{prod_times}}{\code{\link{timeSequence}} object with
-#'     the product time-line}
+#'     \item{\code{t0}}{\code{\link{timeDate}} object with
+#'     the issue date of the contract}
+#'     \item{\code{t}}{\code{timeDate} object with the end date of the
+#'     accumulation period}
+#'     \item{\code{t1}}{\code{timeDate} object with the end date of the
+#'     guaranteed benefit payment}
 #'     \item{\code{age}}{\code{numeric} positive scalar with the age
-#'     of the policyholder}
+#'      of the policyholder}
 #'     \item{\code{fee}}{\code{\link{constant_parameters}} object with
-#'     the fee}
+#'      the fee}
 #'     \item{\code{barrier}}{\code{numeric} positive scalar with the
-#'     state-dependent fee barrier}
+#'      state-dependent fee barrier}
 #'     \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
-#'     with the withdrawal penalty}
+#'      with the withdrawal penalty}
 #'    }
 #'   }
 #'   \item{\code{get_times}}{get method for the product time-line.
@@ -236,8 +321,6 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
 #'    corresponds to a surrender decision taken every 3 months.}
 #'   \item{\code{times_in_yrs}}{returns the product time-line in
 #'    fraction of year}
-#'   \item{\code{max_number_cfs}}{returns an \code{integer} with the maximun
-#'    number of cash flows the product can generate}
 #'   \item{\code{cash_flow_times}}{returns a \code{\link{timeDate}} object
 #'    with the possible cash flow times.}
 #'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
@@ -271,7 +354,8 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
 #'rollup <- payoff_rollup$new(premium, rate)
 #'
 #'#Five years time-line
-#'times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+#'begin <- timeDate::timeDate("2016-01-01")
+#'end <- timeDate::timeDate("2020-12-31")
 #'
 #'age <- 60
 #'# A constant fee of 2% per year (365 days)
@@ -286,7 +370,8 @@ va_product <- R6::R6Class("va_product",  inherit = path_dependent,
 #'
 #'#Sets up a VA contract with GMAB guarantee. The guaranteed miminum
 #'#is the roll-up of premiums with rate 1%
-#'contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+#'contract <- GMAB$new(rollup, t0 = begin, t = end, age = age,  fee = fee,
+#'barrier = barrier, penalty = penalty)
 
 
 
@@ -368,8 +453,12 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #'   \item{\code{new}}{Constructor method with arguments:
 #'    \describe{
 #'     \item{\code{payoff}}{\code{payoff} object of the GMAB guarantee}
-#'     \item{\code{prod_times}}{\code{\link{timeSequence}} object with
-#'     the product time-line}
+#'     \item{\code{t0}}{\code{\link{timeDate}} object with
+#'     the issue date of the contract}
+#'     \item{\code{t}}{\code{timeDate} object with the end date of the
+#'     accumulation period}
+#'     \item{\code{t1}}{\code{timeDate} object with the end date of the
+#'     guaranteed benefit payment}
 #'     \item{\code{age}}{\code{numeric} positive scalar with the age
 #'     of the policyholder}
 #'     \item{\code{fee}}{\code{\link{constant_parameters}} object with
@@ -404,8 +493,6 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #'    corresponds to a surrender decision taken every 3 months.}
 #'   \item{\code{times_in_yrs}}{returns the product time-line in
 #'    fraction of year}
-#'   \item{\code{max_number_cfs}}{returns an \code{integer} with the maximun
-#'    number of cash flows the product can generate}
 #'   \item{\code{cash_flow_times}}{returns a \code{\link{timeDate}} object
 #'    with the possible cash flow times.}
 #'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
@@ -439,7 +526,8 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #'rollup <- payoff_rollup$new(premium, rate)
 #'
 #'#Five years time-line
-#'times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+#'begin <- timeDate::timeDate("2016-01-01")
+#'end <- timeDate::timeDate("2020-12-31")
 #'#Age of the insured
 #'age <- 60
 #'# A constant fee of 2% per year (365 days)
@@ -453,13 +541,14 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #'penalty <- 0.01
 #'#Sets up the GMAB + GMDB with the same payoff for survival and death
 #'#benefits
-#'contract <- GMAB_GMDB$new(rollup, times, age, fee, barrier, penalty, rollup)
+#'contract <- GMAB_GMDB$new(rollup, t0 = begin, t = end, age = age, fee =fee,
+#'barrier = barrier, penalty = penalty, death_payoff = rollup)
 
 GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
  public = list(
-  initialize = function(payoff, prod_times, age, fee, barrier, penalty,
+  initialize = function(payoff, t0, t, t1, age, fee, barrier, penalty,
                         death_payoff){
-   super$initialize(payoff, prod_times, age, fee, barrier, penalty)
+   super$initialize(payoff, t0, t, t1, age, fee, barrier, penalty)
    if (!missing(death_payoff))
      if (inherits(death_payoff, "payoff_guarantee"))
      private$the_death_payoff <- death_payoff
@@ -514,8 +603,12 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 #'   \item{\code{new}}{Constructor method with arguments:
 #'   \describe{
 #'     \item{\code{payoff}}{\code{payoff} object of the GMDB guarantee}
-#'     \item{\code{prod_times}}{\code{\link{timeSequence}} object with
-#'     the product time-line}
+#'     \item{\code{t0}}{\code{\link{timeDate}} object with
+#'     the issue date of the contract}
+#'     \item{\code{t}}{\code{timeDate} object with the end date of the
+#'     accumulation period}
+#'     \item{\code{t1}}{\code{timeDate} object with the end date of the
+#'     guaranteed benefit payment}
 #'     \item{\code{age}}{\code{numeric} positive scalar with the age
 #'     of the policyholder}
 #'     \item{\code{fee}}{\code{\link{constant_parameters}} object with
@@ -582,8 +675,8 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 #'premium <- 100
 #'rollup <- payoff_rollup$new(premium, rate)
 #'
-#'#Five years time-line
-#'times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+#'begin <- timeDate::timeDate("2016-01-01")
+#'end <- timeDate::timeDate("2020-12-31")
 #'
 #'age <- 60
 #'# A constant fee of 2% per year (365 days)
@@ -598,7 +691,8 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 #'
 #'#Sets up a VA contract with GMDB guarantee. The guaranteed miminum
 #'#is the roll-up of premiums with rate 1%
-#'contract <- GMDB$new(rollup, times, age, fee, barrier, penalty)
+#'contract <- GMDB$new(rollup, t0 = begin, t = end, age = age,  fee = fee,
+#'barrier = barrier, penalty = penalty)
 
 
 

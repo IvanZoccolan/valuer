@@ -24,8 +24,12 @@ insurance products, their guarantees and fee structures.
   \item{\code{new}}{Constructor method with arguments:
    \describe{
     \item{\code{payoff}}{\code{payoff} object of the GMAB guarantee}
-    \item{\code{prod_times}}{\code{\link{timeSequence}} object with
-    the product time-line}
+    \item{\code{t0}}{\code{\link{timeDate}} object with
+    the issue date of the contract}
+    \item{\code{t}}{\code{timeDate} object with the end date of the
+    accumulation period}
+    \item{\code{t1}}{\code{timeDate} object with the end date of the
+    guaranteed benefit payment}
     \item{\code{age}}{\code{numeric} positive scalar with the age
     of the policyholder}
     \item{\code{fee}}{\code{\link{constant_parameters}} object with
@@ -60,8 +64,6 @@ insurance products, their guarantees and fee structures.
    corresponds to a surrender decision taken every 3 months.}
   \item{\code{times_in_yrs}}{returns the product time-line in
    fraction of year}
-  \item{\code{max_number_cfs}}{returns an \code{integer} with the maximun
-   number of cash flows the product can generate}
   \item{\code{cash_flow_times}}{returns a \code{\link{timeDate}} object
    with the possible cash flow times.}
   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
@@ -86,7 +88,8 @@ premium <- 100
 rollup <- payoff_rollup$new(premium, rate)
 
 #Five years time-line
-times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+begin <- timeDate::timeDate("2016-01-01")
+end <- timeDate::timeDate("2020-12-31")
 #Age of the insured
 age <- 60
 # A constant fee of 2\% per year (365 days)
@@ -100,7 +103,8 @@ barrier <- 200
 penalty <- 0.01
 #Sets up the GMAB + GMDB with the same payoff for survival and death
 #benefits
-contract <- GMAB_GMDB$new(rollup, times, age, fee, barrier, penalty, rollup)
+contract <- GMAB_GMDB$new(rollup, t0 = begin, t = end, age = age, fee =fee,
+barrier = barrier, penalty = penalty, death_payoff = rollup)
 }
 \references{
 \enumerate{

@@ -1,3 +1,18 @@
+#Copyright 2016 Ivan Zoccolan
+
+#This program is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 
 
 #' General Variable Annuity pricing engine
@@ -105,7 +120,8 @@
 #'rollup <- payoff_rollup$new(premium, rate)
 #'
 #'#Five years time-line
-#'times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+#'begin <- timeDate::timeDate("2016-01-01")
+#'end <- timeDate::timeDate("2020-12-31")
 #'
 #'#Age of the policyholder.
 #'age <- 60
@@ -118,7 +134,8 @@
 #'#Withdrawal penalty applied in case the insured surrenders the contract
 #'penalty <- 0.02
 #'#Sets up the contract with GMAB guarantee
-#'contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+#'contract <- GMAB$new(rollup, t0 = begin, t = end, age = age, fee = fee,
+#'barrier = barrier, penalty = penalty)
 #'
 #'#Sets up a gatherer of the MC point estimates
 #'the_gatherer  <- mc_gatherer$new()
