@@ -101,8 +101,6 @@
 #'    corresponds to a surrender decision taken every 3 months.}
 ##'  \item{\code{times_in_yrs}}{returns the product time-line in
 #'    fraction of year}
-#'   \item{\code{cash_flow_times}}{returns a \code{\link{timeDate}} object
-#'    with the possible cash flow times.}
 #'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
 #'    cash flows of the product. It takes as argument \code{spot_values} a
 #'    \code{numeric} vector which holds the values of the underlying fund this
@@ -235,7 +233,6 @@ va_product <- R6::R6Class("va_product",
   get_premium = function() private$the_payoff$get_premium(),
   get_times = function() private$times,
   times_in_yrs = function() private$times_yrs,
-  cash_flow_times = function() private$times,
   survival_benefit_times = function(){},
   surrender_times = function(){},
   cash_flows = function(spot_values) spot_values
@@ -321,8 +318,6 @@ va_product <- R6::R6Class("va_product",
 #'    corresponds to a surrender decision taken every 3 months.}
 #'   \item{\code{times_in_yrs}}{returns the product time-line in
 #'    fraction of year}
-#'   \item{\code{cash_flow_times}}{returns a \code{\link{timeDate}} object
-#'    with the possible cash flow times.}
 #'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
 #'    cash flows of the product. It takes as argument \code{spot_values} a
 #'    \code{numeric} vector which holds the values of the underlying fund this
@@ -377,15 +372,6 @@ va_product <- R6::R6Class("va_product",
 
 GMAB <- R6::R6Class("GMAB", inherit = va_product,
  public = list(
-  max_number_cfs = function() length(private$times),
-
-  cash_flow_times = function(death_time){
-   delivery <- which(private$times == death_time)
-   if (length(delivery) != 0)
-    res <- private$times[1:delivery]
-   else res <- private$times
-   res
-  },
   survival_benefit_times = function() length(private$times),
   surrender_times = function(freq){
     #Check on freq units
@@ -410,12 +396,11 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
     out <- rep(out, length.out=len)
     out[(death_time+1):len] <- 0
    } else {
-    t0 <- head(private$times, 1)
-    t1 <- tail(private$times, 1)
+    time_int <- c(private$t0, private$t)
     out <- calc_account(spot_values, fee, barrier, penalty)
     #GMAB living benefit
     last <- length(out)
-    out[last] <- private$the_payoff$get_payoff(out[last], c(t0, t1), out)
+    out[last] <- private$the_payoff$get_payoff(out[last], time_int, out)
    }
    out
   },
@@ -493,8 +478,6 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #'    corresponds to a surrender decision taken every 3 months.}
 #'   \item{\code{times_in_yrs}}{returns the product time-line in
 #'    fraction of year}
-#'   \item{\code{cash_flow_times}}{returns a \code{\link{timeDate}} object
-#'    with the possible cash flow times.}
 #'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
 #'    cash flows of the product. It takes as argument \code{spot_values} a
 #'    \code{numeric} vector which holds the values of the underlying fund this
@@ -560,21 +543,21 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
    barrier <- private$the_barrier
    penalty <- private$the_penalty
    len <- length(spot_values)
-   t0 <- head(private$times, 1)
+   t0 <- private$t0
    if (death_time < length(private$times)){
     out <- calc_account(spot_values[1:death_time], fee, barrier, penalty)
     #GMDB death benefit
     last <- length(out)
-    t1 <- private$times[death_time]
-    out[last] <- private$the_death_payoff$get_payoff(out[last], c(t0, t1), out)
+    t <- private$times[death_time]
+    out[last] <- private$the_death_payoff$get_payoff(out[last], c(t0, t), out)
     out <- rep(out, length.out=len)
     out[(death_time+1):len] <- 0
    } else {
-    t1 <- tail(private$times, 1)
+    t <- private$t
     out <- calc_account(spot_values, fee, barrier, penalty)
     #GMAB living benefit
     last <- length(out)
-    out[last] <- private$the_payoff$get_payoff(out[last], c(t0, t1), out)
+    out[last] <- private$the_payoff$get_payoff(out[last], c(t0, t), out)
    }
    out
   }
@@ -641,10 +624,6 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 #'    corresponds to a surrender decision taken every 3 months.}
 #'   \item{\code{times_in_yrs}}{returns the product time-line in
 #'    fraction of year}
-#'   \item{\code{max_number_cfs}}{returns an \code{integer} with the maximun
-#'    number of cash flows the product can generate}
-#'   \item{\code{cash_flow_times}}{returns a \code{\link{timeDate}} object
-#'    with the possible cash flow times.}
 #'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
 #'    cash flows of the product. It takes as argument \code{spot_values} a
 #'    \code{numeric} vector which holds the values of the underlying fund this
@@ -704,13 +683,13 @@ GMDB <- R6::R6Class("GMDB", inherit = GMAB,
    barrier <- private$the_barrier
    penalty <- private$the_penalty
    len <- length(spot_values)
-   t0 <- head(private$times, 1)
+   t0 <- private$t0
    if (death_time < length(private$times)){
     out <- calc_account(spot_values[1:death_time], fee, barrier, penalty)
     #GMDB death benefit
     last <- length(out)
-    t1 <- private$times[death_time]
-    out[last] <- private$the_payoff$get_payoff(out[last], c(t0, t1), out)
+    t <- private$times[death_time]
+    out[last] <- private$the_payoff$get_payoff(out[last], c(t0, t), out)
     out <- rep(out, length.out=len)
     out[(death_time+1):len] <- 0
    } else {

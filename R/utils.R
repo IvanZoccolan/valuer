@@ -103,7 +103,7 @@ yr_fractions <- function(times){
 #'@export
 #'@param x numeric scalar
 
-sq <- function(x) ifelse( x > 0, sqrt(x), 0)
+sq <- function(x) ifelse(x > 0, sqrt(x), 0)
 
 #Deterministic intensity of mortality ( Weibull )
 

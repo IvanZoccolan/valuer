@@ -61,10 +61,6 @@ insurance products, their guarantees and fee structures.
    corresponds to a surrender decision taken every 3 months.}
   \item{\code{times_in_yrs}}{returns the product time-line in
    fraction of year}
-  \item{\code{max_number_cfs}}{returns an \code{integer} with the maximun
-   number of cash flows the product can generate}
-  \item{\code{cash_flow_times}}{returns a \code{\link{timeDate}} object
-   with the possible cash flow times.}
   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
    cash flows of the product. It takes as argument \code{spot_values} a
    \code{numeric} vector which holds the values of the underlying fund this
