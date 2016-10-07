@@ -101,17 +101,19 @@ penalty <- 0.01
 
 ### Initializing a VA product object ###
 
-We now need to set the time-line of the product, the age of the insured when the contract is issued and pass all other contractual features discussed above. For example if we want to set up a VA with a GMAB rider: 
+We now need to set the time-line of the product. In order to do it we first need to specify  the issue date, the end of the accumulation period date and the end of the benefit payment date in case it doesn't coincide with the end of accumulation date.
+Then, we need to set the age of the insured when the contract is issued and pass all other contractual features discussed above. For example if we want to set up a VA with a GMAB rider: 
 
 ```{r}
 #Five years time-line
-times <- timeDate::timeSequence(from="2016-01-01", to="2020-12-31")
+begin <- timeDate::timeDate("2016-01-01")
+end <- timeDate::timeDate("2020-12-31")
 
+#Age of the policyholder.
 age <- 60
 
-
 #Sets up a VA contract with GMAB guarantee.
-contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+contract <- GMAB$new(rollup, t0 = begin, t = end, age = age, fee = fee, barrier = barrier, penalty = penalty)
 
 ```
 

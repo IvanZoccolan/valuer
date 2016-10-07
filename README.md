@@ -20,7 +20,8 @@ premium <- 100
 rollup <- payoff_rollup$new(premium, rate)
 
 #Ten years time-line
-times <- timeDate::timeSequence(from="2016-01-01", to="2025-12-31")
+begin <- timeDate::timeDate("2016-01-01")
+end <- timeDate::timeDate("2025-12-31")
 
 #Age of the policyholder.
 age <- 60
@@ -33,7 +34,7 @@ barrier <- Inf
 #Withdrawal penalty applied in case the insured surrenders the contract
 penalty <- 0.01
 #Sets up the contract with GMAB guarantee
-contract <- GMAB$new(rollup, times, age, fee, barrier, penalty)
+contract <- GMAB$new(rollup, t0 = begin, t = end, age = age, fee = fee, barrier = barrier, penalty = penalty)
 #Interest rate
 r <- constant_parameters$new(0.03)
 #Initial value of the underlying fund
@@ -57,8 +58,8 @@ volatility=vol, dividends=div)
 
 engine$do_static(the_gatherer, no_of_paths)
 the_gatherer$get_results()
-#>       mean       se
-#> 1 100.1154 1.318315
+#>       mean        se
+#> 1 105.8163 0.9506961
 ```
 
 ### Release status
