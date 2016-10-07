@@ -10,8 +10,9 @@
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #GNU General Public License for more details.
 #
-#You should have received a copy of the GNU General Public License
-#along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#A copy of the GNU General Public License is available at
+#https://www.R-project.org/Licenses/ and included in the R distribution
+#(in directory share/licenses).
 
 #Utility functions
 
