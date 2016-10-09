@@ -1,11 +1,13 @@
 #Copyright 2016 Ivan Zoccolan
 
-#This program is free software: you can redistribute it and/or modify
+#This file is part of valuer.
+
+#Valuer is free software: you can redistribute it and/or modify
 #it under the terms of the GNU General Public License as published by
 #the Free Software Foundation, either version 3 of the License, or
 #(at your option) any later version.
 #
-#This program is distributed in the hope that it will be useful,
+#Valuer is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #GNU General Public License for more details.
@@ -56,7 +58,11 @@ is_payoff <- function(x, ...) tryCatch(inherits(x, "payoff"), error = function(e
 
 is_between <- function(x,lower,upper, ...) tryCatch(isTRUE(x >= lower) & isTRUE(x <= upper), error = function(e) FALSE)
 
-#Error messages
+istrue <- function(x, ...) tryCatch(isTRUE(x), error = function(e) FALSE)
+
+is_identical_to_any <-  function(x, y, ...) tryCatch(any(sapply(y, function(z) identical(x, z))),
+                                                     error = function(e) FALSE)
+#Error messages,
 
 error_msg_1 <- function(object) paste("Argument must be a", object, "object")
 error_msg_2 <- function(object) paste("Arguments must be", object, "objects")
@@ -78,6 +84,7 @@ error_msg_10 <- function() {
 }
 
 error_msg_11 <- function(arg1, arg2) paste(arg1, "must be after", arg2)
+
 
 #' Normalizes a timeDate sequence into year fractions
 #'@param times A \code{\link{timeDate}} sequence

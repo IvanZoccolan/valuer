@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-Valuer
-======
+Valuer - VA value with R
+========================
 
 Valuer aims at pricing a type of life insurance contracts called variable annuities. The package implements the valuation framework and algorithms described in [BMOP2011](#BMOP2011) where Monte Carlo methods are adapted to the life insurance case. It's written using [R6](https://cran.r-project.org/web/packages/R6/vignettes/Introduction.html) and comes with classes which describe the variable annuity contracts and other classes, called pricing engines, which are used to price those contracts.
 
@@ -59,7 +59,7 @@ volatility=vol, dividends=div)
 engine$do_static(the_gatherer, no_of_paths)
 the_gatherer$get_results()
 #>       mean        se
-#> 1 106.1424 0.9926954
+#> 1 105.3537 0.9213572
 ```
 
 ### Release status

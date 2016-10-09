@@ -12,7 +12,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-#Valuer#
+#Valuer - VA value with R#
+
 
 Valuer aims at pricing a type of life insurance contracts called variable annuities.
 The package implements the valuation framework and algorithms described in [BMOP2011](#BMOP2011) where Monte Carlo methods are adapted to the life insurance case. 
