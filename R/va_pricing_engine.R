@@ -230,7 +230,7 @@ va_engine <- R6::R6Class("va_engine",
     self$death_time(i)})
 
    #Initial cash flow matrix
-   cash <- matrix(NA, nrow = npaths, ncol = m)
+   cash <- matrix(0, nrow = npaths, ncol = m)
    old_penalty <- private$the_product$get_penalty()
    private$the_product$set_penalty(penalty = 1)
    for (i in ind){
@@ -261,23 +261,23 @@ va_engine <- R6::R6Class("va_engine",
    private$tau <- sapply(ind, function(i){
      self$death_time(i)})
 
-
-   #Initial cash flow matrix
-   cash <- matrix(NA, nrow = npaths, ncol = m)
-   for (i in ind){
-     cash[i, ] <- private$the_product$cash_flows(self$get_fund(i),
-                                                 private$tau[i])
-   }
-
    #Initial surrender times vector
    sur_ts <- private$tau
    ##
    surrender_times <- private$the_product$surrender_times(freq)
    survival_times <- private$the_product$survival_benefit_times()
    tt <- c(surrender_times, survival_times)
-   #Sets all zero in the cash flow matrix but for times corresponding
-   #to surrender decision, living benefit times and death-times.
-   for(i in ind) cash[i, -sort(unique(c(tt, private$tau[i])))] <- 0
+
+   #Initial cash flow matrix
+   cash <- matrix(0, nrow = npaths, ncol = m)
+   for (i in ind){
+     cash[i, ] <- private$the_product$cash_flows(self$get_fund(i),
+                                                  private$tau[i])
+
+     #Sets all zero in the cash flow matrix but for times corresponding
+     #to surrender decision, living benefit times and death-times.
+     cash[i, -sort(unique(c(tt, private$tau[i])))] <- 0
+   }
 
    for(t in rev(surrender_times)){
      h_t <- which(private$tau > t)
