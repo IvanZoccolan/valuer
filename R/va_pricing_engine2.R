@@ -199,18 +199,32 @@ va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine,
    private$r <- matrix(NA, npaths, len)
    private$discounts <- matrix(NA, npaths, len)
    #Simulates the underlying fund spot prices, the interest rate paths
-   #and calculates the discount factors paths
-   for (i in seq(npaths)){
+   #and calculates the discount factors paths.
+   #Will use foreach to run the simulations in parallel
+   #Imported in NAMESPACE
+   #yuima::simulate
+   #yuima::get.zoo.data
+   if(requireNamespace("foreach", quietly = TRUE)){
+     loop <- foreach::foreach(iterators::icount(npaths))
+     data_paths <- foreach::`%dopar%`(loop, {
+       zoo_paths <- do.call(simulate, parms)
+       get.zoo.data(zoo_paths)
+     })
+    for (i in seq(npaths)){
+     private$fund[i, ] <- exp(as.numeric(data_paths[[i]][[ind[2]]]))
+     private$r[i, ] <- as.numeric(data_paths[[i]][[ind[1]]])
+     private$discounts[i, ] <- exp(-cumsum(c(0, head(private$r[i, ], -1)) *                                           private$samp@delta))
+    }
+   } else for (i in seq(npaths)){
+     #Imported in NAMESPACE
      #yuima::simulate
      #yuima::get.zoo.data
-     #Imported in NAMESPACE for performance
      zoo_paths <- do.call(simulate, parms)
      data_paths <- get.zoo.data(zoo_paths)
      private$fund[i, ] <- exp(as.numeric(data_paths[[ind[2]]]))
      private$r[i, ] <- as.numeric(data_paths[[ind[1]]])
-     private$discounts[i, ] <- exp(-cumsum(c(0, head(private$r[i, ], -1)) *                                           private$samp@delta))
+     private$discounts[i, ] <- exp(-cumsum(c(0, head(private$r[i, ], -1)) *                                           samp@delta))
    }
-
   },
   get_fund = function(i) private$fund[i, ],
   get_discount = function(i,j) private$discounts[i, j],
@@ -229,18 +243,32 @@ va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine,
    len <-  length(private$the_product$get_times())
    private$mu <- matrix(NA, npaths, len)
    private$mu_integrals <- matrix(NA, npaths, len)
+   dt <- private$samp@delta
    #Sets up the intensity of mortality and
    #calculates the integrals of the intensity of mortality
-   for(i in seq(npaths)){
-    #yuima::simulate
-    #yuima::get.zoo.data
-    #Imported in NAMESPACE for performance
-    zoo_paths <- do.call(simulate, parms)
-    private$mu[i, ] <- get.zoo.data(zoo_paths)[[ind]]
-    dt <- private$samp@delta
-    mu_ <- head(private$mu[i, ], -1)
-    private$mu_integrals[i, ] <- cumsum(c(0, mu_ * dt))
+   #Will use foreach to run the simulations in parallel
+   #Imported in NAMESPACE
+   #yuima::simulate
+   #yuima::get.zoo.data
+   if(requireNamespace("foreach", quietly = TRUE)){
+     loop <- foreach::foreach(iterators::icount(npaths))
+     data_paths <- foreach::`%dopar%`(loop, {
+       zoo_paths <- do.call(simulate, parms)
+       get.zoo.data(zoo_paths)
+     })
+     for(i in seq(npaths)){
+       private$mu[i, ] <- data_paths[[i]][[ind]]
+       mu_ <- head(private$mu[i, ], -1)
+       private$mu_integrals[i, ] <- cumsum(c(0, mu_ * dt))
+     }
+   } else for(i in seq(npaths)){
+     zoo_paths <- do.call(simulate, parms)
+     private$mu[i, ] <- get.zoo.data(zoo_paths)[[ind]]
+     mu_ <- head(private$mu[i, ], -1)
+     private$mu_integrals[i, ] <- cumsum(c(0, mu_ * dt))
+
    }
+
   },
   death_time = function(i){
     ind <- which(private$mu_integrals[i, ] > rexp(1))

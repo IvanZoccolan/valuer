@@ -43,7 +43,6 @@ So let's begin by initializing a  payoff_rollup object  after choosing a 2% year
 
 ```{r}
 library(valuer)
-library(orthopolynom)
 
 rate <- constant_parameters$new(0.02)
 
@@ -280,6 +279,29 @@ engine$do_mixed(the_gatherer, no_of_paths, degree = 3, freq = "3m", simulate = F
 the_gatherer$get_results()
 
 ```
+
+### Parallel simulation ###
+With the va_sde_engine the simulation  of the financial and intensity of mortality paths takes quite some time and it's where most of the time is spent during the execution of *do_static* and *do_mixed* methods. 
+Luckily, va_sde_engine supports the parallel execution of the simulations by means of the [foreach](https://CRAN.R-project.org/package=foreach) package. By executing them on multiple processors/cores the overall execution time will decrease.  
+It is important to highlight that if we want foreach to execute the code in parallel a parallel back-end must be registered first. Otherwise, the simulation will be done sequentially and foreach will issue a warning to inform about that but just the first time it's used without a back-end.
+In order to register a parallel back-end you can use the package [doParallel](https://CRAN.R-project.org/package=doParallel ). Please check the doParallel [vignette](https://cran.r-project.org/web/packages/doParallel/vignettes/gettingstartedParallel.pdf) for more details.  
+The following code will start a cluster with two CPU cores, register it with doParallel so that foreach can use it during the *do_mixed* method:
+
+```{r, eval=FALSE}
+
+library(doParallel)
+
+cl <- makeCluster(2)
+
+registerDoParallel(cl)
+
+engine$do_static(the_gatherer, no_of_paths)
+
+
+```
+
+If you're running with a system with at least two CPU cores, you should see a sensible decrease of the execution time. Of course,  *foreach* should be installed first, otherwise the engine will run the simulations sequentially.
+
 
 ## References ##
 

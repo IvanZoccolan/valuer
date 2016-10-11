@@ -19,11 +19,13 @@ Depends: R (>= 3.2.5),
 Imports: R6 (>= 2.1.2),
     RcppEigen (>= 0.3.2.8.1),
     timeDate (>= 3012.100),
-    ggplot2 (>= 2.1.0),
-    yuima (>= 1.1.6)
+    yuima (>= 1.1.6),
+    ggplot2 (>= 2.1.0)
 Suggests: testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    doParallel (>= 1.0.10),
+    foreach (>= 1.4.3)
 LinkingTo: Rcpp
 VignetteBuilder: knitr
 URL: http://github.com/IvanZoccolan/valuer
