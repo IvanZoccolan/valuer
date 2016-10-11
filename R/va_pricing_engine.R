@@ -214,8 +214,7 @@ va_engine <- R6::R6Class("va_engine",
   do_static = function(the_gatherer, npaths, simulate = TRUE){
    #Estimates the VA by means of the static approach
    #implemented with Monte Carlo
-   times <- private$the_product$get_times()
-   m = length(times)
+   times_len = length(private$the_product$get_times())
    ind <- seq(npaths)
 
    if(simulate){
@@ -230,7 +229,7 @@ va_engine <- R6::R6Class("va_engine",
     self$death_time(i)})
 
    #Initial cash flow matrix
-   cash <- matrix(0, nrow = npaths, ncol = m)
+   cash <- matrix(0, nrow = npaths, ncol = times_len)
    old_penalty <- private$the_product$get_penalty()
    private$the_product$set_penalty(penalty = 1)
    for (i in ind){
@@ -247,8 +246,7 @@ va_engine <- R6::R6Class("va_engine",
   do_mixed = function(the_gatherer, npaths, degree = 3, freq = "3m", simulate = TRUE){
    #Estimates the VA by means of the mixed approach
    #implemented with Least Squares Monte Carlo
-   times <- private$the_product$get_times()
-   m = length(times)
+   times_len = length(private$the_product$get_times())
    ind <- seq(npaths)
    if(simulate){
    #Simulates financials
@@ -269,7 +267,7 @@ va_engine <- R6::R6Class("va_engine",
    tt <- c(surrender_times, survival_times)
 
    #Initial cash flow matrix
-   cash <- matrix(0, nrow = npaths, ncol = m)
+   cash <- matrix(0, nrow = npaths, ncol = times_len)
    for (i in ind){
      cash[i, ] <- private$the_product$cash_flows(self$get_fund(i),
                                                   private$tau[i])
@@ -291,7 +289,6 @@ va_engine <- R6::R6Class("va_engine",
      x_t <- private$bases(h_t, t, degree)
      #Estimated continuation values
      #RcppEigen::fastLmPure it's imported in NAMESPACE
-     #performance reasons
      chat_t <- fastLmPure(x_t, c_t)$fitted.values
      #### Comparison between surrender values and estimated
      #### continuation values ####
@@ -540,7 +537,7 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
    private$mu_integrals <- self$simulate_mortality_paths()
   },
   simulate_financial_paths = function(npaths){
-    cf_times <- private$the_product$get_times()
+    cf_times <- private$times
     private$fund <- t(vapply(seq(npaths), function(index) {
       private$simulate_financial_path()
     }, FUN.VALUE = vector("numeric", length(cf_times))))
@@ -574,7 +571,7 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
   }
  ),
  private = list(
-  #timeDate object with the product time-line
+  #Product times
   times = "timeDate",
   #parameters object with the risk-neutral interest rate
   r = "parameters",
