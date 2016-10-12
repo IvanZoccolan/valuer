@@ -70,7 +70,7 @@
 #'     \item{\code{t}}{\code{timeDate} object with the end date of the
 #'     accumulation period}
 #'     \item{\code{t1}}{\code{timeDate} object with the end date of the
-#'     guaranteed benefit payment}
+#'      life benefit payment}
 #'     \item{\code{age}}{\code{numeric} positive scalar with the age
 #'      of the policyholder}
 #'     \item{\code{fee}}{\code{\link{constant_parameters}} object with
@@ -237,7 +237,7 @@ va_product <- R6::R6Class("va_product",
   times_in_yrs = function() private$times_yrs,
   survival_benefit_times = function(){},
   surrender_times = function(){},
-  cash_flows = function(spot_values) spot_values
+  cash_flows = function(spot_values, ...) spot_values
  ),
  private = list(
   #Issue date of the contract
@@ -287,7 +287,7 @@ va_product <- R6::R6Class("va_product",
 #'     \item{\code{t}}{\code{timeDate} object with the end date of the
 #'     accumulation period}
 #'     \item{\code{t1}}{\code{timeDate} object with the end date of the
-#'     guaranteed benefit payment}
+#'      life benefit payment}
 #'     \item{\code{age}}{\code{numeric} positive scalar with the age
 #'      of the policyholder}
 #'     \item{\code{fee}}{\code{\link{constant_parameters}} object with
@@ -322,8 +322,8 @@ va_product <- R6::R6Class("va_product",
 #'    fraction of year}
 #'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
 #'    cash flows of the product. It takes as argument \code{spot_values} a
-#'    \code{numeric} vector which holds the values of the underlying fund this
-#'     method will calculate the cash flows from}
+#'    \code{numeric} vector which holds the values of the underlying fund and
+#'     \code{death_time} a time index with the time of death}
 #'   \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to
 #'    the survival benefit.
 #'    The arguments are \code{spot_values} vector which holds the values of
@@ -387,7 +387,7 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
       surr_idx[i] <- which(surr_dates[i] == private$times)
     c(1, head(surr_idx, -1))
   },
-  cash_flows = function(spot_values, death_time){
+  cash_flows = function(spot_values, death_time, ...){
    fee <- private$the_fee$get()
    barrier <- private$the_barrier
    penalty <- private$the_penalty
@@ -445,7 +445,7 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #'     \item{\code{t}}{\code{timeDate} object with the end date of the
 #'     accumulation period}
 #'     \item{\code{t1}}{\code{timeDate} object with the end date of the
-#'     guaranteed benefit payment}
+#'      life benefit payment}
 #'     \item{\code{age}}{\code{numeric} positive scalar with the age
 #'     of the policyholder}
 #'     \item{\code{fee}}{\code{\link{constant_parameters}} object with
@@ -482,8 +482,8 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #'    fraction of year}
 #'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
 #'    cash flows of the product. It takes as argument \code{spot_values} a
-#'    \code{numeric} vector which holds the values of the underlying fund this
-#'    method will calculate the cash flows from}
+#'    \code{numeric} vector which holds the values of the underlying fund and
+#'    \code{death_time} a time index with the time of death}
 #'   \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to
 #'    the survival benefit.
 #'    The arguments are \code{spot_values} vector which holds the values of
@@ -540,7 +540,7 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
      else stop(error_msg_1_("death_payoff", "payoff_guarantee"))
    else stop("Please provide a guarantee payoff object\n")
    },
-  cash_flows = function(spot_values, death_time){
+  cash_flows = function(spot_values, death_time, ...){
    fee <- private$the_fee$get()
    barrier <- private$the_barrier
    penalty <- private$the_penalty
@@ -593,7 +593,7 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 #'     \item{\code{t}}{\code{timeDate} object with the end date of the
 #'     accumulation period}
 #'     \item{\code{t1}}{\code{timeDate} object with the end date of the
-#'     guaranteed benefit payment}
+#'      life benefit payment}
 #'     \item{\code{age}}{\code{numeric} positive scalar with the age
 #'     of the policyholder}
 #'     \item{\code{fee}}{\code{\link{constant_parameters}} object with
@@ -628,8 +628,8 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 #'    fraction of year}
 #'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
 #'    cash flows of the product. It takes as argument \code{spot_values} a
-#'    \code{numeric} vector which holds the values of the underlying fund this
-#'     method will calculate the cash flows from}
+#'    \code{numeric} vector which holds the values of the underlying fund and
+#'    \code{death_time} a time index with the time of death}
 #'   \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to
 #'    the survival benefit.
 #'    The arguments are \code{spot_values} vector which holds the values of
@@ -680,7 +680,7 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 GMDB <- R6::R6Class("GMDB", inherit = GMAB,
  public = list(
   survival_benefit_times = function() NULL,
-  cash_flows = function(spot_values, death_time){
+  cash_flows = function(spot_values, death_time, ...){
    fee <- private$the_fee$get()
    barrier <- private$the_barrier
    penalty <- private$the_penalty

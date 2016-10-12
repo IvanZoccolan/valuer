@@ -29,7 +29,7 @@ insurance products, their guarantees and fee structures.
     \item{\code{t}}{\code{timeDate} object with the end date of the
     accumulation period}
     \item{\code{t1}}{\code{timeDate} object with the end date of the
-    guaranteed benefit payment}
+     life benefit payment}
     \item{\code{age}}{\code{numeric} positive scalar with the age
     of the policyholder}
     \item{\code{fee}}{\code{\link{constant_parameters}} object with
@@ -66,8 +66,8 @@ insurance products, their guarantees and fee structures.
    fraction of year}
   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
    cash flows of the product. It takes as argument \code{spot_values} a
-   \code{numeric} vector which holds the values of the underlying fund this
-   method will calculate the cash flows from}
+   \code{numeric} vector which holds the values of the underlying fund and
+   \code{death_time} a time index with the time of death}
   \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to
    the survival benefit.
    The arguments are \code{spot_values} vector which holds the values of

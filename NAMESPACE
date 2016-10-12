@@ -3,6 +3,7 @@
 export(GMAB)
 export(GMAB_GMDB)
 export(GMDB)
+export(GMIB)
 export(calc_account)
 export(constant_parameters)
 export(mc_gatherer)

@@ -230,11 +230,18 @@ va_engine <- R6::R6Class("va_engine",
 
    #Initial cash flow matrix
    cash <- matrix(0, nrow = npaths, ncol = times_len)
+   #With the static method we set the penalty as 1
+   #since we  want the surrender values to be all zeros.
    old_penalty <- private$the_product$get_penalty()
    private$the_product$set_penalty(penalty = 1)
    for (i in ind){
+     #Discount factors from time of death
+     #This is used by GMIB (Ib, Ic) and GMWB (Wc) riders for
+     #the death benefit at death_time.
+    discounts <- self$get_discount(i) / self$get_discount(i, private$tau[i])
+
     cash[i, ] <- private$the_product$cash_flows(self$get_fund(i),
-                                                private$tau[i])
+                                                private$tau[i], discounts)
    }
    res <- sapply(ind, function(i){
      sum(cash[i, 1:private$tau[i]] *
@@ -269,11 +276,15 @@ va_engine <- R6::R6Class("va_engine",
    #Initial cash flow matrix
    cash <- matrix(0, nrow = npaths, ncol = times_len)
    for (i in ind){
+     #Discount factors from time of death
+     #This is used by GMIB (Ib, Ic) and GMWB (Wc) riders for
+     #the death benefit at death_time.
+     discounts <- self$get_discount(i) / self$get_discount(i, private$tau[i])
      cash[i, ] <- private$the_product$cash_flows(self$get_fund(i),
-                                                  private$tau[i])
+                                                 private$tau[i], discounts)
 
      #Sets all zero in the cash flow matrix but for times corresponding
-     #to surrender decision, living benefit times and death-times.
+     #to surrender decision, living benefit times and death time.
      cash[i, -sort(unique(c(tt, private$tau[i])))] <- 0
    }
 

@@ -30,7 +30,7 @@ insurance products, their guarantees and fee structures.
     \item{\code{t}}{\code{timeDate} object with the end date of the
     accumulation period}
     \item{\code{t1}}{\code{timeDate} object with the end date of the
-    guaranteed benefit payment}
+     life benefit payment}
     \item{\code{age}}{\code{numeric} positive scalar with the age
      of the policyholder}
     \item{\code{fee}}{\code{\link{constant_parameters}} object with
