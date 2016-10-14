@@ -7,7 +7,7 @@ test_that("GMDB methods work", {
   begin <- timeDate::timeDate("2016-01-01")
   end <- timeDate::timeDate("2020-12-31")
   age <- 60
-  fee <- constant_parameters$new(0.02)
+  fee <- constant_parameters$new(0.008)
   penalty <- 0.01
   contract <- GMDB$new(rollup, t0 = begin, t = end, age = age,  fee = fee, penalty = penalty)
 
@@ -18,12 +18,16 @@ test_that("GMDB methods work", {
   engine$simulate_financial_paths(10)
   y <- engine$get_fund(1)
 
-  expect_equal(contract$survival_benefit_times(), NULL)
+  expect_equal(contract$survival_benefit_times(), length(y))
   expect_is(contract$cash_flows(y, engine$death_time()), "numeric")
 
   the_gatherer <- mc_gatherer$new()
 
   expect_silent(engine$do_static(the_gatherer, 10, simulate=FALSE))
+
   expect_silent(engine$do_mixed(the_gatherer, 10, simulate=FALSE))
+
+  #SE error of the simulation should be greater than zero.
+  expect_true(the_gatherer$get_results()[2] > 0)
 
 })

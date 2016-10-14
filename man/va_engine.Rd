@@ -29,7 +29,7 @@ and static approaches and the algorithm implemented by this class,
  \item{\code{new}}{Constructor method}
  \item{\code{death_time}}{Returns the time of death index. If the
  death doesn't occur during the product time-line it returns the
- last index of the product time-line}
+ last index of the product time-line plus one.}
  \item{\code{simulate_financial_paths}}{Simulates \code{npaths} paths
   of the underlying fund of the VA contract and the discount factors
   (interest rate) and saves them into private fields for later use.}

@@ -211,13 +211,15 @@ GMIB <- R6::R6Class("GMIB", inherit = va_product,
     penalty <- private$the_penalty
     len <- length(spot_values)
     t_id <- which(private$t == private$times)
-    if (death_time < t_id){
-      out <- calc_account(spot_values[1 : death_time], fee, barrier, penalty)
+    if (death_time <= t_id){
+      ben <- rep(0, death_time)
+      out <- calc_account(spot_values[1:death_time], ben, fee, barrier, penalty)
       out <- rep(out, length.out=len)
       out[(death_time + 1) : len] <- 0
     } else {
       time_int <- c(private$t0, private$t)
-      out <- calc_account(spot_values[1:t_id], fee, barrier, penalty)
+      ben <- rep(0, t_id)
+      out <- calc_account(spot_values[1:t_id], ben, fee, barrier, penalty)
       last <- length(out)
       income <- private$the_payoff$get_payoff(out[last], time_int, out)
       out <- rep(out, length.out = len)
@@ -225,7 +227,7 @@ GMIB <- R6::R6Class("GMIB", inherit = va_product,
       out[self$survival_benefit_times()] <- private$eta * income
       switch(private$type,
        "Ia" = {#Whole life annuity
-         if(death_time < len ) out[(death_time +1 ) : len] <- 0
+         if(death_time < len ) out[(death_time +1) : len] <- 0
         },
        "Ib" = {#Annuity certain
          t1_id <- which(private$t1 == private$times)
@@ -247,14 +249,15 @@ GMIB <- R6::R6Class("GMIB", inherit = va_product,
     }
     out
   },
-  survival_benefit = function(spot_values, time){
-    if(time %in% self$survival_benefit_times()){
+  survival_benefit = function(spot_values, death_time, time){
+    if(time %in% self$survival_benefit_times() & time != death_time){
      fee <- private$the_fee$get()
      barrier <- private$the_barrier
      penalty <- private$the_penalty
      t_id <- which(private$t == private$times)
      time_int <- c(private$t0, private$t)
-     out <- calc_account(spot_values[1:t_id], fee, barrier, penalty)
+     ben <- rep(0, t_id)
+     out <- calc_account(spot_values[1:t_id], ben, fee, barrier, penalty)
      last <- length(out)
      income <- private$the_payoff$get_payoff(out[last], time_int, out)
      out <- private$eta * income

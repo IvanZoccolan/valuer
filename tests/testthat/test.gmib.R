@@ -48,7 +48,7 @@ test_that("GMIB methods work", {
 
   #expects survival benefits is payed at the end of the
   #accumalation period if the insured is alive.
-  expect_equal(contract$survival_benefit(y, 1827), contract$cash_flows(y, 21900)[1827])
+  expect_equal(contract$survival_benefit(y, 1828, 1827), contract$cash_flows(y, 21900)[1827])
 
   #expects 2 living payments if death happens at time index 2300
   expect_equal(sum(contract$cash_flows(y, 2300)[1827:21900] != 0), 2)

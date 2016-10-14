@@ -134,7 +134,7 @@
 #'  \item{\code{new}}{Constructor method}
 #'  \item{\code{death_time}}{Returns the time of death index. If the
 #'  death doesn't occur during the product time-line it returns the
-#'  last index of the product time-line}
+#'  last index of the product time-line plus one.}
 #'  \item{\code{simulate_financial_paths}}{Simulates \code{npaths} paths
 #'   of the underlying fund of the VA contract and the discount factors
 #'   (interest rate) and saves them into private fields for later use.}
@@ -230,6 +230,10 @@ va_engine <- R6::R6Class("va_engine",
 
    #Initial cash flow matrix
    cash <- matrix(0, nrow = npaths, ncol = times_len)
+   #Adjusted time of death to avoid 'subscript out of bounds'
+   #errors with the cash matrix
+   adj_tau <- sapply(ind, function(i) ifelse(private$tau[i] > times_len,
+                                             times_len, private$tau[i]))
    #With the static method we set the penalty as 1
    #since we  want the surrender values to be all zeros.
    old_penalty <- private$the_product$get_penalty()
@@ -238,14 +242,14 @@ va_engine <- R6::R6Class("va_engine",
      #Discount factors from time of death
      #This is used by GMIB (Ib, Ic) and GMWB (Wc) riders for
      #the death benefit at death_time.
-    discounts <- self$get_discount(i) / self$get_discount(i, private$tau[i])
+    discounts <- self$get_discount(i) / self$get_discount(i, adj_tau[i])
 
     cash[i, ] <- private$the_product$cash_flows(self$get_fund(i),
                                                 private$tau[i], discounts)
    }
    res <- sapply(ind, function(i){
-     sum(cash[i, 1:private$tau[i]] *
-           self$get_discount(i, 1:private$tau[i]))
+     sum(cash[i, 1:adj_tau[i]] *
+           self$get_discount(i, 1:adj_tau[i]))
    })
    private$the_product$set_penalty(penalty = old_penalty)
    the_gatherer$dump_result(res)
@@ -266,20 +270,26 @@ va_engine <- R6::R6Class("va_engine",
    private$tau <- sapply(ind, function(i){
      self$death_time(i)})
 
-   #Initial surrender times vector
-   sur_ts <- private$tau
-   ##
    surrender_times <- private$the_product$surrender_times(freq)
    survival_times <- private$the_product$survival_benefit_times()
    tt <- c(surrender_times, survival_times)
 
    #Initial cash flow matrix
    cash <- matrix(0, nrow = npaths, ncol = times_len)
+
+   #Adjusted time of death to avoid 'subscript out of bounds'
+   #errors with the cash matrix
+   adj_tau <- sapply(ind, function(i) ifelse(private$tau[i] > times_len,
+                                             times_len, private$tau[i]))
+   #Initial surrender times vector
+   sur_ts <- adj_tau
+   ############################
+
    for (i in ind){
      #Discount factors from time of death
      #This is used by GMIB (Ib, Ic) and GMWB (Wc) riders for
      #the death benefit at death_time.
-     discounts <- self$get_discount(i) / self$get_discount(i, private$tau[i])
+     discounts <- self$get_discount(i) / self$get_discount(i, adj_tau[i])
      cash[i, ] <- private$the_product$cash_flows(self$get_fund(i),
                                                  private$tau[i], discounts)
 
@@ -304,7 +314,8 @@ va_engine <- R6::R6Class("va_engine",
      #### Comparison between surrender values and estimated
      #### continuation values ####
      for (i in seq_along(h_t)){
-      surv_ben <- private$the_product$survival_benefit(self$get_fund(h_t[i]), t)
+      surv_ben <- private$the_product$survival_benefit(self$get_fund(h_t[i]),
+                                                       private$tau[h_t[i]], t)
       surrender <-  cash[h_t[i], t] - surv_ben
       if (surrender > chat_t[i])
        sur_ts[h_t[i]] <- t
@@ -577,7 +588,7 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
     ind <- which(private$mu_integrals > rexp(1))
     if (length(ind) != 0)
       res <- min(ind)
-    else res <- length(private$times)
+    else res <- length(private$times) + 1
     res
   }
  ),

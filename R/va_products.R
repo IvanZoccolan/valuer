@@ -393,28 +393,33 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
    penalty <- private$the_penalty
    len <- length(spot_values)
 
-   if (death_time < length(private$times)){
-    out <- calc_account(spot_values[1:death_time], fee, barrier, penalty)
-    out <- rep(out, length.out=len)
-    out[(death_time+1):len] <- 0
+   if (death_time <= length(private$times)){
+    ben <- rep(0, death_time)
+    out <- calc_account(spot_values[1:death_time], ben, fee, barrier, penalty)
+    if(death_time < length(private$times)){
+      out <- rep(out, length.out=len)
+      out[(death_time+1):len] <- 0
+    }
    } else {
     time_int <- c(private$t0, private$t)
-    out <- calc_account(spot_values, fee, barrier, penalty)
+    ben <- rep(0, len)
+    out <- calc_account(spot_values, ben, fee, barrier, penalty)
     #GMAB living benefit
     last <- length(out)
     out[last] <- private$the_payoff$get_payoff(out[last], time_int, out)
    }
    out
   },
-  survival_benefit = function(spot_values, t){
+  survival_benefit = function(spot_values, death_time, t){
     last <- length(private$times)
-    if (t == last){
+    if (t == last & t != death_time){
       fee <- private$the_fee$get()
       barrier <- private$the_barrier
       penalty <- private$the_penalty
       t0 <- head(private$times, 1)
       t1 <- tail(private$times, 1)
-      out <- calc_account(spot_values, fee, barrier, penalty)
+      ben <- rep(0, last)
+      out <- calc_account(spot_values, ben, fee, barrier, penalty)
       out <-private$the_payoff$get_payoff(out[last], c(t0, t1), out)
     } else out <- 0
     out
@@ -546,17 +551,21 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
    penalty <- private$the_penalty
    len <- length(spot_values)
    t0 <- private$t0
-   if (death_time < length(private$times)){
-    out <- calc_account(spot_values[1:death_time], fee, barrier, penalty)
+   if (death_time <= length(private$times)){
+    ben <- rep(0, death_time)
+    out <- calc_account(spot_values[1:death_time], ben, fee, barrier, penalty)
     #GMDB death benefit
     last <- length(out)
     t <- private$times[death_time]
     out[last] <- private$the_death_payoff$get_payoff(out[last], c(t0, t), out)
-    out <- rep(out, length.out=len)
-    out[(death_time+1):len] <- 0
+    if(death_time < length(private$times)){
+      out <- rep(out, length.out=len)
+      out[(death_time+1):len] <- 0
+    }
    } else {
     t <- private$t
-    out <- calc_account(spot_values, fee, barrier, penalty)
+    ben <- rep(0, len)
+    out <- calc_account(spot_values, ben, fee, barrier, penalty)
     #GMAB living benefit
     last <- length(out)
     out[last] <- private$the_payoff$get_payoff(out[last], c(t0, t), out)
@@ -649,9 +658,9 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
   #' pp. 559-585.}}
 #' }
 #'@examples
-#'#Sets up the payoff as a roll-up of premiums with roll-up rate 1%
+#'#Sets up the payoff as a roll-up of premiums with roll-up rate 2%
 #'
-#'rate <- constant_parameters$new(0.01)
+#'rate <- constant_parameters$new(0.02)
 #'
 #'premium <- 100
 #'rollup <- payoff_rollup$new(premium, rate)
@@ -660,18 +669,19 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 #'end <- timeDate::timeDate("2020-12-31")
 #'
 #'age <- 60
-#'# A constant fee of 2% per year (365 days)
+#'# A constant fee of 0.02% per year (365 days)
 #'fee <- constant_parameters$new(0.02)
 #'
 #'#Barrier for a state-dependent fee. The fee will be applied only if
 #'#the value of the account is below the barrier
-#'barrier <- 200
+#'barrier <- Inf
 #'
 #'#Withdrawal penalty applied in case the insured surrenders the contract
 #'penalty <- 0.01
 #'
 #'#Sets up a VA contract with GMDB guarantee. The guaranteed miminum
-#'#is the roll-up of premiums with rate 1%
+#'#is the roll-up of premiums with rate 2%
+#'
 #'contract <- GMDB$new(rollup, t0 = begin, t = end, age = age,  fee = fee,
 #'barrier = barrier, penalty = penalty)
 
@@ -679,27 +689,43 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 
 GMDB <- R6::R6Class("GMDB", inherit = GMAB,
  public = list(
-  survival_benefit_times = function() NULL,
   cash_flows = function(spot_values, death_time, ...){
    fee <- private$the_fee$get()
    barrier <- private$the_barrier
    penalty <- private$the_penalty
    len <- length(spot_values)
    t0 <- private$t0
-   if (death_time < length(private$times)){
-    out <- calc_account(spot_values[1:death_time], fee, barrier, penalty)
+   if (death_time <= length(private$times)){
+    ben <- rep(0, death_time)
+    out <- calc_account(spot_values[1:death_time], ben, fee, barrier, penalty)
     #GMDB death benefit
     last <- length(out)
     t <- private$times[death_time]
     out[last] <- private$the_payoff$get_payoff(out[last], c(t0, t), out)
-    out <- rep(out, length.out=len)
-    out[(death_time+1):len] <- 0
+    if(death_time < length(private$times)){
+      out <- rep(out, length.out=len)
+      out[(death_time+1):len] <- 0
+    }
    } else {
-    out <- calc_account(spot_values, fee, barrier, penalty)
+    ben <- rep(0, len)
+    out <- calc_account(spot_values, ben, fee, barrier, penalty)
    }
    out
   },
-  survival_benefit = function(spot_values, t) 0L
+  survival_benefit = function(spot_values, death_time, t){
+    last <- length(private$times)
+    if (t == last & t != death_time){
+      fee <- private$the_fee$get()
+      barrier <- private$the_barrier
+      penalty <- private$the_penalty
+      t0 <- head(private$times, 1)
+      t1 <- tail(private$times, 1)
+      ben <- rep(0, last)
+      out <- calc_account(spot_values, ben, fee, barrier, penalty)
+      out <- out[last]
+    } else out <- 0
+    out
+  }
  )
 )
 

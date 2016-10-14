@@ -4,10 +4,12 @@
 \alias{calc_account}
 \title{Calculates the account}
 \usage{
-calc_account(spot, fee, barrier, penalty)
+calc_account(spot, ben, fee, barrier, penalty)
 }
 \arguments{
 \item{spot}{\code{numeric} vector with the VA reference fund values}
+
+\item{ben}{\code{numeric} vector with the living benefit cash flow}
 
 \item{fee}{\code{numeric} scalar with the fee}
 

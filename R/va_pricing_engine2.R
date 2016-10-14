@@ -56,7 +56,7 @@
 #'  }
 #'  \item{\code{death_time}}{Returns the time of death index. If the
 #'  death doesn't occur during the product time-line it returns the
-#'  last index of the product time-line.}
+#'  last index of the product time-line plus one.}
 #'  \item{\code{simulate_financial_paths}}{Simulates \code{npaths} paths
 #'  of the underlying fund of the VA contract and the discount factors
 #'  (interest rate) and saves them into private fields for later use.}
@@ -274,7 +274,7 @@ va_sde_engine <- R6::R6Class("va_sde_engine", inherit = va_engine,
     ind <- which(private$mu_integrals[i, ] > rexp(1))
     if (length(ind) != 0)
      res <- min(ind)
-    else res <- length(private$the_product$get_times())
+    else res <- length(private$the_product$get_times()) + 1
     res
   }
  ),
