@@ -385,7 +385,7 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
     surr_idx <- vector(mode = "numeric", length = length(surr_dates))
     for (i in seq_along(surr_dates))
       surr_idx[i] <- which(surr_dates[i] == private$times)
-    c(1, head(surr_idx, -1))
+    head(surr_idx, -1)
   },
   cash_flows = function(spot_values, death_time, ...){
    fee <- private$the_fee$get()
@@ -420,7 +420,7 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
       t1 <- tail(private$times, 1)
       ben <- rep(0, last)
       out <- calc_account(spot_values, ben, fee, barrier, penalty)
-      out <-private$the_payoff$get_payoff(out[last], c(t0, t1), out)
+      out <- private$the_payoff$get_payoff(out[last], c(t0, t1), out)
     } else out <- 0
     out
   }

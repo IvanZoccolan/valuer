@@ -547,10 +547,10 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
      for(j in seq(private$no_time_intervals)){
       this_variance <- volatility$integral_square(private$times[j],
                                                   private$times[j+1])
-      private$drifts[j] <- interest$integral(private$times[j],
+      drift <- interest$integral(private$times[j],
                                              private$times[j+1])
-      - dividends$integral(private$times[j], private$times[j+1])
-      - 0.5 * this_variance
+      drift <- drift - dividends$integral(private$times[j], private$times[j+1])
+      private$drifts[j] <- drift - 0.5 * this_variance
       private$standard_deviations[j] <- sqrt(this_variance)
      }
     }else stop(error_msg_2("parameters"))

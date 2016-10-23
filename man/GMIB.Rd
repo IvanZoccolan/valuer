@@ -87,7 +87,7 @@ of the accumulation period \code{t}.
   \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to
    the survival benefit.
    The arguments are \code{spot_values} vector which holds the values of
-   the underlying fund and \code{t} the time index of the survival benefit.
+   the underlying fund and \code{time} the time index of the survival benefit.
    The function will return 0 if there's no survival benefit at the
    specified time}
   \item{\code{get_premium}}{Returns the premium as non negative scalar}
