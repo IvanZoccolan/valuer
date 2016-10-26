@@ -240,7 +240,7 @@ va_engine <- R6::R6Class("va_engine",
    private$the_product$set_penalty(penalty = 1)
    for (i in ind){
      #Discount factors from time of death
-     #This is used by GMIB (Ib, Ic) and GMWB (Wc) riders for
+     #This is used by GMIB (Ib, Ic) and GMWB (Wa) riders for
      #the death benefit at death_time.
     discounts <- self$get_discount(i) / self$get_discount(i, adj_tau[i])
 
@@ -287,7 +287,7 @@ va_engine <- R6::R6Class("va_engine",
 
    for (i in ind){
      #Discount factors from time of death
-     #This is used by GMIB (Ib, Ic) and GMWB (Wc) riders for
+     #This is used by GMIB (Ib, Ic) and GMWB (Wa) riders for
      #the death benefit at death_time.
      discounts <- self$get_discount(i) / self$get_discount(i, adj_tau[i])
      cash[i, ] <- private$the_product$cash_flows(self$get_fund(i),
@@ -316,7 +316,9 @@ va_engine <- R6::R6Class("va_engine",
      for (i in seq_along(h_t)){
       surv_ben <- private$the_product$survival_benefit(self$get_fund(h_t[i]),
                                                        private$tau[h_t[i]], t)
-      surrender <-  cash[h_t[i], t] - surv_ben
+
+      surrender <-  cash[h_t[i], t] -  surv_ben
+
       if (surrender > chat_t[i])
        sur_ts[h_t[i]] <- t
       else cash[h_t[i], t] <- surv_ben

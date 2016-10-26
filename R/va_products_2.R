@@ -179,14 +179,14 @@ GMIB <- R6::R6Class("GMIB", inherit = va_product,
    if(is_identical_to_any(private$type, "Ib") & missing(t1))
      stop(error_msg_1_("t1", "timeDate"))
 
+   ts <- private$times
+   s_id <- which(private$t == ts)
+   endpoints <- timeDate::.endpoints(ts, on = "y")
+   out <- unique(sort(c(s_id, endpoints)))
+   private$surv_times <- out[out >= s_id]
+
   },
-  survival_benefit_times = function(){
-    ts <- private$times
-    s_id <- which(private$t == ts)
-    endpoints <- timeDate::.endpoints(ts, on = "y")
-    out <- unique(sort(c(s_id, endpoints)))
-    out[out >= s_id]
-  },
+  survival_benefit_times = function() private$surv_times,
   surrender_times = function(freq = "3m"){
     #Check on freq units
     units <- c("m", "w", "d")
@@ -250,7 +250,7 @@ GMIB <- R6::R6Class("GMIB", inherit = va_product,
     out
   },
   survival_benefit = function(spot_values, death_time, time){
-    if(time %in% self$survival_benefit_times() & time != death_time){
+    if(time %in% private$surv_times & time != death_time){
      fee <- private$the_fee$get()
      barrier <- private$the_barrier
      penalty <- private$the_penalty

@@ -9,3 +9,14 @@ packrat
 .Rbuildignore
 inst/doc
 vignettes/Introduction_cache
+CV_density_fitting.Rmd
+CV_density_fitting.html
+README.utf8.md
+Residual_histograms.Rmd
+Residual_histograms.html
+forward_looking_cv.Rmd
+forward_looking_cv.html
+residual_plots.Rmd
+residual_plots.html
+residual_plots_cst.Rmd
+residual_plots_cst.html
