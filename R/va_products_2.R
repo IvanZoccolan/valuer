@@ -200,7 +200,7 @@ GMIB <- R6::R6Class("GMIB", inherit = va_product,
     surr_idx <- vector(mode = "numeric", length = length(surr_dates))
     for (i in seq_along(surr_dates))
       surr_idx[i] <- which(surr_dates[i] == private$times)
-    c(1, head(surr_idx, -1))
+    head(surr_idx, -1)
   },
   cash_flows = function(spot_values, death_time, discounts){
     #discounts is a vector with the discount factors
