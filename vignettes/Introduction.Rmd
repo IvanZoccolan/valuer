@@ -27,7 +27,8 @@ Valuer has classes to represent a variable annuity contract whose names reflect 
 * GMAB
 * GMDB
 * GMAB_GMDB
-* GMIB.
+* GMIB
+* GMWB.
 
 
 ### Payoff of guarantees ###
