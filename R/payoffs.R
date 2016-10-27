@@ -206,3 +206,61 @@ payoff_ratchet <- R6::R6Class("payoff_ratchet", inherit = payoff_guarantee,
    freq = "1m"
  )
 )
+
+
+
+#' GMWB payoff class
+#' @description
+#' Class providing the  periodic payment of a GMWB contract.
+#' It is stated as a given percentage of the premium.
+#' @docType class
+#' @examples
+#' premium <- 100
+#' beta <- 0.15
+#' GMWB_payment <- payoff_GMWB$new(premium, beta)
+#' GMWB_payment$get_payoff()
+#' @export
+#' @return Object of \code{\link{R6Class}}
+#' @format \code{\link{R6Class}} object.
+#' @section Methods:
+#'  \describe{
+#'   \item{\code{new}}{Initialize method.
+#'    The arguments are a non negative scalar with the premium and a
+#'    scalar between 0 and 1 with the percentage.}
+#'   \item{\code{set_premium}}{Stores the premium in a
+#'    private field. The argument is a non negative scalar}
+#'   \item{\code{get_premium}}{Returns the premium
+#'   as non negative scalar}
+#'   \item{\code{set_beta}}{Sets the percentage. The argument is
+#'   a scalar between 0 and 1}
+#'   \item{\code{get_beta}}{Gets the percentage}
+#'   \item{\code{get_payoff}}{Gets the payoff}
+#'}
+
+
+
+payoff_GMWB <- R6::R6Class("payoff_GMWB", inherit = payoff_guarantee,
+ public = list(
+  initialize = function(premium, beta){
+    super$initialize(premium)
+    if (!missing(beta))
+     if (is_between(beta, 0, 1))
+      private$beta <- beta
+     else stop(error_msg_8("beta"))
+    else private$beta <- 0.1
+  },
+  get_payoff = function() private$beta * private$the_premium,
+  get_beta = function() private$beta,
+  set_beta = function(beta) {
+   if (!missing(beta))
+    if (is_between(beta, 0, 1))
+     private$beta <- beta
+    else stop(error_msg_8("beta"))
+   else private$beta <- 0.1
+  }
+ ),
+ private = list(
+   #Percentage of the initial premium to be withdrawn
+   beta = 0.1
+ )
+)

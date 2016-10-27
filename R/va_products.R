@@ -203,6 +203,9 @@ va_product <- R6::R6Class("va_product",
     if (is_between(penalty,0,1)) private$the_penalty <- penalty
     else stop(error_msg_8("penalty"))
    else private$the_penalty <- 0
+
+   private$surv_times <- length(private$times)
+
   },
   get_age = function() private$the_age,
   set_age = function(age){
@@ -261,7 +264,9 @@ va_product <- R6::R6Class("va_product",
   the_penalty = "numeric",
   #A numeric vector with the product time-line
   #in fraction of years
-  times_yrs = "numeric"
+  times_yrs = "numeric",
+  #Survival benefit time index
+  surv_times = "numeric"
  )
 )
 
@@ -374,7 +379,7 @@ va_product <- R6::R6Class("va_product",
 
 GMAB <- R6::R6Class("GMAB", inherit = va_product,
  public = list(
-  survival_benefit_times = function() length(private$times),
+  survival_benefit_times = function() private$surv_times,
   surrender_times = function(freq){
     #Check on freq units
     units <- c("m", "w", "d")
@@ -385,7 +390,7 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
     surr_idx <- vector(mode = "numeric", length = length(surr_dates))
     for (i in seq_along(surr_dates))
       surr_idx[i] <- which(surr_dates[i] == private$times)
-    c(1, head(surr_idx, -1))
+    head(surr_idx, -1)
   },
   cash_flows = function(spot_values, death_time, ...){
    fee <- private$the_fee$get()
@@ -420,7 +425,7 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
       t1 <- tail(private$times, 1)
       ben <- rep(0, last)
       out <- calc_account(spot_values, ben, fee, barrier, penalty)
-      out <-private$the_payoff$get_payoff(out[last], c(t0, t1), out)
+      out <- private$the_payoff$get_payoff(out[last], c(t0, t1), out)
     } else out <- 0
     out
   }
@@ -713,7 +718,7 @@ GMDB <- R6::R6Class("GMDB", inherit = GMAB,
    out
   },
   survival_benefit = function(spot_values, death_time, t){
-    last <- length(private$times)
+    last <- private$surv_times
     if (t == last & t != death_time){
       fee <- private$the_fee$get()
       barrier <- private$the_barrier

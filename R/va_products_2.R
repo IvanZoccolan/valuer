@@ -96,7 +96,7 @@
 #'   \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to
 #'    the survival benefit.
 #'    The arguments are \code{spot_values} vector which holds the values of
-#'    the underlying fund and \code{t} the time index of the survival benefit.
+#'    the underlying fund and \code{time} the time index of the survival benefit.
 #'    The function will return 0 if there's no survival benefit at the
 #'    specified time}
 #'   \item{\code{get_premium}}{Returns the premium as non negative scalar}
@@ -179,14 +179,14 @@ GMIB <- R6::R6Class("GMIB", inherit = va_product,
    if(is_identical_to_any(private$type, "Ib") & missing(t1))
      stop(error_msg_1_("t1", "timeDate"))
 
+   ts <- private$times
+   s_id <- which(private$t == ts)
+   endpoints <- timeDate::.endpoints(ts, on = "y")
+   out <- unique(sort(c(s_id, endpoints)))
+   private$surv_times <- out[out >= s_id]
+
   },
-  survival_benefit_times = function(){
-    ts <- private$times
-    s_id <- which(private$t == ts)
-    endpoints <- timeDate::.endpoints(ts, on = "y")
-    out <- unique(sort(c(s_id, endpoints)))
-    out[out >= s_id]
-  },
+  survival_benefit_times = function() private$surv_times,
   surrender_times = function(freq = "3m"){
     #Check on freq units
     units <- c("m", "w", "d")
@@ -200,7 +200,7 @@ GMIB <- R6::R6Class("GMIB", inherit = va_product,
     surr_idx <- vector(mode = "numeric", length = length(surr_dates))
     for (i in seq_along(surr_dates))
       surr_idx[i] <- which(surr_dates[i] == private$times)
-    c(1, head(surr_idx, -1))
+    head(surr_idx, -1)
   },
   cash_flows = function(spot_values, death_time, discounts){
     #discounts is a vector with the discount factors
@@ -250,7 +250,7 @@ GMIB <- R6::R6Class("GMIB", inherit = va_product,
     out
   },
   survival_benefit = function(spot_values, death_time, time){
-    if(time %in% self$survival_benefit_times() & time != death_time){
+    if(time %in% private$surv_times & time != death_time){
      fee <- private$the_fee$get()
      barrier <- private$the_barrier
      penalty <- private$the_penalty

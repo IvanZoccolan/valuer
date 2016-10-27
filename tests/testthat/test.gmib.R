@@ -35,7 +35,7 @@ test_that("GMIB methods work", {
   #expects 20 potential surrender times in 5 years if
   #the surrender decision is taken every 3 months
 
-  expect_length(contract$surrender_times(), 20)
+  expect_length(contract$surrender_times(), 19)
 
   #expects 56 potential life payments.
   expect_length(contract$survival_benefit_times(), 56)
@@ -80,7 +80,7 @@ test_that("GMIB methods work", {
   #expects 20 potential surrender times in 5 years if
   #the surrender decision is taken every 3 months
 
-  expect_length(contract$surrender_times(), 20)
+  expect_length(contract$surrender_times(), 19)
 
   #expects 6 potential life payments from 5 to 10 years.
   expect_length(contract$survival_benefit_times(), 6)
@@ -108,7 +108,7 @@ test_that("GMIB methods work", {
   #expects 20 potential surrender times in 5 years if
   #the surrender decision is taken every 3 months
 
-  expect_length(contract$surrender_times(), 20)
+  expect_length(contract$surrender_times(), 19)
 
   #expects 56 potential life payments from 65 to 120 years
   expect_length(contract$survival_benefit_times(), 56)

@@ -36,7 +36,7 @@ NumericVector calc_account(const NumericVector& spot, const NumericVector& ben, 
   int n = spot.size();
   NumericVector account(n);
 
-  double temp = spot[0];
+  double temp = spot[0] - ben[0];
   double p = 1 - penalty;
 
   for (int i = 0; i < n; ++i){
@@ -46,9 +46,9 @@ NumericVector calc_account(const NumericVector& spot, const NumericVector& ben, 
    else account[i] = 0;
 
    if (account[i] <= barrier){
-     temp =  account[i] * ((spot[i+1] / spot[i]) - fee) - ben[i];
+     temp =  account[i] * ((spot[i+1] / spot[i]) - fee) - ben[i + 1];
     } else {
-     temp = account[i] * (spot[i+1] / spot[i]) - ben[i];
+     temp = account[i] * (spot[i+1] / spot[i]) - ben[i + 1];
    };
   };
 
