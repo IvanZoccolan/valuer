@@ -71,6 +71,25 @@ and static approaches and the algorithm implemented by this class,
  Gets the \code{j}-th discount factor corresponding to the \code{i}-th
  simulated path of the discount factors. This method must be implemented
  by sub-classes.}
+ \item{\code{fair_fee}}{Calculates the fair fee for a contract using the
+ bisection method. Arguments are:
+  \describe{
+   \item{\code{fee_gatherer}}{\code{\link{data_gatherer}} object to hold
+   the point estimates}
+   \item{\code{npaths}}{\code{numeric} scalar with the number of MC
+   simulations to run}
+   \item{\code{lower}}{\code{numeric} scalar with the fee corresponding
+   to  the lower end of the bisection interval}
+   \item{\code{upper}}{\code{numeric} scalar with the fee corresponding
+   to the upper end of the bisection interval}
+   \item{\code{mixed}}{\code{boolean} specifying if the mixed method has
+   to be used. The default is \code{FALSE}}
+   \item{\code{tol}}{\code{numeric} scalar with the tolerance of the
+   bisection algorithm. Default is \code{1e-4}}
+   \item{\code{nmax}}{positive \code{integer} with the maximun number of
+   iterations of the bisection algorithm}
+  }
+ }
 }
 }
 \references{

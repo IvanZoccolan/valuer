@@ -176,6 +176,25 @@
 #'  Gets the \code{j}-th discount factor corresponding to the \code{i}-th
 #'  simulated path of the discount factors. This method must be implemented
 #'  by sub-classes.}
+#'  \item{\code{fair_fee}}{Calculates the fair fee for a contract using the
+#'  bisection method. Arguments are:
+#'   \describe{
+#'    \item{\code{fee_gatherer}}{\code{\link{data_gatherer}} object to hold
+#'    the point estimates}
+#'    \item{\code{npaths}}{\code{numeric} scalar with the number of MC
+#'    simulations to run}
+#'    \item{\code{lower}}{\code{numeric} scalar with the fee corresponding
+#'    to  the lower end of the bisection interval}
+#'    \item{\code{upper}}{\code{numeric} scalar with the fee corresponding
+#'    to the upper end of the bisection interval}
+#'    \item{\code{mixed}}{\code{boolean} specifying if the mixed method has
+#'    to be used. The default is \code{FALSE}}
+#'    \item{\code{tol}}{\code{numeric} scalar with the tolerance of the
+#'    bisection algorithm. Default is \code{1e-4}}
+#'    \item{\code{nmax}}{positive \code{integer} with the maximun number of
+#'    iterations of the bisection algorithm}
+#'   }
+#'  }
 #' }
 #' @references
 #' \enumerate{
@@ -332,7 +351,64 @@ va_engine <- R6::R6Class("va_engine",
   },
   get_discount = function(i, j) {
 
+    },
+  fair_fee = function(fee_gatherer, npaths, lower, upper, mixed = FALSE, tol = 1e-4, nmax = 100){
+    #Argument checks
+    if(!missing(fee_gatherer))
+     if(inherits(fee_gatherer, "data_gatherer")){}
+     else stop(error_msg_1_("fee_gatherer", "data_gatherer"))
+    else stop(error_msg_1_("fee_gatherer", "data_gatherer"))
+
+    if(!is_positive_integer(npaths)) stop(error_msg_4("npaths"))
+    if(!is_positive_scalar(lower)) stop(error_msg_7("lower"))
+    if(!is_positive_scalar(upper)) stop(error_msg_7("upper"))
+    if(upper <= lower) stop("Argument upper should be greater than lower")
+    if(!is.logical(mixed)) stop("Argument mixed should be a logical")
+    if(!is_between(tol, 0, 1)) stop(error_msg_8("tol"))
+    if(!is_positive_integer(nmax)) stop(error_msg_4("nmax"))
+    #######
+
+    P <- private$the_product$get_premium()
+
+    #Finds the contract value corresponding to the lower fee
+    private$the_product$set_fee(constant_parameters$new(lower))
+
+    the_gatherer <- mc_gatherer$new()
+
+    if(mixed) self$do_mixed(the_gatherer, npaths)
+    else self$do_static(the_gatherer, npaths)
+
+    old_value <- the_gatherer$get_results()[[1]]  - P
+
+    n <- 1
+    while(n <= nmax){
+     cat("#")
+     current <- (lower + upper) / 2
+     private$the_product$set_fee(constant_parameters$new(current))
+
+     fee_gatherer$dump_result(current)
+
+     if(mixed) self$do_mixed(the_gatherer, npaths, simulate = FALSE)
+     else self$do_static(the_gatherer, npaths, simulate = FALSE)
+
+     current_value <- the_gatherer$get_results()[[1]] - P
+     se <- the_gatherer$get_results()[[2]]
+
+     if(abs(current_value) <= se | (upper - lower) / 2 <= tol){
+      cat("\nFair fee is", current)
+      break
+     } else {
+      n <- n + 1
+      if (sign(current_value) == sign(old_value)){
+       lower <- current
+       old_value <- current_value
+      } else upper <- current
+     }
     }
+   if(n > nmax){
+     warning("The bisection method did not converge.\nCurrent fee value: ", current)
+   }
+  }
  ),
  private = list(
   #A va_product object with the VA contract.
@@ -433,6 +509,25 @@ va_engine <- R6::R6Class("va_engine",
 #'  Gets the \code{j}-th discount factor corresponding to the \code{i}-th
 #'  simulated path of the discount factors. This method must be implemented
 #'  by sub-classes.}
+#'  \item{\code{fair_fee}}{Calculates the fair fee for a contract using the
+#'  bisection method. Arguments are:
+#'   \describe{
+#'    \item{\code{fee_gatherer}}{\code{\link{data_gatherer}} object to hold
+#'    the point estimates}
+#'    \item{\code{npaths}}{\code{numeric} scalar with the number of MC
+#'    simulations to run}
+#'    \item{\code{lower}}{\code{numeric} scalar with the fee corresponding
+#'    to  the lower end of the bisection interval}
+#'    \item{\code{upper}}{\code{numeric} scalar with the fee corresponding
+#'    to the upper end of the bisection interval}
+#'    \item{\code{mixed}}{\code{boolean} specifying if the mixed method has
+#'    to be used. The default is \code{FALSE}}
+#'    \item{\code{tol}}{\code{numeric} scalar with the tolerance of the
+#'    bisection algorithm. Default is \code{1e-4}}
+#'    \item{\code{nmax}}{positive \code{integer} with the maximun number of
+#'    iterations of the bisection algorithm}
+#'   }
+#'  }
 #' }
 #' @references
 #' \enumerate{

@@ -29,8 +29,13 @@
 
 
 gatherer <-  R6::R6Class("gatherer",
- public = list( dump_result = function(result) {},
-                 get_results = function() {})
+ public = list(
+   dump_result = function(result) {},
+   get_results = function() {}
+ ),
+ private = list(
+   values = NULL
+ )
 )
 
 
@@ -58,7 +63,8 @@ mc_gatherer  <- R6::R6Class("mc_gatherer", inherit = gatherer,
  public = list(
   initialize = function(){ private$values <- 0.0 },
   dump_result = function(result){
-   if (inherits(result, "numeric")) private$values <- result
+   if (inherits(result, "numeric"))
+     private$values <-  result
    else stop(error_msg_9("result"))
   },
   get_results = function(){
@@ -90,9 +96,36 @@ mc_gatherer  <- R6::R6Class("mc_gatherer", inherit = gatherer,
   }
  ),
  private = list(
-  values = "numeric",
   conv_table = NULL
  )
 )
 
 
+#'Simple data gatherer
+#' @description Class which defines a simple data gatherer to hold estimates
+#' calculated in a loop.
+#' @docType class
+#' @export
+#' @return Object of \code{\link{R6Class}}
+#' @format \code{\link{R6Class}} object.
+#' @section Methods:
+#' \describe{
+#'   \item{\code{new}}{Constructor method}
+#'   \item{\code{dump_result}}{Saves the argument \code{result} which is
+#'   a numeric scalar}
+#'   \item{\code{get_results}}{Returns a numeric vector with the point
+#'   estimates.}
+#' }
+#'
+
+data_gatherer <- R6::R6Class("data_gatherer", inherit = gatherer,
+  public = list(
+    dump_result = function(result){
+      if (inherits(result, "numeric"))
+       private$values <- c(private$values, result)
+      else stop(error_msg_9("result"))
+    },
+    get_results = function() private$values
+
+  )
+)
