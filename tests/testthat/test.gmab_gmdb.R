@@ -10,7 +10,7 @@ test_that("GMAB_GMDB methods work", {
   end <- timeDate::timeDate("2020-12-31")
   age <- 60
   fee <- constant_parameters$new(0.02)
-  penalty <- 0.01
+  penalty <- penalty_class$new(type = 1, const = 0.01)
   barrier <- 200
   contract <- GMAB_GMDB$new(rollup, t0 = begin, t = end, age = age, fee =fee,
                             barrier = barrier, penalty = penalty, death_payoff = rollup)

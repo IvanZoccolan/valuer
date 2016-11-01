@@ -37,8 +37,8 @@ insurance products, their guarantees and fee structures.
      the fee}
     \item{\code{barrier}}{\code{numeric} positive scalar with the
      state-dependent fee barrier}
-    \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
-     with the withdrawal penalty}
+    \item{\code{penalty}}{\code{\link{penalty_class}} object with the
+     penalty}
     \item{\code{type}}{\code{string} with the GMWB contract type:
      it can be \code{'Wa'} for withdrawals up to \code{t1} independent
       of survival,\code{'Wb'} for withdrawals up to \code{t1} only
@@ -55,10 +55,14 @@ insurance products, their guarantees and fee structures.
    Returns a positive scalar with the barrier}
   \item{\code{set_barrier}}{set method for the state-dependent fee barrier.
    Argument must be a positive scalar.}
+  \item{\code{set_penalty_object}}{the argument \code{penalty} is a
+  \code{\link{penalty_class}} object which is stored in a private field.}
+  \item{\code{get_penalty_object}}{gets the \code{\link{penalty_class}} object.}
   \item{\code{set_penalty}}{set method for the penalty applied in case of
-   surrender. Argument must be a scalar between 0 and 1.}
-  \item{\code{get_penalty}}{get method for the penalty applied in case of
-    surrender. It returns a scalar between 0 and 1.}
+   surrender. The argument must be a scalar between 0 and 1.}
+  \item{\code{get_penalty}}{get method for the surrender penalties. It can be
+  a scalar between 0 and 1 in case the penalty is constant or a numeric vector
+  in case the penalty varies with time.}
   \item{\code{set_fee}}{set method for the contract fee. The argument is
      a \code{\link{constant_parameters}} object with the fee.}
   \item{\code{survival_benefit_times}}{returns a \code{numeric} vector with
@@ -109,8 +113,9 @@ fee <- constant_parameters$new(0.02)
 #the value of the account is below the barrier
 barrier <- 200
 
-#Surrender charge applied in case the insured surrenders the contract
-penalty <- 0.01
+#Withdrawal penalty applied in case the insured surrenders the contract
+#It is a constant penalty in this case
+penalty <- penalty_class$new(type = 1, 0.01)
 
 #Sets up a VA contract with GMWB guarantee type Wa with yearly
 #withdrawals for 10 years.

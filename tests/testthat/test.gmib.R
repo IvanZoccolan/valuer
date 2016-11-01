@@ -9,7 +9,7 @@ test_that("GMIB methods work", {
   t1 <- timeDate::timeDate("2025-12-31")
   age <- 60
   fee <- constant_parameters$new(0.02)
-  penalty <- 0.01
+  penalty <- penalty_class$new(type = 1, 0.01)
   barrier <- 200
 
   set.seed(1)

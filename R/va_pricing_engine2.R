@@ -154,7 +154,8 @@
 #'#the value of the account is below the barrier
 #'barrier <- 200
 #'#Withdrawal penalty applied in case the insured surrenders the contract
-#'penalty <- 0.02
+#'#It is a constant penalty in this case
+#'penalty <- penalty_class$new(type = 1, 0.02)
 #'#Sets up the contract with GMAB guarantee
 #'contract <- GMAB$new(rollup, t0 = begin, t = end, age = age, fee = fee,
 #'barrier = barrier, penalty = penalty)

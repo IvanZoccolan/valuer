@@ -7,7 +7,7 @@
 #' @param ben \code{numeric} vector with the living benefit cash flow
 #' @param fee  \code{numeric} scalar with the fee
 #' @param barrier \code{numeric} scalar with the state-dependent barrier
-#' @param penalty \code{numeric} scalar with the surrender penalty
+#' @param penalty \code{numeric} vector with the surrender penalty
 #' @export
 calc_account <- function(spot, ben, fee, barrier, penalty) {
     .Call('valuer_calc_account', PACKAGE = 'valuer', spot, ben, fee, barrier, penalty)

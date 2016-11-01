@@ -255,8 +255,9 @@ va_engine <- R6::R6Class("va_engine",
                                              times_len, private$tau[i]))
    #With the static method we set the penalty as 1
    #since we  want the surrender values to be all zeros.
-   old_penalty <- private$the_product$get_penalty()
-   private$the_product$set_penalty(penalty = 1)
+   old_penalty <- private$the_product$get_penalty_object()
+   penalty_1 <- penalty_class$new(type =1, const = 1)
+   private$the_product$set_penalty_object(penalty_1)
    for (i in ind){
      #Discount factors from time of death
      #This is used by GMIB (Ib, Ic) and GMWB (Wa) riders for
@@ -270,7 +271,7 @@ va_engine <- R6::R6Class("va_engine",
      sum(cash[i, 1:adj_tau[i]] *
            self$get_discount(i, 1:adj_tau[i]))
    })
-   private$the_product$set_penalty(penalty = old_penalty)
+   private$the_product$set_penalty_object(penalty = old_penalty)
    the_gatherer$dump_result(res)
   },
   do_mixed = function(the_gatherer, npaths, degree = 3, freq = "3m", simulate = TRUE){
@@ -559,7 +560,8 @@ va_engine <- R6::R6Class("va_engine",
 #'#the value of the account is below the barrier
 #'barrier <- Inf
 #'#Withdrawal penalty applied in case the insured surrenders the contract
-#'penalty <- 0.01
+#'#It is a constant penalty in this case
+#'penalty <- penalty_class$new(type = 1, 0.01)
 #'#Sets up the contract with GMAB guarantee
 #'contract <- GMAB$new(rollup, t0 = begin, t = end, age = age, fee = fee,
 #'barrier = barrier, penalty = penalty)

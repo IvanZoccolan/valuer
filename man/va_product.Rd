@@ -37,8 +37,8 @@ insurance products, their guarantees and fee structures.
      the fee}
     \item{\code{barrier}}{\code{numeric} positive scalar with the
      state-dependent fee barrier}
-    \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
-     with the withdrawal penalty}
+    \item{\code{penalty}}{\code{\link{penalty_class}} object with the
+    penalty}
    }
   }
   \item{\code{get_times}}{get method for the product time-line.
@@ -49,10 +49,14 @@ insurance products, their guarantees and fee structures.
    Returns a positive scalar with the barrier}
   \item{\code{set_barrier}}{set method for the state-dependent fee barrier.
     Argument must be a positive scalar.}
+  \item{\code{set_penalty_object}}{the argument \code{penalty} is a
+  \code{\link{penalty_class}} object which is stored in a private field.}
+  \item{\code{get_penalty_object}}{gets the \code{\link{penalty_class}} object.}
   \item{\code{set_penalty}}{set method for the penalty applied in case of
-   surrender. Argument must be a scalar between 0 and 1.}
-  \item{\code{get_penalty}}{get method for the penalty applied in case of
-    surrender. It returns a scalar between 0 and 1.}
+   surrender. The argument must be a scalar between 0 and 1.}
+  \item{\code{get_penalty}}{get method for the surrender penalties. It can be
+  a scalar between 0 and 1 in case the penalty is constant or a numeric vector
+  in case the penalty varies with time.}
   \item{\code{set_fee}}{set method for the contract fee. The argument is
      a \code{\link{constant_parameters}} object with the fee.}
   \item{\code{survival_benefit_times}}{returns a \code{numeric} vector with
