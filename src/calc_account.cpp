@@ -28,16 +28,17 @@ using namespace Rcpp;
 //' @param ben \code{numeric} vector with the living benefit cash flow
 //' @param fee  \code{numeric} scalar with the fee
 //' @param barrier \code{numeric} scalar with the state-dependent barrier
-//' @param penalty \code{numeric} scalar with the surrender penalty
+//' @param penalty \code{numeric} vector with the surrender penalty
 //' @export
 // [[Rcpp::export]]
-NumericVector calc_account(const NumericVector& spot, const NumericVector& ben, double fee, double barrier, double penalty) {
+NumericVector calc_account(const NumericVector& spot, const NumericVector& ben, double fee, double barrier, const NumericVector& penalty) {
 
   int n = spot.size();
   NumericVector account(n);
+  int m = penalty.size();
 
   double temp = spot[0] - ben[0];
-  double p = 1 - penalty;
+
 
   for (int i = 0; i < n; ++i){
 
@@ -52,8 +53,12 @@ NumericVector calc_account(const NumericVector& spot, const NumericVector& ben, 
    };
   };
 
-  for (int i = 0; i < n - 1; i++){
-    account[i] = p * account[i];
+  if(m == 1){
+   for (int i = 0; i < n - 1; i++)
+    account[i] = (1 - penalty[0]) * account[i];
+  } else {
+    for (int i = 0; i < n - 1; i++)
+     account[i] = (1 - penalty[i]) * account[i];
   };
 
   return account;

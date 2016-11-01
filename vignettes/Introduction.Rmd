@@ -93,13 +93,54 @@ barrier <- 200
 ### Surrender guarantee ###
 
 A VA contract may embed a surrender guarantee in case the policyholder is allowed to surrender the contract. Usually in this case a penalty is applied and the amount withdrawn would be the account value at the time of surrender multiplied by the penalty.
+Currently valuer supports a surrender penalty which is held constant during the time the insured 
+can surrender or two types of penalties which are decreasing functions of time. The idea behind time decreasing penalties is that the penalty should be set very high at contract inception to discourage early surrenders and progressively  reduces to zero. A specific class named  penalty_class is used to model these penalties. 
+
 
 ```{r}
 #Withdrawal penalty applied in case the insured surrenders the contract
-penalty <- 0.01
+
+penalty <- penalty_class$new(type =1, 0.01)
 
 ```
 
+This is a constant penalty or type 1
+
+To specify a penalty of type 2 we must provide the time (in years)
+by which the insurer can surrender. Usually this is the end of the accumulation 
+period. 
+
+```{r}
+penalty <- penalty_class$new(type = 2, const = 0.08, T = 5)
+
+penalty$get(0)
+
+penalty$get(5)
+
+```
+
+The type 2  penalty is calculated using the formula
+
+$$
+const\left (1-\frac{t}{T}  \right )^3
+$$
+
+so it's 8% at t = 0 and decreases to 0 at time t = 5.
+
+Finally type 3 is calculated using the formula
+
+$$
+1 - \exp\left ( -const \left ( T - \min\left (t, T  \right )  \right )\right ) 
+$$
+
+```{r}
+penalty <- penalty_class$new(type = 3, const = 0.08, T = 5)
+
+penalty$get(0)
+
+penalty$get(5)
+
+```
 ### Initializing a VA product object ###
 
 We now need to set the time-line of the product. In order to do it we first need to specify  the issue date, the end of the accumulation period date and the end of the benefit payment date in case it doesn't coincide with the end of accumulation date.
@@ -118,7 +159,7 @@ contract <- GMAB$new(rollup, t0 = begin, t = end, age = age, fee = fee, barrier 
 
 ```
 
-The contract fee, state-dependent fee barrier, initial age of the insured, withdrawal penalty can be changed later on by means of the corresponding set methods. Their values can be checked using the get methods: 
+The contract fee, state-dependent fee barrier, initial age of the insured can be changed later on by means of the corresponding set methods. Their values can be checked using the get methods: 
 
 ```{r}
 
@@ -128,12 +169,25 @@ contract$get_age()
 contract$set_barrier(200)
 contract$get_barrier()
 
-contract$set_penalty(0.02)
-contract$get_penalty()
 
 contract$set_fee(constant_parameters$new(0.03))
 
 ```
+
+It's also possible to change the constant of the surrender penalties while it's not possible to switch between penalty types unless we redefine the penalty_class object.
+
+```{r}
+contract$set_penalty(0.04)
+
+head(contract$get_penalty())
+
+penalty2 <- penalty_class$new(type = 2, const = 0.08, T = 5)
+
+contract$set_penalty_object(penalty2)
+
+head(contract$get_penalty())
+```
+
 These set methods are useful when we want to get estimates of the contract value corresponding to different feature of the contract but using the same simulated paths.  As an example of this usage scenario, the set_fee method would be called repeatedly while estimating the fair fee of a contract.  
 
 ## Pricing engines ##

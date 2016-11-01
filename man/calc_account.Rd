@@ -15,7 +15,7 @@ calc_account(spot, ben, fee, barrier, penalty)
 
 \item{barrier}{\code{numeric} scalar with the state-dependent barrier}
 
-\item{penalty}{\code{numeric} scalar with the surrender penalty}
+\item{penalty}{\code{numeric} vector with the surrender penalty}
 }
 \description{
 Calculates the account

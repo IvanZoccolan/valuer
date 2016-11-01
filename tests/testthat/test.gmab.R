@@ -8,7 +8,7 @@ test_that("GMAB methods work", {
   end <- timeDate::timeDate("2020-12-31")
   age <- 60
   fee <- constant_parameters$new(0.02)
-  penalty <- 0.01
+  penalty <- penalty_class$new(type = 1, const = 0.01)
   contract <- GMAB$new(rollup, t0 = begin, t = end, age = age,  fee = fee, penalty = penalty)
 
   engine <- va_bs_engine$new(contract, constant_parameters$new(0.03), c1=90.43, c2=10.36,

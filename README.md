@@ -32,7 +32,8 @@ fee <- constant_parameters$new(0.04)
 #the value of the account is below the barrier
 barrier <- Inf
 #Withdrawal penalty applied in case the insured surrenders the contract
-penalty <- 0.01
+#It is a constant penalty in this case
+penalty <- penalty_class$new(type = 1, 0.01)
 #Sets up the contract with GMAB guarantee
 contract <- GMAB$new(rollup, t0 = begin, t = end, age = age, fee = fee, barrier = barrier, penalty = penalty)
 #Interest rate
@@ -58,13 +59,13 @@ volatility=vol, dividends=div)
 
 engine$do_static(the_gatherer, no_of_paths)
 the_gatherer$get_results()
-#>       mean        se
-#> 1 105.3537 0.9213572
+#>       mean       se
+#> 1 93.18935 1.124966
 ```
 
 ### Release status
 
-Valuer is currently on development release 1.0.0.9000. Work to include further contract riders (e.g: GMIB, GMWB) is on-going. A beta release 1.1.0 which will include these is targeted end of October 2016.
+Valuer is currently on development release 1.1.0
 
 ### Installation
 

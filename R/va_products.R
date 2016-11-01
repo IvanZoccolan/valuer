@@ -41,9 +41,10 @@
 #This is the calc_account function.
 #A simple state-dependent fee structure with a single barrier is implemented
 #in the calc_account function.
-#Two public methods will return the times of survival benefit payments
+#Public methods will return the times of survival benefit payments
 #and the possible surrender times.
 #A public method returns the survival benefit at any given time.
+#The surrender penalty can be either constant or a decreasing function of time.
 ##########################DESIGN COMMENTS END###################################
 
 
@@ -77,8 +78,8 @@
 #'      the fee}
 #'     \item{\code{barrier}}{\code{numeric} positive scalar with the
 #'      state-dependent fee barrier}
-#'     \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
-#'      with the withdrawal penalty}
+#'     \item{\code{penalty}}{\code{\link{penalty_class}} object with the
+#'     penalty}
 #'    }
 #'   }
 #'   \item{\code{get_times}}{get method for the product time-line.
@@ -89,10 +90,14 @@
 #'    Returns a positive scalar with the barrier}
 #'   \item{\code{set_barrier}}{set method for the state-dependent fee barrier.
 #'     Argument must be a positive scalar.}
+#'   \item{\code{set_penalty_object}}{the argument \code{penalty} is a
+#'   \code{\link{penalty_class}} object which is stored in a private field.}
+#'   \item{\code{get_penalty_object}}{gets the \code{\link{penalty_class}} object.}
 #'   \item{\code{set_penalty}}{set method for the penalty applied in case of
-#'    surrender. Argument must be a scalar between 0 and 1.}
-#'   \item{\code{get_penalty}}{get method for the penalty applied in case of
-#'     surrender. It returns a scalar between 0 and 1.}
+#'    surrender. The argument must be a scalar between 0 and 1.}
+#'   \item{\code{get_penalty}}{get method for the surrender penalties. It can be
+#'   a scalar between 0 and 1 in case the penalty is constant or a numeric vector
+#'   in case the penalty varies with time.}
 #'   \item{\code{set_fee}}{set method for the contract fee. The argument is
 #'      a \code{\link{constant_parameters}} object with the fee.}
 #'   \item{\code{survival_benefit_times}}{returns a \code{numeric} vector with
@@ -200,11 +205,17 @@ va_product <- R6::R6Class("va_product",
    else private$the_barrier <- Inf
 
    if (!missing(penalty))
-    if (is_between(penalty,0,1)) private$the_penalty <- penalty
-    else stop(error_msg_8("penalty"))
-   else private$the_penalty <- 0
+    if (inherits(penalty, "penalty_class"))
+      private$the_penalty <- penalty
+    else stop(error_msg_1_("penalty", "penalty_class"))
+   else private$the_penalty <- penalty_class$new(type = 1, const = 1)
 
    private$surv_times <- length(private$times)
+
+   if (identical(private$the_penalty$get_type(), 1))
+     private$penalty <- private$the_penalty$get()
+   else for (i in seq_along(private$times_yrs))
+     private$penalty[i] <- private$the_penalty$get(private$times_yrs[i])
 
   },
   get_age = function() private$the_age,
@@ -222,13 +233,27 @@ va_product <- R6::R6Class("va_product",
     else stop(error_msg_3_("barrier"))
    else private$the_barrier <- Inf
   },
-  get_penalty = function() private$the_penalty,
-  set_penalty = function(penalty) {
+  set_penalty_object = function(penalty){
    if (!missing(penalty))
-    if (is_between(penalty, 0, 1)) private$the_penalty <- penalty
-    else stop(error_msg_8("penalty"))
-  else private$the_penalty <- 0
+    if (inherits(penalty, "penalty_class"))
+     private$the_penalty <- penalty
+    else stop(error_msg_1_("penalty", "penalty_class"))
+   else private$the_penalty <- penalty_class$new(type = 1, const = 1)
+
+   if (identical(private$the_penalty$get_type(), 1))
+     private$penalty <- private$the_penalty$get()
+   else for (i in seq_along(private$times_yrs))
+     private$penalty[i] <- private$the_penalty$get(private$times_yrs[i])
   },
+  get_penalty_object = function(time) private$the_penalty,
+  set_penalty = function(penalty) {
+    private$the_penalty$set(penalty)
+    if (identical(private$the_penalty$get_type(), 1))
+      private$penalty <- private$the_penalty$get()
+    else for (i in seq_along(private$times_yrs))
+      private$penalty[i] <- private$the_penalty$get(private$times_yrs[i])
+  },
+  get_penalty = function( ) private$penalty,
   set_fee = function(fee){
     if (!missing(fee))
       if(inherits(fee, "constant_parameters")) private$the_fee <- fee
@@ -259,9 +284,10 @@ va_product <- R6::R6Class("va_product",
   the_fee = "constant_parameters",
   #A positive scalar with the barrier for state-dependent fees.
   the_barrier = "numeric",
-  #A scalar with the withdrawal penalty.
-  # Must be between 0 and 1.
-  the_penalty = "numeric",
+  #A scalar or numeric vector  with the withdrawal penalty.
+  penalty = numeric(0),
+  #A penalty object
+  the_penalty = "penalty_class",
   #A numeric vector with the product time-line
   #in fraction of years
   times_yrs = "numeric",
@@ -299,8 +325,8 @@ va_product <- R6::R6Class("va_product",
 #'      the fee}
 #'     \item{\code{barrier}}{\code{numeric} positive scalar with the
 #'      state-dependent fee barrier}
-#'     \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
-#'      with the withdrawal penalty}
+#'     \item{\code{penalty}}{\code{\link{penalty_class}} object with the
+#'      penalty}
 #'    }
 #'   }
 #'   \item{\code{get_times}}{get method for the product time-line.
@@ -311,10 +337,14 @@ va_product <- R6::R6Class("va_product",
 #'    Returns a positive scalar with the barrier}
 #'   \item{\code{set_barrier}}{set method for the state-dependent fee barrier.
 #'    Argument must be a positive scalar.}
+#'   \item{\code{set_penalty_object}}{the argument \code{penalty} is a
+#'   \code{\link{penalty_class}} object which is stored in a private field.}
+#'   \item{\code{get_penalty_object}}{gets the \code{\link{penalty_class}} object.}
 #'   \item{\code{set_penalty}}{set method for the penalty applied in case of
-#'    surrender. Argument must be a scalar between 0 and 1.}
-#'   \item{\code{get_penalty}}{get method for the penalty applied in case of
-#'     surrender. It returns a scalar between 0 and 1.}
+#'    surrender. The argument must be a scalar between 0 and 1.}
+#'   \item{\code{get_penalty}}{get method for the surrender penalties. It can be
+#'   a scalar between 0 and 1 in case the penalty is constant or a numeric vector
+#'   in case the penalty varies with time.}
 #'   \item{\code{set_fee}}{set method for the contract fee. The argument is
 #'      a \code{\link{constant_parameters}} object with the fee.}
 #'   \item{\code{survival_benefit_times}}{returns a \code{numeric} vector with
@@ -332,9 +362,7 @@ va_product <- R6::R6Class("va_product",
 #'   \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to
 #'    the survival benefit.
 #'    The arguments are \code{spot_values} vector which holds the values of
-#'    the underlying fund and \code{t} the time index of the survival benefit.
-#'    The function will return 0 if there's no survival benefit at the
-#'    specified time}
+#'    the underlying fund and \code{t} the time index of the survival benefit.}
 #'   \item{\code{get_premium}}{Returns the premium as non negative scalar}
 #' }
 #' @references
@@ -368,7 +396,9 @@ va_product <- R6::R6Class("va_product",
 #'barrier <- 200
 #'
 #'#Withdrawal penalty applied in case the insured surrenders the contract
-#'penalty <- 0.01
+#'#It is a constant penalty in this case
+#'penalty <- penalty_class$new(type = 1, 0.01)
+#'
 #'
 #'#Sets up a VA contract with GMAB guarantee. The guaranteed miminum
 #'#is the roll-up of premiums with rate 1%
@@ -395,7 +425,7 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
   cash_flows = function(spot_values, death_time, ...){
    fee <- private$the_fee$get()
    barrier <- private$the_barrier
-   penalty <- private$the_penalty
+   penalty <- private$penalty
    len <- length(spot_values)
 
    if (death_time <= length(private$times)){
@@ -417,10 +447,10 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
   },
   survival_benefit = function(spot_values, death_time, t){
     last <- length(private$times)
+    penalty <- private$penalty
     if (t == last & t != death_time){
       fee <- private$the_fee$get()
       barrier <- private$the_barrier
-      penalty <- private$the_penalty
       t0 <- head(private$times, 1)
       t1 <- tail(private$times, 1)
       ben <- rep(0, last)
@@ -462,8 +492,8 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #'     the fee}
 #'     \item{\code{barrier}}{\code{numeric} positive scalar with the
 #'     state-dependent fee barrier}
-#'     \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
-#'     with the withdrawal penalty}
+#'     \item{\code{penalty}}{\code{\link{penalty_class}} object with the
+#'      penalty}
 #'     \item{\code{death_payoff}}{\code{payoff} object with the payoff
 #'     of the GMDB guarantee}
 #'    }
@@ -476,10 +506,14 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #'    Returns a positive scalar with the barrier}
 #'   \item{\code{set_barrier}}{set method for the state-dependent fee barrier.
 #'     Argument must be a positive scalar.}
+#'   \item{\code{set_penalty_object}}{the argument \code{penalty} is a
+#'   \code{\link{penalty_class}} object which is stored in a private field.}
+#'   \item{\code{get_penalty_object}}{gets the \code{\link{penalty_class}} object.}
 #'   \item{\code{set_penalty}}{set method for the penalty applied in case of
-#'    surrender. Argument must be a scalar between 0 and 1.}
-#'   \item{\code{get_penalty}}{get method for the penalty applied in case of
-#'     surrender. It returns a scalar between 0 and 1.}
+#'    surrender. The argument must be a scalar between 0 and 1.}
+#'   \item{\code{get_penalty}}{get method for the surrender penalties. It can be
+#'   a scalar between 0 and 1 in case the penalty is constant or a numeric vector
+#'   in case the penalty varies with time.}
 #'   \item{\code{set_fee}}{set method for the contract fee. The argument is
 #'      a \code{\link{constant_parameters}} object with the fee.}
 #'   \item{\code{survival_benefit_times}}{returns a \code{numeric} vector with
@@ -493,13 +527,11 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
 #'    cash flows of the product. It takes as argument \code{spot_values} a
 #'    \code{numeric} vector which holds the values of the underlying fund and
-#'    \code{death_time} a time index with the time of death}
+#'     \code{death_time} a time index with the time of death}
 #'   \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to
 #'    the survival benefit.
 #'    The arguments are \code{spot_values} vector which holds the values of
-#'    the underlying fund and \code{t} the time index of the survival benefit.
-#'    The function will return 0 if there's no survival benefit at the
-#'    specified time}
+#'    the underlying fund and \code{t} the time index of the survival benefit.}
 #'   \item{\code{get_premium}}{Returns the premium as non negative scalar}
 #' }
 #' @references
@@ -532,8 +564,10 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #'#the value of the account is below the barrier
 #'barrier <- 200
 #'
-#'#Withdrawal penalty applied in case the insured surrenders the contract.
-#'penalty <- 0.01
+#'#Withdrawal penalty applied in case the insured surrenders the contract
+#'#It is a constant penalty in this case
+#'penalty <- penalty_class$new(type = 1, 0.01)
+#'
 #'#Sets up the GMAB + GMDB with the same payoff for survival and death
 #'#benefits
 #'contract <- GMAB_GMDB$new(rollup, t0 = begin, t = end, age = age, fee =fee,
@@ -553,7 +587,7 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
   cash_flows = function(spot_values, death_time, ...){
    fee <- private$the_fee$get()
    barrier <- private$the_barrier
-   penalty <- private$the_penalty
+   penalty <- private$penalty
    len <- length(spot_values)
    t0 <- private$t0
    if (death_time <= length(private$times)){
@@ -614,8 +648,8 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 #'     the fee}
 #'     \item{\code{barrier}}{\code{numeric} positive scalar with the
 #'     state-dependent fee barrier}
-#'     \item{\code{penalty}}{\code{numeric} scalar between 0 and 1
-#'     with the withdrawal penalty}
+#'     \item{\code{penalty}}{\code{\link{penalty_class}} object with the
+#'      penalty}
 #'    }
 #'   }
 #'   \item{\code{get_times}}{get method for the product time-line.
@@ -626,10 +660,14 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 #'    Returns a positive scalar with the barrier}
 #'   \item{\code{set_barrier}}{set method for the state-dependent fee barrier.
 #'    Argument must be a positive scalar.}
+#'   \item{\code{set_penalty_object}}{the argument \code{penalty} is a
+#'   \code{\link{penalty_class}} object which is stored in a private field.}
+#'   \item{\code{get_penalty_object}}{gets the \code{\link{penalty_class}} object.}
 #'   \item{\code{set_penalty}}{set method for the penalty applied in case of
-#'    surrender. Argument must be a scalar between 0 and 1.}
-#'   \item{\code{get_penalty}}{get method for the penalty applied in case of
-#'     surrender. It returns a scalar between 0 and 1.}
+#'    surrender. The argument must be a scalar between 0 and 1.}
+#'   \item{\code{get_penalty}}{get method for the surrender penalties. It can be
+#'   a scalar between 0 and 1 in case the penalty is constant or a numeric vector
+#'   in case the penalty varies with time.}
 #'   \item{\code{set_fee}}{set method for the contract fee. The argument is
 #'      a \code{\link{constant_parameters}} object with the fee.}
 #'   \item{\code{survival_benefit_times}}{returns a \code{numeric} vector with
@@ -643,13 +681,11 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 #'   \item{\code{cash_flows}}{returns a \code{numeric} vector with the
 #'    cash flows of the product. It takes as argument \code{spot_values} a
 #'    \code{numeric} vector which holds the values of the underlying fund and
-#'    \code{death_time} a time index with the time of death}
+#'     \code{death_time} a time index with the time of death}
 #'   \item{\code{survival_benefit}}{Returns a numeric scalar corresponding to
 #'    the survival benefit.
 #'    The arguments are \code{spot_values} vector which holds the values of
-#'    the underlying fund and \code{t} the time index of the survival benefit.
-#'    The function will return 0 if there's no survival benefit at the
-#'    specified time}
+#'    the underlying fund and \code{t} the time index of the survival benefit.}
 #'   \item{\code{get_premium}}{Returns the premium as non negative scalar}
 #' }
 #' @references
@@ -682,7 +718,8 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
 #'barrier <- Inf
 #'
 #'#Withdrawal penalty applied in case the insured surrenders the contract
-#'penalty <- 0.01
+#'#It is a constant penalty in this case
+#'penalty <- penalty_class$new(type = 1, 0.01)
 #'
 #'#Sets up a VA contract with GMDB guarantee. The guaranteed miminum
 #'#is the roll-up of premiums with rate 2%
@@ -697,7 +734,7 @@ GMDB <- R6::R6Class("GMDB", inherit = GMAB,
   cash_flows = function(spot_values, death_time, ...){
    fee <- private$the_fee$get()
    barrier <- private$the_barrier
-   penalty <- private$the_penalty
+   penalty <- private$penalty
    len <- length(spot_values)
    t0 <- private$t0
    if (death_time <= length(private$times)){
@@ -719,12 +756,10 @@ GMDB <- R6::R6Class("GMDB", inherit = GMAB,
   },
   survival_benefit = function(spot_values, death_time, t){
     last <- private$surv_times
+    penalty <- private$penalty
     if (t == last & t != death_time){
       fee <- private$the_fee$get()
       barrier <- private$the_barrier
-      penalty <- private$the_penalty
-      t0 <- head(private$times, 1)
-      t1 <- tail(private$times, 1)
       ben <- rep(0, last)
       out <- calc_account(spot_values, ben, fee, barrier, penalty)
       out <- out[last]
