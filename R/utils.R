@@ -122,6 +122,18 @@ sq <- function(x) ifelse(x > 0, sqrt(x), 0)
 #' @export
 mu <-  function(t, x, c1, c2) {(c1^(-c2))*c2*((x + t)^(c2 -1))}
 
+#Deterministic intensity of mortality ( Makeham )
+
+#' Makeham's intensity of mortality
+#' @param t time as numeric scalar
+#' @param x age as numeric scalar
+#' @param A numeric scalar
+#' @param B numeric scalar
+#' @param c numeric scalar
+#' @export
+
+makeham <- function(t, x, A, B, c) A + B * (c ^ (x + t))
+
 
 #Cumulative standard deviation
 #http://stackoverflow.com/questions/2765374/

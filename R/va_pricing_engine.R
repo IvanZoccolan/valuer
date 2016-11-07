@@ -605,7 +605,7 @@ va_engine <- R6::R6Class("va_engine",
 
 va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
  public = list(
-  initialize = function(product, interest, c1, c2, spot, volatility, dividends){
+  initialize = function(product, interest, c1, c2, spot, volatility, dividends, ...){
    if(!missing(product))
     if (inherits(product, "va_product")){
      private$the_product <- product
