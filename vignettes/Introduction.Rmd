@@ -130,7 +130,7 @@ so it's 8% at t = 0 and decreases to 0 at time t = 5.
 Finally type 3 is calculated using the formula
 
 $$
-1 - \exp\left ( -const \left ( T - \min\left (t, T  \right )  \right )\right ) 
+1 - \exp\left ( -(const / T) \left ( T - \min\left (t, T  \right )  \right )\right ) 
 $$
 
 ```{r}

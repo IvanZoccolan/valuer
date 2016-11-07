@@ -177,14 +177,14 @@ penalty_class <- R6::R6Class("penalty_class",
     },
     '3' = {
      if (!missing(const))
-      if (is_between(const, 0, 1)) private$const <- const / 10
+      if (is_between(const, 0, 1)) private$const <- const
       else stop(error_msg_8("const"))
-     else private$const <- 0.008
+     else private$const <- 0.08
 
      if(!missing(T))
       if(is_positive_integer(T)){
         private$T <- T
-        private$the_penalty <- function(t) 1 - exp(-private$const * (T - min(T, t)))
+        private$the_penalty <- function(t) 1 - exp(-(private$const / T) * (T - min(T, t)))
       } else stop(error_msg_4("T"))
      else stop(error_msg_4("T"))
     }

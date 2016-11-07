@@ -21,10 +21,10 @@ test_that("penalty_class methods work", {
 
   expect_equal(penalty$get(0), 0.04)
 
-  expect_silent(penalty <- penalty_class$new(type = 3, const = 0.08, T = 10))
+  expect_silent(penalty <- penalty_class$new(type = 3, const = 0.08, T = 5))
 
   expect_lt(penalty$get(0), 0.08)
-  expect_equal(penalty$get(10), 0)
+  expect_equal(penalty$get(5), 0)
 
   expect_silent(penalty$set(0.04))
 
