@@ -60,6 +60,10 @@ insurance products, their guarantees and fee structures.
   in case the penalty varies with time.}
   \item{\code{set_fee}}{set method for the contract fee. The argument is
      a \code{\link{constant_parameters}} object with the fee.}
+  \item{\code{set_payoff}}{set method for the \code{\link{payoff_guarantee}}
+  object of the GMAB rider}
+  \item{\code{set_death_payoff}}{set method for the
+  \code{\link{payoff_guarantee}}  object of the GMDB rider}
   \item{\code{survival_benefit_times}}{returns a \code{numeric} vector with
    the survival benefit time indexes.}
   \item{\code{surrender_times}}{returns a \code{numeric} vector with the

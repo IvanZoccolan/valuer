@@ -101,6 +101,8 @@ for \code{yuima}.
    bisection algorithm. Default is \code{1e-4}}
    \item{\code{nmax}}{positive \code{integer} with the maximun number of
    iterations of the bisection algorithm}
+   \item{\code{simulate}}{boolean specifying if financial and mortality
+   paths should be simulated.}
   }
  }
 }

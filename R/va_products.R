@@ -100,6 +100,8 @@
 #'   in case the penalty varies with time.}
 #'   \item{\code{set_fee}}{set method for the contract fee. The argument is
 #'      a \code{\link{constant_parameters}} object with the fee.}
+#'   \item{\code{set_payoff}}{set method for the \code{\link{payoff_guarantee}}
+#'    object.}
 #'   \item{\code{survival_benefit_times}}{returns a \code{numeric} vector with
 #'    the survival benefit time indexes.}
 #'   \item{\code{surrender_times}}{returns a \code{numeric} vector with the
@@ -217,6 +219,12 @@ va_product <- R6::R6Class("va_product",
    else for (i in seq_along(private$times_yrs))
      private$penalty[i] <- private$the_penalty$get(private$times_yrs[i])
 
+  },
+  set_payoff = function(payoff){
+    if (!missing(payoff))
+      if (inherits(payoff, "payoff_guarantee")) private$the_payoff <- payoff
+      else stop(error_msg_1("payoff_guarantee"))
+    else stop("Please provide a guarantee payoff object\n")
   },
   get_age = function() private$the_age,
   set_age = function(age){
@@ -347,6 +355,8 @@ va_product <- R6::R6Class("va_product",
 #'   in case the penalty varies with time.}
 #'   \item{\code{set_fee}}{set method for the contract fee. The argument is
 #'      a \code{\link{constant_parameters}} object with the fee.}
+#'   \item{\code{set_payoff}}{set method for the \code{\link{payoff_guarantee}}
+#'    object.}
 #'   \item{\code{survival_benefit_times}}{returns a \code{numeric} vector with
 #'    the survival benefit time indexes.}
 #'   \item{\code{surrender_times}}{returns a \code{numeric} vector with the
@@ -516,6 +526,10 @@ GMAB <- R6::R6Class("GMAB", inherit = va_product,
 #'   in case the penalty varies with time.}
 #'   \item{\code{set_fee}}{set method for the contract fee. The argument is
 #'      a \code{\link{constant_parameters}} object with the fee.}
+#'   \item{\code{set_payoff}}{set method for the \code{\link{payoff_guarantee}}
+#'   object of the GMAB rider}
+#'   \item{\code{set_death_payoff}}{set method for the
+#'   \code{\link{payoff_guarantee}}  object of the GMDB rider}
 #'   \item{\code{survival_benefit_times}}{returns a \code{numeric} vector with
 #'    the survival benefit time indexes.}
 #'   \item{\code{surrender_times}}{returns a \code{numeric} vector with the
@@ -584,6 +598,13 @@ GMAB_GMDB <- R6::R6Class("GMAB_GMDB", inherit = GMAB,
      else stop(error_msg_1_("death_payoff", "payoff_guarantee"))
    else stop("Please provide a guarantee payoff object\n")
    },
+  set_death_payoff = function(death_payoff){
+    if (!missing(death_payoff))
+      if (inherits(death_payoff, "payoff_guarantee"))
+        private$the_death_payoff <- death_payoff
+      else stop(error_msg_1_("death_payoff", "payoff_guarantee"))
+    else stop("Please provide a guarantee payoff object\n")
+  },
   cash_flows = function(spot_values, death_time, ...){
    fee <- private$the_fee$get()
    barrier <- private$the_barrier
