@@ -66,7 +66,7 @@
 
 #The pricing algorithms are defined in the base class va_engine.
 #Vise-versa the simulation of the source of risks is demanded to subclasses of
-#this base class, currently va_bs_engine and va_sde_engine.
+#this base class, such as  va_bs_engine and va_sde_engine.
 #va_bs_engine simulates the underlying fund with a GBM and the demographic risk
 #by means of the deterministic Weibull intensity of mortality.
 #The class va_sde_engine leverages on the beautiful yuima package to specify
@@ -75,11 +75,15 @@
 #So it is pretty general and flexible in that respect.
 #However bear in mind the cost of this flexibility is far longer execution
 #time and assumes some fair knowledge of yuima.
-#To make things easier for the user I've provided  example parameters
-#to set up the engine.
 #Please see the help pages for financials_BMOP2011, mortality_BMOP2011,
 #financials_BBM2010 and mortality_BBM2010.
-#
+#To improve the execution time of the simulation of paths in the va_sde_engine,
+#parallel execution of the yuima simulate function is implemented via
+#foreach. However paraller execution proved to be voracious for memory
+#in Windows (SOCK clusters). I recommend to use it in Linux as fork clusters
+#are more efficient in terms of memory utilization.
+#To make things easier for the user I've provided  example parameters
+#to set up the engine.
 #The simulated paths of the underlying fund, interest rate, discount factors,
 #intensity of mortality and VA cash flows are saved into private matrices.
 #As a consequence the  memory foot print of the engine object increases
@@ -274,7 +278,7 @@ va_engine <- R6::R6Class("va_engine",
    private$the_product$set_penalty_object(penalty = old_penalty)
    the_gatherer$dump_result(res)
   },
-  do_mixed = function(the_gatherer, npaths, degree = 3, freq = "3m", simulate = TRUE){
+  do_mixed = function(the_gatherer, npaths, degree = 3, freq = "3m", simulate = TRUE, bound = Inf){
    #Estimates the VA by means of the mixed approach
    #implemented with Least Squares Monte Carlo
    times_len = length(private$the_product$get_times())
@@ -318,9 +322,32 @@ va_engine <- R6::R6Class("va_engine",
      cash[i, -sort(unique(c(tt, private$tau[i])))] <- 0
    }
 
+   #In case the penalty is  decreasing with time
+   #and the finantial paths are continous (e.g: no jump diffusion),
+   #recent studies proved that the rational policyholder would decide
+   #to surrender only when the surrender guarantee is in the money.
+   #Therefore in these hyphoteses, for the LSMC regression we want to
+   #take into consideration only paths where the insured is alive and
+   #the  rider guarantee is in-the-money.
+   #For this to happen the account at a specific surrender date must be
+   #below  the minimum guaranteed benefit amount.
+   #Therefore the variable bound should hold that amount by (1 - penalty)
+   #Only the advanced user should set the bound variable when using the
+   #do_mixed method.
+   #Otherwise it should be left at the default Inf which corresponds to
+   #taking the regression in both cases of guarantee out or in the money.
+
+    penalty <- private$the_product$get_penalty()
+    if (length(penalty) != 1) {
+      bound <- (1 - penalty[surrender_times]) * bound
+    } else bound <- (1 - penalty[1]) * rep(bound, length(surrender_times))
+
+
    for(t in rev(surrender_times)){
-     h_t <- which(private$tau > t)
-     #Continuation value at time t
+    #See comment above about bound
+    h_t <- which(private$tau > t & cash[, t] < bound[t])
+    if(length(h_t) != 0){
+    #Continuation value at time t
      c_t <- sapply(h_t, function(i){
        sum(cash[i, (t+1):sur_ts[i]] *
         self$get_discount(i, (t+1):sur_ts[i]) / self$get_discount(i, t))
@@ -343,6 +370,15 @@ va_engine <- R6::R6Class("va_engine",
        sur_ts[h_t[i]] <- t
       else cash[h_t[i], t] <- surv_ben
      }
+    }
+    #We need to set the cashflow at time t back to just the survival benefit
+    #(so zero clear the surrender value) given we're not taking the decision
+    #to surrender on all paths but those indexed by h_t
+    for (i in ind[!is.element(ind, h_t)]){
+      surv_ben <- private$the_product$survival_benefit(self$get_fund(i),
+                                                       private$tau[i], t)
+      cash[i, t] <- surv_ben
+    }
    }
    res <- sapply(seq_along(sur_ts), function(i) {
      sum(cash[i, 1:sur_ts[i]] *
