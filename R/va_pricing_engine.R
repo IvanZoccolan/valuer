@@ -278,10 +278,10 @@ va_engine <- R6::R6Class("va_engine",
    private$the_product$set_penalty_object(penalty = old_penalty)
    the_gatherer$dump_result(res)
   },
-  do_mixed = function(the_gatherer, npaths, degree = 3, freq = "3m", simulate = TRUE, bound = Inf){
+  do_mixed = function(the_gatherer, npaths, degree = 3, freq = "3m", simulate = TRUE, adjust = TRUE){
    #Estimates the VA by means of the mixed approach
    #implemented with Least Squares Monte Carlo
-   times_len = length(private$the_product$get_times())
+   times_len <- length(private$the_product$get_times())
    ind <- seq(npaths)
    if(simulate){
    #Simulates financials
@@ -325,27 +325,36 @@ va_engine <- R6::R6Class("va_engine",
    #In case the penalty is  decreasing with time
    #and the finantial paths are continous (e.g: no jump diffusion),
    #recent studies proved that the rational policyholder would decide
-   #to surrender only when the surrender guarantee is in the money.
+   #to surrender only when the account value is below the barrier.
    #Therefore in these hyphoteses, for the LSMC regression we want to
    #take into consideration only paths where the insured is alive and
-   #the  rider guarantee is in-the-money.
-   #For this to happen the account at a specific surrender date must be
-   #below  the minimum guaranteed benefit amount.
-   #Therefore the variable bound should hold that amount by (1 - penalty)
-   #Only the advanced user should set the bound variable when using the
-   #do_mixed method.
-   #Otherwise it should be left at the default Inf which corresponds to
-   #taking the regression in both cases of guarantee out or in the money.
+   #the  account is below the barrier.
+   #The bound parameter will then be the barrier by the penalty so that
+   #it can be compared with the cash matrix
 
-    penalty <- private$the_product$get_penalty()
-    if (length(penalty) != 1) {
+   if(adjust)
+     bound <- private$the_product$get_barrier()
+   else bound <- Inf
+
+   bound <- rep(bound, length(surrender_times))
+
+   if(inherits(private$the_product, "GMWB")) {
+     surv_times <- survival_times[survival_times %in% surrender_times]
+     bound[surv_times] <- bound[surv_times] - cash[1, 1]
+   }
+
+   penalty <- private$the_product$get_penalty()
+
+   if (length(penalty) != 1) {
       bound <- (1 - penalty[surrender_times]) * bound
-    } else bound <- (1 - penalty[1]) * rep(bound, length(surrender_times))
-
+    } else bound <- (1 - penalty[1]) * bound
 
    for(t in rev(surrender_times)){
+
+    t_idx <- which(t == surrender_times)
     #See comment above about bound
-    h_t <- which(private$tau > t & cash[, t] < bound[t])
+    h_t <- which(private$tau > t & cash[, t] < bound[t_idx])
+    not_h_t <- which(private$tau > t & cash[, t] >= bound[t_idx])
     if(length(h_t) != 0){
     #Continuation value at time t
      c_t <- sapply(h_t, function(i){
@@ -374,11 +383,11 @@ va_engine <- R6::R6Class("va_engine",
     #We need to set the cashflow at time t back to just the survival benefit
     #(so zero clear the surrender value) given we're not taking the decision
     #to surrender on all paths but those indexed by h_t
-    for (i in ind[!is.element(ind, h_t)]){
+     for (i in not_h_t){
       surv_ben <- private$the_product$survival_benefit(self$get_fund(i),
                                                        private$tau[i], t)
       cash[i, t] <- surv_ben
-    }
+     }
    }
    res <- sapply(seq_along(sur_ts), function(i) {
      sum(cash[i, 1:sur_ts[i]] *
