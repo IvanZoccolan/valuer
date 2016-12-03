@@ -323,14 +323,14 @@ va_engine <- R6::R6Class("va_engine",
    }
 
    #In case the penalty is  decreasing with time
-   #and the finantial paths are continous (e.g: no jump diffusion),
+   #and the financial paths are continuous (e.g: no jump diffusion),
    #recent studies proved that the rational policyholder would decide
    #to surrender only when the account value is below the barrier.
-   #Therefore in these hyphoteses, for the LSMC regression we want to
+   #Therefore in these hypotheses for the LSMC regression we want to
    #take into consideration only paths where the insured is alive and
    #the  account is below the barrier.
    #The bound parameter will then be the barrier by the penalty so that
-   #it can be compared with the cash matrix
+   #it can be compared with the cash matrix.
 
    if(adjust)
      bound <- private$the_product$get_barrier()
