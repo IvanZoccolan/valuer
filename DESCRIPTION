@@ -5,12 +5,11 @@ Version: 1.1.0
 Authors@R: person("Ivan", "Zoccolan", email = "ivan.zoccolan@gmail.com", role = c("aut", "cre"))
 Author: Ivan Zoccolan [aut, cre]
 Maintainer: Ivan Zoccolan <ivan.zoccolan@gmail.com>
-Description: Provides R6 pricing engines for variable annuities life insurance
-    contracts. These engines implement different models to simulate the
-    financial and demographic sources of risk. A simple Monte Carlo method
-    is used to price the contract in case the policyholder cannot surrender
-    while Least Squares Monte Carlo is used if the insured can surrender.
-    A state-dependent fee structure with single barrier is also implemented.
+Description: Pricing of variable annuity life insurance
+    contracts by means of Monte Carlo methods. Monte Carlo is used to price
+    the contract in case the policyholder cannot surrender while Least Squares Monte Carlo
+    is used if the insured can surrender.
+    A state-dependent fee structure with a single barrier is implemented.
 License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1
