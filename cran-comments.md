@@ -11,5 +11,9 @@ There was 1 NOTE:
 * Maintainer: 'Ivan Zoccolan <ivan.zoccolan@gmail.com>'
   New submission
 
+## Resubmission
+This is a resubmission. I have:
+* Fixed not canonical CRAN URLs in README and vignette. 
+
 ## Downstream dependencies
 Currently there are no downstream dependencies of valuer.

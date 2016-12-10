@@ -6,7 +6,6 @@ packrat/lib*/
 .Rprofile
 valuer.Rproj
 packrat
-.Rbuildignore
 inst/doc
 vignettes/Introduction_cache
 CV_density_fitting.Rmd
