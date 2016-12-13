@@ -74,10 +74,15 @@ the_gatherer$get_results()
 ```
 
 ###Release status###
-Valuer is currently on  release 1.1.0
-
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/valuer)](http://cran.r-project.org/package=valuer)  
+Valuer is currently on development release 1.1.0 
 
 ### Installation ###
+Get valuer from CRAN:
+```{r, eval=FALSE}
+install.packages("valuer")
+
+```
 Get the development release from GitHub:
 ```{r, eval=FALSE}
 # install.packages("devtools")
