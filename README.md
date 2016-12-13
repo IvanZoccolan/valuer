@@ -59,13 +59,8 @@ volatility=vol, dividends=div)
 
 engine$do_static(the_gatherer, no_of_paths)
 the_gatherer$get_results()
-<<<<<<< HEAD
-#>       mean        se
-#> 1 92.38847 0.9323631
-=======
-#>      mean       se
-#> 1 93.1247 1.080551
->>>>>>> 41b51f8249bf1e7ff65f8672088714ef7dca3229
+#>       mean      se
+#> 1 91.37243 1.07941
 ```
 
 ### Release status
