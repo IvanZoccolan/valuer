@@ -60,14 +60,21 @@ volatility=vol, dividends=div)
 engine$do_static(the_gatherer, no_of_paths)
 the_gatherer$get_results()
 #>       mean        se
-#> 1 92.12345 0.9508671
+#> 1 92.38847 0.9323631
 ```
 
 ### Release status
 
-Valuer is currently on release 1.1.0
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/valuer)](http://cran.r-project.org/package=valuer)
+Valuer is currently on development release 1.1.0
 
 ### Installation
+
+Get valuer from CRAN:
+
+``` r
+install.packages("valuer")
+```
 
 Get the development release from GitHub:
 
