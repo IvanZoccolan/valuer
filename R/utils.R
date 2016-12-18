@@ -16,6 +16,13 @@
 #https://www.R-project.org/Licenses/ and included in the R distribution
 #(in directory share/licenses).
 
+
+
+.onUnload <- function (libpath) {
+  library.dynam.unload("valuer", libpath)
+}
+
+
 #Utility functions
 
 is_numeric_scalar <- function(x, ...) tryCatch(inherits(x, "numeric") & isTRUE(length(x) == 1),
@@ -145,4 +152,5 @@ cumsd <- function(x) {
   x[!ind_na] <- 0
   sq(cumsum(x^2) / (nn-1) - (cumsum(x))^2/(nn-1)/nn)
 }
+
 
