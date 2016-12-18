@@ -196,7 +196,10 @@ payoff_ratchet <- R6::R6Class("payoff_ratchet", inherit = payoff_guarantee,
     t <- timeDate::timeSequence(from = t[1], to = t[2])
     freq <- private$freq
     ratchet_dates <- timeDate::periods(t, freq, freq)$to
-    ratchet_idx <- sapply(ratchet_dates, function(x) which(x == t))
+    ratchet_idx <- rep(0, length(ratchet_dates))
+    for (i in seq_along(ratchet_dates)){
+      ratchet_idx[i] <- which(ratchet_dates[i] == t)
+    }
     ratchet_idx <- c(1, head(ratchet_idx, -1))
     guarantee <- max(amounts[ratchet_idx])
     sapply(amount, function(i) max(i, guarantee))
