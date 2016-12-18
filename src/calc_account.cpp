@@ -38,7 +38,6 @@ NumericVector calc_account(const NumericVector& spot, const NumericVector& ben, 
   int m = penalty.size();
 
   account[0] = spot[0] - ben[0];
- //
 
   for (int i = 0; i < n - 1; ++i){
 
@@ -50,10 +49,10 @@ NumericVector calc_account(const NumericVector& spot, const NumericVector& ben, 
   };
 
   if(m == 1){
-   for (int i = 0; i < n - 2; i++)
+   for (int i = 0; i < n - 1; i++)
     account[i] = (1 - penalty[0]) * account[i];
   } else {
-    for (int i = 0; i < n - 2; i++)
+    for (int i = 0; i < n - 1; i++)
      account[i] = (1 - penalty[i]) * account[i];
   };
 
