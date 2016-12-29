@@ -36,8 +36,8 @@ for \code{yuima}.
    \item{\code{product}}{A \code{\link{va_product}}
    object with the VA product.}
    \item{\code{financial_parms}}{A list of parameters
-   specifying the financial risk factors.
-   See \code{\link{financials_BMOP2011}} for an example.}
+   specifying the financial processes.
+   See \code{\link{financials_BZ2016}} for an example.}
    \item{\code{c1}}{\code{numeric} scalar argument of the intensity
    of mortality function \code{\link{mu}}}
    \item{\code{c2}}{\code{numeric} scalar argument of the intensity

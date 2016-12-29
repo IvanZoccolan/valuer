@@ -3,7 +3,7 @@
 \docType{data}
 \name{financials_BZ2016}
 \alias{financials_BZ2016}
-\title{BZ2016 financial risk factors}
+\title{BZ2016 financial processes}
 \format{A list with elements:
 \describe{
 \item{[[1]]}{List of parameters for \code{\link[yuima]{simulate}}}
@@ -15,11 +15,17 @@ in solve.variable \code{\link{setModel}}}
 financials_BZ2016
 }
 \description{
-List of parameters to initialize a va_sde_engine object to
+List of parameters to initialize a \code{\link{va_sde_engine2}} object to
 simulate the interest rate and log price processes being the
 volatility constant. The interest rate and fund processes
 follow the stochastic differential equations specified
-in BMOP2011 -  See \bold{References}.
+in BMOP2011 -  See \bold{References}. The volatility is constant with
+default value 0.2
+}
+\examples{
+ #Sets the constant volatility to 0.3
+ financials_BZ2016[[1]]$K <- 0.3 ^ 2
+
 }
 \references{
 \enumerate{

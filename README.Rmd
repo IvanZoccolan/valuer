@@ -20,7 +20,7 @@ The package implements the valuation framework and algorithms described in [BMOP
 It's written using [R6](https://CRAN.R-project.org/package=R6) and comes with classes which describe the variable annuity contracts and other classes, called pricing engines, which are used to price those contracts.  
 
 ### Example ###
-The following code prices a 10 years VA with GMAB guarantee by means of a  pricing engine which models the underlying fund as a geometric Brownian motion. Please check the introductory [vignette](https://github.com/IvanZoccolan/valuer/blob/master/vignettes/Introduction.Rmd) for an explanation of this example and a description of the package structure.
+The following code prices a 10 years VA with GMAB guarantee by means of a  pricing engine which models the underlying fund as a geometric Brownian motion. Please check the introductory [vignette](https://CRAN.R-project.org/package=valuer) for an explanation of this example and a description of the package structure.
 
 ```{r}
 library(valuer)
@@ -74,8 +74,8 @@ the_gatherer$get_results()
 ```
 
 ###Release status###
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/valuer)](http://cran.r-project.org/package=valuer)    
-Valuer is currently on development release 1.1.0 
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/valuer)](http://cran.r-project.org/package=valuer)  
+Valuer is currently on development release 1.1.1  
 
 ### Installation ###
 Get valuer from CRAN:
@@ -83,6 +83,7 @@ Get valuer from CRAN:
 install.packages("valuer")
 
 ```
+
 Get the development release from GitHub:
 ```{r, eval=FALSE}
 # install.packages("devtools")

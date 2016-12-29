@@ -3,7 +3,7 @@
 \docType{data}
 \name{mortality_BBM2010}
 \alias{mortality_BBM2010}
-\title{BBM2010 demographic risk factors}
+\title{BBM2010 demographic processes}
 \format{A list with elements:
 \describe{
 \item{[[1]]}{List of parameters for \code{\link[yuima]{simulate}}}

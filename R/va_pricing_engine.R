@@ -53,7 +53,7 @@
 #mainly why I begun to use R6.
 #
 #The basic design principle is that the engine knows how to simulate the
-#financial and demographic risk factors but does not know anything about the
+#financial and demographic processes but does not know anything about the
 #va contract itself.
 #Info about the contract such as the type of guarantee, expiry, dates
 #of due payments, age of the insured are saved into a va_product object.
@@ -70,7 +70,7 @@
 #va_bs_engine simulates the underlying fund with a GBM and the demographic risk
 #by means of the deterministic Weibull intensity of mortality.
 #The class va_sde_engine leverages on the beautiful yuima package to specify
-#both the financial and demographic risk factors by means of
+#both the financial and demographic processes by means of
 #a system of stochastic differential equations.
 #So it is pretty general and flexible in that respect.
 #However bear in mind the cost of this flexibility is far longer execution

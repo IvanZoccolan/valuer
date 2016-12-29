@@ -3,7 +3,7 @@
 \docType{data}
 \name{financials_BBM2010}
 \alias{financials_BBM2010}
-\title{BBM2010 financial risk factors}
+\title{BBM2010 financial processes}
 \format{A list with elements:
 \describe{
 \item{[[1]]}{List of parameters for \code{\link[yuima]{simulate}}}

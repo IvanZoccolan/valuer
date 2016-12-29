@@ -208,7 +208,11 @@ va_sde_engine2
 : the underlying fund and interest rate are specified by means of a system of stochastic differential equations while the intensity of mortality is deterministic and given by the Weibull function.
 
 va_mkh_engine
-:  with this engine the underlying fund is modeled with a geometric Brownian motion, the interest rate is  constant and the intensity of mortality is modeled by the Makeham intensity of mortality function.
+:  with this engine the underlying fund is modeled with a geometric Brownian motion, the interest rate is  constant and the intensity of mortality is modeled by the Makeham intensity of mortality function.  
+
+va_sde_engine3
+:  the underlying fund is specified by means of a system of stochastic differential equations while the 
+interest rate is constant and the intensity of mortality is deterministic and given by the Weibull function. 
 
 ### Pricing with va_bs_engine ###
 
