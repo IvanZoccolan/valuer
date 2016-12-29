@@ -74,7 +74,7 @@ the_gatherer$get_results()
 ```
 
 ###Release status###
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/valuer)](http://cran.r-project.org/package=valuer)  
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/valuer)](https://cran.r-project.org/package=valuer)  
 Valuer is currently on development release 1.1.1  
 
 ### Installation ###
