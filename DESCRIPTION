@@ -10,6 +10,10 @@ Description: Pricing of variable annuity life insurance
     the contract in case the policyholder cannot surrender while Least Squares Monte Carlo
     is used if the insured can surrender.
     A state-dependent fee structure with a single barrier is implemented.
+    A.R. Bacinello, P. Millossovich, A. Olivieri, E. Pitacco,
+    Variable annuities: A unifying valuation approach,
+    Insurance: Mathematics and Economics. 49 (2011) 285–297.
+    doi:10.1016/j.insmatheco.2011.05.003.
 License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1
