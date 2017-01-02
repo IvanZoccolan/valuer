@@ -10,9 +10,9 @@ Description: Pricing of variable annuity life insurance
     the contract in case the policyholder cannot surrender while
     Least Squares Monte Carlo is used if the insured can surrender.
     This package implements the pricing framework and algorithm described in
-    Bacinello et All (2011) <doi:10.1016/j.insmatheco.2011.05.003>.
+    Bacinello et Al (2011) <doi:10.1016/j.insmatheco.2011.05.003>.
     It also implements the state-dependent fee structure discussed
-    in Bernard et All (2014) <doi:10.1017/asb.2014.13>.
+    in Bernard et Al (2014) <doi:10.1017/asb.2014.13>.
 License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1
