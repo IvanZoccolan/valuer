@@ -1,18 +1,11 @@
----
-title: "News"
-output: html_document
----
+#valuer 1.1.1.9000
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
-# valuer 1.1.1  
+# valuer 1.1.1
 
-*  Fixed an heap overflow bug in valuer's C code that could crash R (#2).    
+*  Fixed an heap overflow bug in valuer's C code that could crash R (#2).
 *  Fixed the ratchet_payoff class (#1).
 *  Added va_sde_engine3 to price under the assumption the interest rate is constant, the intersity of mortality is given by the Weibull function  and the underlying fund is specified by a system of SDEs.
-
 
 
 
