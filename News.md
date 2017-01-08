@@ -1,5 +1,5 @@
 #valuer 1.1.1.9000
-
+* Argument checks in fair_fee to prevent convergence failures (#3).
 
 # valuer 1.1.1
 
