@@ -280,6 +280,13 @@ va_bs_engine2 <- R6::R6Class("va_bs_engine", inherit = va_bs_engine,
       private$mu_integrals[i, ] <- cumsum(c(0, mu_ * dt))
 
     }
+  },
+  death_time = function(i){
+    ind <- which(private$mu_integrals[i, ] > rexp(1))
+    if (length(ind) != 0)
+      res <- min(ind)
+    else res <- length(private$the_product$get_times()) + 1
+    res
   }
  ),
  private = list(
