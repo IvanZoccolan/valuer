@@ -215,16 +215,17 @@ va_mkh_engine <- R6::R6Class("va_mkh_engine", inherit = va_bs_engine,
    B <- private$mu_2
    c <- private$mu_3
    t_yrs  <- head(private$the_product$times_in_yrs(), -1)
-   #Deterministic intensity of mortality (Makeham)
-   mu <- A + B * (c ^ (age + t_yrs))
-   #Integrals of the intensity of mortality
-   dt <- diff(t_yrs)
-   mu_ <- head(mu, -1)
-   mu_integrals <- cumsum(c(0, mu_ * dt))
+   #Makeham intensity of mortality
+   integrand <- function(x) {A + B * (c ^ (age + x))}
+
+   mu_integrals <- sapply(t_yrs, function(u) {
+     stats::integrate(integrand, 0, u)$value
+   })
    mu_integrals
   }
  ),
  private = list(
-  mu_3 = numeric(0)
+  #Third parameter of the Makeham function
+  mu_3 = 1.075
  )
 )

@@ -727,11 +727,12 @@ va_bs_engine <- R6::R6Class("va_bs_engine", inherit = va_engine,
     c2 <- private$mu_2
     t_yrs  <- head(private$the_product$times_in_yrs(), -1)
     #Deterministic intensity of mortality (Weibull)
-    mu <- (c1 ^ (-c2)) * c2 * ((age + t_yrs) ^ (c2 - 1))
-    #Integrals of the intensity of mortality
-    dt <- diff(t_yrs)
-    mu_ <- head(mu, -1)
-    mu_integrals <- cumsum(c(0, mu_ * dt))
+    integrand <- function(t) {
+      (c1 ^ (-c2)) * c2 * ((age + t) ^ (c2 - 1))
+    }
+    mu_integrals <- sapply(t_yrs, function(u) {
+      stats::integrate(integrand, 0, u)$value
+    })
     mu_integrals
   },
   death_time = function(i){
