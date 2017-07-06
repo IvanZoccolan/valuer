@@ -27,7 +27,8 @@ Suggests: testthat,
     knitr,
     rmarkdown,
     doParallel (>= 1.0.10),
-    foreach (>= 1.4.3)
+    foreach (>= 1.4.3),
+    limSolve
 LinkingTo: Rcpp
 VignetteBuilder: knitr
 URL: http://github.com/IvanZoccolan/valuer
