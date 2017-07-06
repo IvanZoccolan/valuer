@@ -127,7 +127,8 @@ sq <- function(x) ifelse(x > 0, sqrt(x), 0)
 #' @param c1 numeric scalar
 #' @param c2 numeric scalar
 #' @export
-weibull  <-  function(t, x, c1, c2) {(c1^(-c2))*c2*((x + t)^(c2 -1))}
+
+mu  <-  function(t, x, c1, c2) {(c1^(-c2))*c2*((x + t)^(c2 -1))}
 
 #Deterministic intensity of mortality ( Makeham )
 
