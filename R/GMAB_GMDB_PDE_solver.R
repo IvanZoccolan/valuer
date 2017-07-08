@@ -62,7 +62,7 @@
 #'va <- va_pde_pricer(lambda = lambda, K = K)
 #'
 #'va
-#'
+#'@importFrom stats integrate
 #'@export
 
 va_pde_pricer <- function(F0 = 100,  r = 0.03,  sigma = 0.165, x = 50,

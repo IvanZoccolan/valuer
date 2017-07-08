@@ -62,7 +62,6 @@ K <- function(t, T) {0.05 * ( 1 - t / T)^3}
 va <- va_pde_pricer(lambda = lambda, K = K)
 
 va
-
 }
 \references{
 \enumerate{
