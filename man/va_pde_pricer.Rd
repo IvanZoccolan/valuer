@@ -71,4 +71,3 @@ va
  The Journal of Risk and Insurance, 84(2):661-690, 2017. DOI: 10.1111/jori.12094}}
 }
 }
-

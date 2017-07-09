@@ -37,4 +37,3 @@ default value 0.2
  }
 }
 \keyword{datasets}
-

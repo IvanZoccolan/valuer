@@ -36,4 +36,3 @@ financials_BZ2016bis[[1]]$r <- 0.02
  }
 }
 \keyword{datasets}
-

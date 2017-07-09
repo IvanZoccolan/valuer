@@ -110,6 +110,7 @@ for \code{yuima}.
  }
 }
 }
+
 \examples{
 #Sets up the payoff as a roll-up of premiums with roll-up rate 2\%
 
@@ -178,4 +179,3 @@ the_gatherer_2$get_results()
  }
 }
 \keyword{datasets}
-

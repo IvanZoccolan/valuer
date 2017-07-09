@@ -82,6 +82,7 @@ insurance products, their guarantees and fee structures.
   \item{\code{get_premium}}{Returns the premium as non negative scalar}
 }
 }
+
 \references{
 \enumerate{
 \item{[BMOP2011]}{ \cite{Bacinello A.R., Millossovich P., Olivieri A.,
@@ -94,4 +95,3 @@ pp. 559-585.}}
 }
 }
 \keyword{datasets}
-

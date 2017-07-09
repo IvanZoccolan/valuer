@@ -135,13 +135,13 @@ va_pde_pricer <- function(F0 = 100,  r = 0.03,  sigma = 0.165, x = 50,
 
   V0_func <- function(i){
 
-    V0_integrand <- function(u) {
+    V0_integrand <- Vectorize(function(u) {
 
       esp <- (r - delta) * u  - r * i * dt
 
       exp(-esp) * lprob(i*dt, u) * lambda(u)
 
-    }
+    })
 
     esp <- ((r - delta) *  T) - r * i * dt
 

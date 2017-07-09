@@ -13,4 +13,3 @@ sq(x)
 Takes square root if positive otherwise returns zero.
 To be used with mean reverting squared root processes (CIR SDE)
 }
-

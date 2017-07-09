@@ -78,6 +78,7 @@ insurance products, their guarantees and fee structures.
   \item{\code{get_premium}}{Returns the premium as non negative scalar}
 }
 }
+
 \examples{
 #Sets up the payoff as a roll-up of premiums with roll-up rate 1\%
 
@@ -120,4 +121,3 @@ pp. 559-585.}}
 }
 }
 \keyword{datasets}
-

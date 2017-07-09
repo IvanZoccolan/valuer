@@ -25,5 +25,5 @@ calculated in a loop.
   estimates.}
 }
 }
-\keyword{datasets}
 
+\keyword{datasets}

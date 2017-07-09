@@ -94,6 +94,7 @@ and static approaches and the algorithm implemented by this class,
  }
 }
 }
+
 \references{
 \enumerate{
  \item{[BMOP2011]}{ \cite{Bacinello A.R., Millossovich P., Olivieri A.
@@ -105,4 +106,3 @@ and static approaches and the algorithm implemented by this class,
 }
 }
 \keyword{datasets}
-

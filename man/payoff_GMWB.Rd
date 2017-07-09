@@ -31,6 +31,7 @@ It is stated as a given percentage of the premium.
   \item{\code{get_payoff}}{Gets the payoff}
 }
 }
+
 \examples{
 premium <- 100
 beta <- 0.15
@@ -38,4 +39,3 @@ GMWB_payment <- payoff_GMWB$new(premium, beta)
 GMWB_payment$get_payoff()
 }
 \keyword{datasets}
-

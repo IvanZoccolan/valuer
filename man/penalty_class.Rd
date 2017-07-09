@@ -34,6 +34,7 @@ charge (type 1) and two surrender charges decreasing with time,
   \item{\code{get_type}}{get the type of the surrender penalty}
 }
 }
+
 \examples{
 #Sets a constant penalty
 penalty <- penalty_class$new(type = 1, const = 0.03)
@@ -54,4 +55,3 @@ penalty$set(0.05)
 penalty$get(time = 0)
 }
 \keyword{datasets}
-

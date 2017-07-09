@@ -28,5 +28,5 @@ Standard Error of the estimate as well as a convergence table.
   \item{\code{plot}}{Plots a Monte Carlo convergence graph at 95\% level}
 }
 }
-\keyword{datasets}
 
+\keyword{datasets}

@@ -37,6 +37,7 @@ some specified times.
    vector with the account values. (see \bold{Examples})}
 }
 }
+
 \examples{
 freq <- "1m"
 premium <- 100
@@ -47,4 +48,3 @@ account <- 120 * rnorm(365)
 ratchet$get_payoff(c(120,100), c(t1,t2), account)
 }
 \keyword{datasets}
-

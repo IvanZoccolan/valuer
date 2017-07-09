@@ -32,5 +32,5 @@ ratchet payoff classes.
    objects to calculate the payoff}
 }
 }
-\keyword{datasets}
 
+\keyword{datasets}

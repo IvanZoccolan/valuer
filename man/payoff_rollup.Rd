@@ -35,6 +35,7 @@ at a given rate.
    (see \bold{Examples})}
 }
 }
+
 \examples{
 rate <- constant_parameters$new(0.01)
 premium <- 100
@@ -44,4 +45,3 @@ t2 <- timeDate::timeDate("2016-12-31")
 rollup$get_payoff(c(120,100), c(t1,t2))
 }
 \keyword{datasets}
-

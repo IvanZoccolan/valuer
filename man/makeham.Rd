@@ -20,4 +20,3 @@ makeham(t, x, A, B, c)
 \description{
 Makeham's intensity of mortality
 }
-

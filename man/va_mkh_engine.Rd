@@ -111,6 +111,7 @@ and static approaches and the algorithm implemented by this class,
  }
 }
 }
+
 \examples{
 #Sets up the payoff as a roll-up of premiums with roll-up rate 1\%
 
@@ -183,4 +184,3 @@ the_gatherer_2$get_results()
 }
 }
 \keyword{datasets}
-

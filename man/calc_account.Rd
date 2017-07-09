@@ -20,4 +20,3 @@ calc_account(spot, ben, fee, barrier, penalty)
 \description{
 Calculates the account
 }
-

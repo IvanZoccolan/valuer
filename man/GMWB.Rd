@@ -92,6 +92,7 @@ insurance products, their guarantees and fee structures.
   \item{\code{get_premium}}{Returns the premium as non negative scalar}
 }
 }
+
 \examples{
 #Sets up the periodic payment.
 
@@ -138,4 +139,3 @@ pp. 559-585.}}
 }
 }
 \keyword{datasets}
-

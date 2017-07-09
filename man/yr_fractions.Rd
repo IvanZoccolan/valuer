@@ -12,4 +12,3 @@ yr_fractions(times)
 \description{
 Normalizes a timeDate sequence into year fractions
 }
-

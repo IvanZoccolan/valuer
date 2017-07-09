@@ -18,4 +18,3 @@ mu(t, x, c1, c2)
 \description{
 Weibull intensity of mortality
 }
-
