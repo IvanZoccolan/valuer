@@ -4,13 +4,13 @@ context("penalty class tests")
 
 test_that("penalty_class methods work", {
 
-  expect_silent(penalty <- penalty_class$new(type = 1, const = 0.03))
+  expect_silent(penalty <- penalty_class$new(type = 1, const = 0.03, T = 10))
 
   expect_equal(penalty$get(), 0.03)
 
   expect_silent(penalty$set(0.04))
 
-  expect_equal(penalty$get(), 0.04)
+  expect_equal(penalty$get(10), 0.04)
 
   expect_silent(penalty <- penalty_class$new(type = 2, const = 0.08, T = 10))
 

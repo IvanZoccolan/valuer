@@ -158,7 +158,7 @@ penalty_class <- R6::R6Class("penalty_class",
      else private$the_penalty <- 1
 
      #
-     private$T <- 5
+     private$T <- T
 
     },
     #Types of penalty decreasing with time
