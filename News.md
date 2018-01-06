@@ -9,4 +9,7 @@
 *  Added va_sde_engine3 to price under the assumption the interest rate is constant, the intersity of mortality is given by the Weibull function  and the underlying fund is specified by a system of SDEs.
 
 
+# valuer 1.1.2
+
+* Added the function va_pde_pricer which prices a VA by PDE methods.
 
