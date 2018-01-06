@@ -24,3 +24,4 @@
 ^News\.md$
 ^News\.Rmd$
 ^revdep/*$
+^NEWS\.md$
