@@ -4,20 +4,14 @@
 * win-builder (devel and release)
 
 ## R CMD check results
-There were no ERRORs, WARNINGs.  
-Win-builder has one NOTE  
-Possibly mis-spelled words in DESCRIPTION:
-  MacKay (16:42)
-  PDE (16:35)
-These are spelled correctly.
+There were no ERRORs, WARNINGs, or NOTEs  
 
 
 ## Resubmission
+* Fixed NOTEs reported on previuos submission.
 
 ## Release notes
 In this release, I have:
-
-* Fixed "Files named as vignettes but with no recognized vignette engine:"
 
 * Added the function va_pde_pricer to price a VA by means of PDE methods.
 
