@@ -14,7 +14,7 @@ Description: Pricing of variable annuity life insurance
     It also implements the state-dependent fee structure
     discussed in Bernard et al. (2014) <doi:10.1017/asb.2014.13> as well as 
     a function which prices the contract by resolving the partial differential equation 
-    described in <doi:10.1111/jori.12094>.
+    described in MacKay et al. (2017) <doi:10.1111/jori.12094>.
 License: GPL-3
 LazyData: TRUE
 RoxygenNote: 6.0.1

@@ -24,7 +24,7 @@
 #' Class providing a variable annuity pricing engine where the underlying
 #' reference fund is specified by an arbitrary system of stochastic
 #' differential equations. In contrast, the interest rates is constant and
-#' the intensity of mortality is determinitic and given by the Weibull
+#' the intensity of mortality is deterministic and given by the Weibull
 #' function.
 #' The fund paths are simulated by means of the
 #' \href{https://CRAN.R-project.org/package=yuima}{yuima} package. \cr
@@ -118,7 +118,7 @@
 #'    to be used. The default is \code{FALSE}}
 #'    \item{\code{tol}}{\code{numeric} scalar with the tolerance of the
 #'    bisection algorithm. Default is \code{1e-4}}
-#'    \item{\code{nmax}}{positive \code{integer} with the maximun number of
+#'    \item{\code{nmax}}{positive \code{integer} with the maximum number of
 #'    iterations of the bisection algorithm}
 #'    \item{\code{simulate}}{boolean specifying if financial and mortality
 #'    paths should be simulated.}

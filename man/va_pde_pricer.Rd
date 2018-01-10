@@ -35,7 +35,7 @@ time dimension}
 the fund dimension}
 
 \item{lambda}{function with the intensity of mortality.
-Default is \code{\link{makeham}} with paramters
+Default is \code{\link{makeham}} with parameters
 \code{x = 50, A = 0.0001, B = 0.00035, c = 1.075}}
 
 \item{K}{function with the  surrender penalty.}

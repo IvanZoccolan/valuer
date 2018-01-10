@@ -195,7 +195,7 @@
 #'    to be used. The default is \code{FALSE}}
 #'    \item{\code{tol}}{\code{numeric} scalar with the tolerance of the
 #'    bisection algorithm. Default is \code{1e-4}}
-#'    \item{\code{nmax}}{positive \code{integer} with the maximun number of
+#'    \item{\code{nmax}}{positive \code{integer} with the maximum number of
 #'    iterations of the bisection algorithm}
 #'    \item{\code{simulate}}{boolean specifying if financial and mortality
 #'    paths should be simulated.}
@@ -575,7 +575,7 @@ va_engine <- R6::R6Class("va_engine",
 #'    to be used. The default is \code{FALSE}}
 #'    \item{\code{tol}}{\code{numeric} scalar with the tolerance of the
 #'    bisection algorithm. Default is \code{1e-4}}
-#'    \item{\code{nmax}}{positive \code{integer} with the maximun number of
+#'    \item{\code{nmax}}{positive \code{integer} with the maximum number of
 #'    iterations of the bisection algorithm}
 #'   \item{\code{simulate}}{boolean specifying if financial and mortality
 #'    paths should be simulated.}

@@ -38,7 +38,7 @@
 #'@param dF numeric scalar with the discretization step for
 #'the fund dimension
 #'@param lambda function with the intensity of mortality.
-#'Default is \code{\link{makeham}} with paramters
+#'Default is \code{\link{makeham}} with parameters
 #'\code{x = 50, A = 0.0001, B = 0.00035, c = 1.075}
 #'@param K function with the  surrender penalty.
 #'@param Fmax numeric scalar with the maximum fund value

@@ -277,7 +277,7 @@ the_gatherer$get_results()
 
 By means of the method *do_mixed* it is possible to estimate the value of the contract with the assumption the policyholder can surrender. This is similar to estimating the value of an American derivative by means of Least Squares Monte Carlo. In fact, the algorithm of do_mixed is a slightly modified LSMC procedure which  takes into account the demographic risk as outlined in [BMOP2011](#BMOP2011). Therefore, besides the number of simulations and the gatherer, we need to pass parameters relevant to LSMC:  
 
-* *degree* - the maximun degree of the Laguerre polynomials used by least squares in LSMC.
+* *degree* - the maximum degree of the Laguerre polynomials used by least squares in LSMC.
   The default value is three,
     
 * *freq* - the frequency of the surrender decision. The default is "3m" which corresponds to a surrender 
