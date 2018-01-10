@@ -32,7 +32,6 @@
 #' the annuitization rate by the roll-up or ratchet payoff at the end
 #' of the accumulation period \code{t}.
 #' @docType class
-#' @useDynLib valuer
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.

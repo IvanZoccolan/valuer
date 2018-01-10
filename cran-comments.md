@@ -1,5 +1,5 @@
 ## Test environments
-* local Ubuntu 16.04.2 LTS install, R  3.4.1
+* local Ubuntu 16.04.2 LTS install, R  3.4.3
 * Ubuntu 14.04.5 LTS (on travis-ci), R 3.4.2
 * win-builder (devel and release)
 
@@ -18,7 +18,6 @@ These are spelled correctly.
 In this release, I have:
 
 * Fixed "Files named as vignettes but with no recognized vignette engine:"
-by placing News.md in .Rbuildignore 
 
 * Added the function va_pde_pricer to price a VA by means of PDE methods.
 

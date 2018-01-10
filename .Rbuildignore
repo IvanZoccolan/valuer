@@ -21,7 +21,5 @@
 ^rsconnect/*$
 ^Residual_histograms\.html$
 ^cran-comments\.md$
-^News\.md$
-^News\.Rmd$
 ^revdep/*$
 ^NEWS\.md$

@@ -129,6 +129,7 @@
   #'  In: Review of Financial studies 14 (2001), pp. 113-147}}
 #' }
 #'@examples
+#'\dontrun{
 #'#Sets up the payoff as a roll-up of premiums with roll-up rate 1%
 #'
 #'rate <- constant_parameters$new(0.01)
@@ -188,8 +189,7 @@
 #'engine$do_mixed(the_gatherer_2, no_of_paths, degree = 3,
 #'freq = "3m", simulate = FALSE)
 #'the_gatherer_2$get_results()
-
-
+#'}
 
 
 va_bs_engine2 <- R6::R6Class("va_bs_engine", inherit = va_bs_engine,

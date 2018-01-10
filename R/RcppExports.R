@@ -9,7 +9,9 @@
 #' @param barrier \code{numeric} scalar with the state-dependent barrier
 #' @param penalty \code{numeric} vector with the surrender penalty
 #' @export
+#' @useDynLib valuer, .registration = TRUE
+#' @importFrom Rcpp sourceCpp
 calc_account <- function(spot, ben, fee, barrier, penalty) {
-    .Call('valuer_calc_account', PACKAGE = 'valuer', spot, ben, fee, barrier, penalty)
+    .Call(valuer_calc_account, spot, ben, fee, barrier, penalty)
 }
 

@@ -28,7 +28,6 @@
 #' See \bold{References} for a description of variable annuities life
 #' insurance products, their guarantees and fee structures.
 #' @docType class
-#' @useDynLib valuer
 #' @export
 #' @return Object of \code{\link{R6Class}}
 #' @format \code{\link{R6Class}} object.

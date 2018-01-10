@@ -30,6 +30,8 @@ using namespace Rcpp;
 //' @param barrier \code{numeric} scalar with the state-dependent barrier
 //' @param penalty \code{numeric} vector with the surrender penalty
 //' @export
+//' @useDynLib valuer, .registration = TRUE
+//' @importFrom Rcpp sourceCpp
 // [[Rcpp::export]]
 NumericVector calc_account(const NumericVector& spot, const NumericVector& ben, double fee, double barrier, const NumericVector& penalty) {
 

@@ -111,6 +111,7 @@ and static approaches and the algorithm implemented by this class,
 }
 
 \examples{
+\dontrun{
 #Sets up the payoff as a roll-up of premiums with roll-up rate 1\%
 
 rate <- constant_parameters$new(0.01)
@@ -170,6 +171,7 @@ the_gatherer_2 <- mc_gatherer$new()
 engine$do_mixed(the_gatherer_2, no_of_paths, degree = 3,
 freq = "3m", simulate = FALSE)
 the_gatherer_2$get_results()
+}
 }
 \references{
 \enumerate{
