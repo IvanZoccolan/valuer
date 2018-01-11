@@ -12,6 +12,6 @@
 #' @useDynLib valuer, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 calc_account <- function(spot, ben, fee, barrier, penalty) {
-    .Call(valuer_calc_account, spot, ben, fee, barrier, penalty)
+    .Call(`_valuer_calc_account`, spot, ben, fee, barrier, penalty)
 }
 

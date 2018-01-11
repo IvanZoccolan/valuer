@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // calc_account
 NumericVector calc_account(const NumericVector& spot, const NumericVector& ben, double fee, double barrier, const NumericVector& penalty);
-RcppExport SEXP valuer_calc_account(SEXP spotSEXP, SEXP benSEXP, SEXP feeSEXP, SEXP barrierSEXP, SEXP penaltySEXP) {
+RcppExport SEXP _valuer_calc_account(SEXP spotSEXP, SEXP benSEXP, SEXP feeSEXP, SEXP barrierSEXP, SEXP penaltySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -22,7 +22,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"valuer_calc_account", (DL_FUNC) &valuer_calc_account, 5},
+    {"_valuer_calc_account", (DL_FUNC) &_valuer_calc_account, 5},
     {NULL, NULL, 0}
 };
 
