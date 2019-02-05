@@ -174,6 +174,9 @@
 #'    every three months if surrendering the contract or not.}
 #'   \item{\code{simulate}}{boolean to specify if the paths should be
 #'    simulated from scratch, default is TRUE.}
+#'   \item{\code{regression_alg}}{String which specifies the regression algorithm used. 
+#'   Values are \code{"lm"} for linear regression, \code{"glm"} for GLM, \code{"ridge"}
+#'   for Ridge regression and \code{"lasso"} for the Lasso.}  
 #'   }
 #'  }
 #'  \item{\code{get_discount}}{Arguments are \code{i,j}.
@@ -278,7 +281,7 @@ va_engine <- R6::R6Class("va_engine",
    private$the_product$set_penalty_object(penalty = old_penalty)
    the_gatherer$dump_result(res)
   },
-  do_mixed = function(the_gatherer, npaths, degree = 3, freq = "3m", simulate = TRUE, adjust = TRUE){
+  do_mixed = function(the_gatherer, npaths, degree = 3, freq = "3m", simulate = TRUE, adjust = TRUE, regression_alg ="lm"){
    #Estimates the VA by means of the mixed approach
    #implemented with Least Squares Monte Carlo
    times_len <- length(private$the_product$get_times())
@@ -365,8 +368,31 @@ va_engine <- R6::R6Class("va_engine",
      #Regressors
      x_t <- private$bases(h_t, t, degree)
      #Estimated continuation values
-     #RcppEigen::fastLmPure it's imported in NAMESPACE
-     chat_t <- fastLmPure(x_t, c_t)$fitted.values
+     switch(regression_alg, 
+       lm = {
+         #RcppEigen::fastLmPure it's imported in NAMESPACE
+         chat_t <- fastLmPure(x_t, c_t)$fitted.values
+         },
+       glm = {
+         chat_t <- glm.fit(x_t, c_t, family = Gamma(link="identity"))$fitted.values
+         },
+       ridge = {
+         if(!requireNamespace("glmnet", quietly = TRUE)){
+           stop("Ridge regression requires the package glmnet.
+                 Please run install.packages(\"glmnet\")")
+         }
+         cv <- glmnet::cv.glmnet(x_t, c_t, alpha = 0, family="gaussian", parallel = TRUE)
+         chat_t <- glmnet::predict.cv.glmnet(cv, newx = x_t, s = "lambda.min") 
+       },
+       lasso = {
+         if(!requireNamespace("glmnet", quietly = TRUE)){
+           stop("The Lasso requires the package glmnet.
+                 Please run install.packages(\"glmnet\")")
+         }
+         cv <- glmnet::cv.glmnet(x_t, c_t, alpha = 1, family="gaussian", parallel = TRUE)
+         chat_t <- glmnet::predict.cv.glmnet(cv, newx = x_t, s = "lambda.min") 
+       }
+     )
      #### Comparison between surrender values and estimated
      #### continuation values ####
      for (i in seq_along(h_t)){
@@ -554,6 +580,9 @@ va_engine <- R6::R6Class("va_engine",
 #'    every three months if surrendering the contract or not.}
 #'   \item{\code{simulate}}{boolean to specify if the paths should be
 #'    simulated from scratch, default is TRUE.}
+#'   \item{\code{regression_alg}}{String which specifies the regression algorithm used. 
+#'   Values are \code{"lm"} for linear regression, \code{"glm"} for GLM, \code{"ridge"}
+#'   for Ridge regression and \code{"lasso"} for the Lasso.}  
 #'   }
 #'  }
 #'  \item{\code{get_discount}}{Arguments are \code{i,j}.

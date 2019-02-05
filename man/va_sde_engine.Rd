@@ -79,6 +79,9 @@ for \code{yuima}.
     three months if surrendering the contract or not.}
     \item{\code{simulate}}{boolean to specify if the paths should be
     simulated from scratch, default is TRUE.}
+    \item{\code{regression_alg}}{String which specifies the regression algorithm used. 
+    Values are \code{"lm"} for linear regression, \code{"glm"} for GLM, \code{"ridge"}
+    for Ridge regression and \code{"lasso"} for the Lasso.} 
   }
  }
  \item{\code{get_discount}}{Arguments are \code{i,j}.
