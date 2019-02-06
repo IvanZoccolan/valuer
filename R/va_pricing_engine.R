@@ -374,7 +374,7 @@ va_engine <- R6::R6Class("va_engine",
          chat_t <- fastLmPure(x_t, c_t)$fitted.values
          },
        glm = {
-         chat_t <- glm.fit(x_t, c_t, family = Gamma(link="identity"))$fitted.values
+         chat_t <- glm.fit(x_t, c_t, family = Gamma(link="inverse"))$fitted.values
          },
        ridge = {
          if(!requireNamespace("glmnet", quietly = TRUE)){
