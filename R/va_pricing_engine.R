@@ -419,7 +419,13 @@ va_engine <- R6::R6Class("va_engine",
      sum(cash[i, 1:sur_ts[i]] *
        self$get_discount(i, 1:sur_ts[i]))
      })
+   #Dumps the contract values for each path
    the_gatherer$dump_result(res)
+   #Dumps the exit times
+   times_in_yrs <- private$the_product$times_in_yrs()
+   death <-  sapply(adj_tau, FUN = function(s) { round(times_in_yrs[s+1], 2) })
+   surrender <- sapply(sur_ts, FUN = function(s) { round(times_in_yrs[s+1], 2) })
+   the_gatherer$dump_exit_times(data.frame(death = death, surrender = surrender))
   },
   get_discount = function(i, j) {
 

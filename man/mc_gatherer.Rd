@@ -22,8 +22,12 @@ Standard Error of the estimate as well as a convergence table.
   \item{\code{new}}{Constructor method}
   \item{\code{dump_result}}{Saves the argument \code{result} which is
   a numeric scalar}
+  \item{\code{dump_exit_times}}{Saves the argument \code{times} which is
+  a \code{data.frame} with the death and surrender times}
   \item{\code{get_results}}{Returns the  Monte Carlo estimate and the
   (estimated) Monte Carlo Standard Error of the estimate}
+  \item{\code{get_exit_times}}{Returns a \code{data.frame} with the death 
+  and surrender times}
   \item{\code{convergence_table}}{Returns the convergence table}
   \item{\code{plot}}{Plots a Monte Carlo convergence graph at 95\% level}
 }

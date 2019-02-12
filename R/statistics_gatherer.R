@@ -53,8 +53,12 @@ gatherer <-  R6::R6Class("gatherer",
 #'   \item{\code{new}}{Constructor method}
 #'   \item{\code{dump_result}}{Saves the argument \code{result} which is
 #'   a numeric scalar}
+#'   \item{\code{dump_exit_times}}{Saves the argument \code{times} which is
+#'   a \code{data.frame} with the death and surrender times}
 #'   \item{\code{get_results}}{Returns the  Monte Carlo estimate and the
 #'   (estimated) Monte Carlo Standard Error of the estimate}
+#'   \item{\code{get_exit_times}}{Returns a \code{data.frame} with the death 
+#'   and surrender times}
 #'   \item{\code{convergence_table}}{Returns the convergence table}
 #'   \item{\code{plot}}{Plots a Monte Carlo convergence graph at 95\% level}
 #' }
@@ -67,6 +71,12 @@ mc_gatherer  <- R6::R6Class("mc_gatherer", inherit = gatherer,
      private$values <-  result
    else stop(error_msg_9("result"))
   },
+  dump_exit_times = function(times){
+    if (inherits(times, "data.frame"))
+      private$exit_times <- times
+    else stop(error_msg_1("data.frame"))
+  },
+  get_exit_times = function() { private$exit_times },
   get_results = function(){
    data.frame(mean = mean(private$values),
               se  =  sd(private$values) / sqrt(length(private$values))
@@ -96,7 +106,8 @@ mc_gatherer  <- R6::R6Class("mc_gatherer", inherit = gatherer,
   }
  ),
  private = list(
-  conv_table = NULL
+  conv_table = NULL,
+  exit_times = NULL
  )
 )
 
