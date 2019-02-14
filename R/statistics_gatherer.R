@@ -57,7 +57,7 @@ gatherer <-  R6::R6Class("gatherer",
 #'   a \code{data.frame} with the death and surrender times}
 #'   \item{\code{get_results}}{Returns the  Monte Carlo estimate and the
 #'   (estimated) Monte Carlo Standard Error of the estimate}
-#'   \item{\code{get_exit_times}}{Returns a \code{data.frame} with the death 
+#'   \item{\code{get_exit_times}}{Returns a \code{list} with the death 
 #'   and surrender times}
 #'   \item{\code{convergence_table}}{Returns the convergence table}
 #'   \item{\code{plot}}{Plots a Monte Carlo convergence graph at 95\% level}
@@ -76,7 +76,17 @@ mc_gatherer  <- R6::R6Class("mc_gatherer", inherit = gatherer,
       private$exit_times <- times
     else stop(error_msg_1("data.frame"))
   },
-  get_exit_times = function() { private$exit_times },
+  get_exit_times = function() { 
+    
+   res  <- private$exit_times
+   #The actual exit times organized by exit cause (death and surrender) are found
+   #from the saved raw data private$exit_times.
+   #Values are returned in a list since the vectors have different lengths.
+   ind  <- res$surrender < res$death
+   expt <- max(res$death)
+   list(death =  res[!ind & res$death != expt, ]$death, surrender = res[ind, ]$surrender) 
+  
+  },
   get_results = function(){
    data.frame(mean = mean(private$values),
               se  =  sd(private$values) / sqrt(length(private$values))

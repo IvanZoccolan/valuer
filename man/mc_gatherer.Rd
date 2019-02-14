@@ -26,7 +26,7 @@ Standard Error of the estimate as well as a convergence table.
   a \code{data.frame} with the death and surrender times}
   \item{\code{get_results}}{Returns the  Monte Carlo estimate and the
   (estimated) Monte Carlo Standard Error of the estimate}
-  \item{\code{get_exit_times}}{Returns a \code{data.frame} with the death 
+  \item{\code{get_exit_times}}{Returns a \code{list} with the death 
   and surrender times}
   \item{\code{convergence_table}}{Returns the convergence table}
   \item{\code{plot}}{Plots a Monte Carlo convergence graph at 95\% level}
