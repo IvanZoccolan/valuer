@@ -200,7 +200,7 @@
 #'    bisection algorithm. Default is \code{1e-4}}
 #'    \item{\code{nmax}}{positive \code{integer} with the maximum number of
 #'    iterations of the bisection algorithm}
-#'    \item{\code{simulate}}{boolean specifying if financial and mortality
+#'    \item{\code{sim}}{boolean specifying if financial and mortality
 #'    paths should be simulated.}
 #'   }
 #'  }
@@ -430,7 +430,7 @@ va_engine <- R6::R6Class("va_engine",
   get_discount = function(i, j) {
 
     },
-  fair_fee = function(fee_gatherer, npaths, lower, upper, mixed = FALSE, tol = 1e-4, nmax = 100, simulate = TRUE){
+  fair_fee = function(fee_gatherer, npaths, lower, upper, mixed = FALSE, tol = 1e-4, nmax = 100, sim = FALSE){
     #Argument checks
     if(!missing(fee_gatherer))
      if(inherits(fee_gatherer, "data_gatherer")){}
@@ -453,8 +453,8 @@ va_engine <- R6::R6Class("va_engine",
 
     the_gatherer <- mc_gatherer$new()
 
-    if(mixed) self$do_mixed(the_gatherer, npaths, simulate)
-    else self$do_static(the_gatherer, npaths, simulate)
+    if(mixed) self$do_mixed(the_gatherer, npaths, simulate = sim)
+    else self$do_static(the_gatherer, npaths, simulate = sim)
 
     old_value <- the_gatherer$get_results()[[1]]  - P
 
@@ -612,7 +612,7 @@ va_engine <- R6::R6Class("va_engine",
 #'    bisection algorithm. Default is \code{1e-4}}
 #'    \item{\code{nmax}}{positive \code{integer} with the maximum number of
 #'    iterations of the bisection algorithm}
-#'   \item{\code{simulate}}{boolean specifying if financial and mortality
+#'   \item{\code{sim}}{boolean specifying if financial and mortality
 #'    paths should be simulated.}
 #'   }
 #'  }

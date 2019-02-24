@@ -108,7 +108,7 @@ and static approaches and the algorithm implemented by this class,
    bisection algorithm. Default is \code{1e-4}}
    \item{\code{nmax}}{positive \code{integer} with the maximum number of
    iterations of the bisection algorithm}
-   \item{\code{simulate}}{boolean specifying if financial and mortality
+   \item{\code{sim}}{boolean specifying if financial and mortality
    paths should be simulated.}
   }
  }
